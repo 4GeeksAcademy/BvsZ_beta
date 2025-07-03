@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -94,20 +93,24 @@ const Login: React.FC = () => {
           setTimeout(() => navigate('/profile'), 1500);
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Auth error:', error);
       
       // Handle specific error messages
       let errorMessage = 'An error occurred during authentication';
       
-      if (error.message?.includes('Invalid login credentials')) {
-        errorMessage = 'Invalid email or password. Please try again.';
-      } else if (error.message?.includes('User already registered')) {
-        errorMessage = 'An account with this email already exists. Please sign in instead.';
-      } else if (error.message?.includes('Email not confirmed')) {
-        errorMessage = 'Please check your email and click the confirmation link before signing in.';
-      } else if (error.message) {
-        errorMessage = error.message;
+      if (error instanceof Error && typeof error.message === 'string') {
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Invalid email or password. Please try again.';
+        } else if (error.message.includes('User already registered')) {
+          errorMessage = 'An account with this email already exists. Please sign in instead.';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Please check your email and click the confirmation link before signing in.';
+        } else {
+          errorMessage = error.message;
+        }
+      } else {
+        errorMessage = String(error);
       }
       
       setError(errorMessage);
