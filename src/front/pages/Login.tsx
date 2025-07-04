@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../hooks/useAuth';
@@ -8,14 +8,18 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [age, setAge] = useState('');
+  const [language, setLanguage] = useState('');
+  const [country, setCountry] = useState('');
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [showPassword, setShowPassword] = useState(false);
   
-  const { user, signIn, signUp } = useAuth();
+  const { user, signIn } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in
@@ -41,16 +45,26 @@ const Login: React.FC = () => {
     }
     
     if (isRegister) {
-      if (!name) {
-        errors.push('Name is required');
-      } else if (name.length < 2) {
-        errors.push('Name must be at least 2 characters');
-      }
-      
       if (!confirmPassword) {
         errors.push('Password confirmation is required');
       } else if (password !== confirmPassword) {
         errors.push('Passwords do not match');
+      }
+
+      if (!username) {
+        errors.push('Username is required');
+      }
+
+      if (!age) {
+        errors.push('Age is required');
+      }
+
+      if (!language) {
+        errors.push('Language is required');
+      }
+
+      if (!country) {
+        errors.push('Country is required');
       }
     }
     
@@ -71,19 +85,32 @@ const Login: React.FC = () => {
 
     try {
       if (isRegister) {
-        const { data, error } = await signUp(email, password, name);
-        if (error) throw error;
-        
-        if (data.user && !data.user.email_confirmed_at) {
-          setSuccess('Please check your email and click the confirmation link to complete registration.');
-        } else if (data.user) {
-          setSuccess('Account created successfully! You can now sign in.');
-          setIsRegister(false);
-          setEmail('');
-          setPassword('');
-          setConfirmPassword('');
-          setName('');
-        }
+        const reps = await fetch('https://organic-succotash-w97wrg996pjfg6jg-3001.app.github.dev/api/register/', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            verify_password: confirmPassword,
+            age,
+            language,
+            country
+          })
+        });
+        const data = await reps.json();
+        if (!reps.ok) throw new Error(data.msg || 'Error en el registro');
+        setSuccess('¡Registro exitoso! Revisa tu correo para activar tu cuenta.');
+        setIsRegister(false);
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setUsername('');
+        setAge('');
+        setLanguage('');
+        setCountry('');
       } else {
         const { data, error } = await signIn(email, password);
         if (error) throw error;
@@ -131,7 +158,10 @@ const Login: React.FC = () => {
     setEmail('');
     setPassword('');
     setConfirmPassword('');
-    setName('');
+    setUsername('');
+    setAge('');
+    setLanguage('');
+    setCountry('');
   };
 
   return (
@@ -161,19 +191,53 @@ const Login: React.FC = () => {
                 
                 <Form onSubmit={handleSubmit}>
                   {isRegister && (
-                    <Form.Group className="mb-3">
-                      <Form.Label>Warrior Name *</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Enter your warrior name"
-                        disabled={loading}
-                        className={validationErrors.some(err => err.includes('Name')) ? 'is-invalid' : ''}
-                      />
-                    </Form.Group>
+                    <>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Nombre de usuario *</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          placeholder="Nombre de usuario"
+                          disabled={loading}
+                          className={validationErrors.some(err => err.toLowerCase().includes('usuario')) ? 'is-invalid' : ''}
+                        />
+                      </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Edad *</Form.Label>
+                        <Form.Control
+                          type="number"
+                          value={age}
+                          onChange={(e) => setAge(e.target.value)}
+                          placeholder="Edad"
+                          disabled={loading}
+                          className={validationErrors.some(err => err.toLowerCase().includes('edad')) ? 'is-invalid' : ''}
+                        />
+                      </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Idioma *</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={language}
+                          onChange={(e) => setLanguage(e.target.value)}
+                          placeholder="Idioma"
+                          disabled={loading}
+                          className={validationErrors.some(err => err.toLowerCase().includes('idioma')) ? 'is-invalid' : ''}
+                        />
+                      </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label>País *</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={country}
+                          onChange={(e) => setCountry(e.target.value)}
+                          placeholder="País"
+                          disabled={loading}
+                          className={validationErrors.some(err => err.toLowerCase().includes('país')) ? 'is-invalid' : ''}
+                        />
+                      </Form.Group>
+                    </>
                   )}
-                  
                   <Form.Group className="mb-3">
                     <Form.Label>Email Address *</Form.Label>
                     <Form.Control
@@ -185,40 +249,57 @@ const Login: React.FC = () => {
                       className={validationErrors.some(err => err.includes('Email')) ? 'is-invalid' : ''}
                     />
                   </Form.Group>
-                  
                   <Form.Group className="mb-3">
                     <Form.Label>Password *</Form.Label>
-                    <Form.Control
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your password"
-                      disabled={loading}
-                      className={validationErrors.some(err => err.includes('Password')) ? 'is-invalid' : ''}
-                    />
+                    <InputGroup>
+                      <Form.Control
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter your password"
+                        disabled={loading}
+                        className={validationErrors.some(err => err.toLowerCase().includes('contraseña') || err.toLowerCase().includes('password')) ? 'is-invalid' : ''}
+                      />
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => setShowPassword(!showPassword)}
+                        tabIndex={-1}
+                        disabled={loading}
+                      >
+                        {showPassword ? 'Ocultar' : 'Ver'}
+                      </Button>
+                    </InputGroup>
                     {isRegister && (
                       <Form.Text className="text-muted">
-                        Password must be at least 6 characters long.
+                        La contraseña debe tener al menos 8 caracteres.
                       </Form.Text>
                     )}
                   </Form.Group>
-
                   {isRegister && (
                     <Form.Group className="mb-3">
-                      <Form.Label>Confirm Password *</Form.Label>
-                      <Form.Control
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Confirm your password"
-                        disabled={loading}
-                        className={validationErrors.some(err => err.includes('confirmation') || err.includes('match')) ? 'is-invalid' : ''}
-                      />
+                      <Form.Label>Confirmar contraseña *</Form.Label>
+                      <InputGroup>
+                        <Form.Control
+                          type={showPassword ? 'text' : 'password'}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Confirma tu contraseña"
+                          disabled={loading}
+                          className={validationErrors.some(err => err.toLowerCase().includes('confirm') || err.toLowerCase().includes('match')) ? 'is-invalid' : ''}
+                        />
+                        <Button
+                          variant="outline-secondary"
+                          onClick={() => setShowPassword(!showPassword)}
+                          tabIndex={-1}
+                          disabled={loading}
+                        >
+                          {showPassword ? 'Ocultar' : 'Ver'}
+                        </Button>
+                      </InputGroup>
                     </Form.Group>
                   )}
-                  
                   <Button variant="primary" type="submit" className="w-100 mb-3" disabled={loading}>
-                    {loading ? 'Loading...' : (isRegister ? 'Join the Battle' : 'Enter the Battle')}
+                    {loading ? 'Loading...' : (isRegister ? 'Registrarse' : 'Entrar')}
                   </Button>
                 </Form>
                 {!isRegister && (
