@@ -11,6 +11,8 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
+import { getApiEndpoint } from "../utils/config";
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -92,7 +94,7 @@ const Login: React.FC = () => {
     try {
       if (isRegister) {
         const reps = await fetch(
-          "https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api/register",
+          getApiEndpoint("REGISTER"),
           {
             method: "POST",
             headers: {
@@ -124,7 +126,7 @@ const Login: React.FC = () => {
         setCountry("");
       } else {
         const response = await fetch(
-          "https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api/login",
+          getApiEndpoint("LOGIN"),
           {
             method: "POST",
             headers: {

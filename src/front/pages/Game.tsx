@@ -5,6 +5,7 @@ import Navigation from "../components/Navigation";
 import ClassSelector from "../components/ClassSelector";
 import GameStats from "../components/GameStats";
 import { isAuthenticated, getUserProfile, fetchWithAuth } from "../utils/auth";
+import { getApiEndpoint } from "../utils/config";
 import PhaserGame from "../components/PhaserGame";
 
 interface User {
@@ -33,7 +34,7 @@ const Game: React.FC = () => {
       try {
         // Verificar acceso al juego
         const gameResponse = await fetchWithAuth(
-          "https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api/game"
+          getApiEndpoint("GAME")
         );
         if (!gameResponse.ok) {
           navigate("/login");

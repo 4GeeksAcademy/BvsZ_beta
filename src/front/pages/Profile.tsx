@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Container,
   Row,
@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
+import { getApiEndpoint } from "../utils/config";
 
 interface Profile {
   id: string;
@@ -40,21 +41,13 @@ const Profile: React.FC = () => {
   } | null>(null);
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-    fetchProfile();
-  }, [token, navigate]);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     if (!token) return;
 
     setIsLoading(true);
     try {
       const res = await fetch(
-        "https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api/profile",
+        getApiEndpoint("PROFILE"),
         {
           headers: {
             "Content-Type": "application/json",
@@ -81,7 +74,15 @@ const Profile: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token, navigate]);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    fetchProfile();
+  }, [token, navigate, fetchProfile]);
 
   // Placeholder para cuando implementemos las estadísticas
   const fetchGameStats = async () => {
@@ -100,7 +101,7 @@ const Profile: React.FC = () => {
     setIsLoading(true);
     try {
       const res = await fetch(
-        `https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api/profile`,
+        getApiEndpoint("PROFILE"),
         {
           method: "PUT",
           headers: {

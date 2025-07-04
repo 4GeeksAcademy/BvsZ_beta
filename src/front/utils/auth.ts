@@ -1,5 +1,4 @@
-const API_BASE_URL =
-  "https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api";
+import { API_CONFIG, getApiEndpoint } from "./config";
 
 export const getToken = (): string | null => {
   return localStorage.getItem("token");
@@ -14,7 +13,7 @@ export const signOut = (): void => {
 };
 
 export const signIn = async (email: string, password: string) => {
-  const res = await fetch(`${API_BASE_URL}/login`, {
+  const res = await fetch(getApiEndpoint("LOGIN"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -34,7 +33,7 @@ export const signUp = async (
   country: string,
   verify_password: string
 ) => {
-  const res = await fetch(`${API_BASE_URL}/register`, {
+  const res = await fetch(getApiEndpoint("REGISTER"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -70,7 +69,7 @@ export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
 };
 
 export const getUserProfile = async () => {
-  const response = await fetchWithAuth(`${API_BASE_URL}/profile`);
+  const response = await fetchWithAuth(getApiEndpoint("PROFILE"));
   if (!response.ok) {
     throw new Error("Failed to fetch user profile");
   }
