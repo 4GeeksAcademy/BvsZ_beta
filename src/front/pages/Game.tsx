@@ -2,9 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
-import ClassSelector from "../components/ClassSelector";
-import GameStats from "../components/GameStats";
-import { isAuthenticated, getUserProfile, fetchWithAuth } from "../utils/auth";
+import { isAuthenticated, fetchWithAuth } from "../utils/auth";
 import { getApiEndpoint } from "../utils/config";
 import PhaserGame from "../components/PhaserGame";
 
@@ -40,7 +38,8 @@ const Game: React.FC = () => {
         }
 
         // Obtener datos del usuario
-        const profileData = await getUserProfile();
+        const profileResponse = await fetchWithAuth(getApiEndpoint("PROFILE"));
+        const profileData = await profileResponse.json();
         setUser(profileData.user);
 
         // Verificar acceso al juego y enviar datos al EventBus
@@ -85,15 +84,9 @@ const Game: React.FC = () => {
     <>
       <Navigation />
       <div className="container">
-        <div className="row">
-          <GameStats phaserRef={phaserRef} />
-        </div>
         <div className="row justify-content-center">
           <div className="col-8">
             <PhaserGame ref={phaserRef} />
-          </div>
-          <div className="col-4">
-            <ClassSelector />
           </div>
         </div>
       </div>

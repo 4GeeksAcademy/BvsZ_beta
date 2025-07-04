@@ -19,8 +19,7 @@ export class MainMenu extends Scene {
         this.add.text(700, 550, '4Geeks', FONT_VT323).setDepth(100).setOrigin(0.5);
 
         const user_obj = this.registry.get('user');
-        const user = user_obj?.display_name || 'Invitado';
-        console.log(user)
+        const user = user_obj?.username || 'Invitado';
 
         this.add.text(384, 50, `Bienvenido ${user}`, FONT_VT323).setDepth(100).setOrigin(0.5);
 
