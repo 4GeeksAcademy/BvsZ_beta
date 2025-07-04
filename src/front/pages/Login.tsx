@@ -93,24 +93,21 @@ const Login: React.FC = () => {
 
     try {
       if (isRegister) {
-        const reps = await fetch(
-          getApiEndpoint("REGISTER"),
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username,
-              email,
-              password,
-              verify_password: confirmPassword,
-              age,
-              language,
-              country,
-            }),
-          }
-        );
+        const reps = await fetch(getApiEndpoint("REGISTER"), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            verify_password: confirmPassword,
+            age,
+            language,
+            country,
+          }),
+        });
         const data = await reps.json();
         if (!reps.ok) throw new Error(data.msg || "Error en el registro");
         setSuccess(
@@ -125,19 +122,16 @@ const Login: React.FC = () => {
         setLanguage("");
         setCountry("");
       } else {
-        const response = await fetch(
-          getApiEndpoint("LOGIN"),
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email,
-              password,
-            }),
-          }
-        );
+        const response = await fetch(getApiEndpoint("LOGIN"), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
 
         const data = await response.json();
 

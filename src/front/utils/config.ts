@@ -20,7 +20,9 @@ export const buildApiUrl = (endpoint: string): string => {
 };
 
 // Helper function para endpoints específicos
-export const getApiEndpoint = (endpointKey: keyof typeof API_CONFIG.ENDPOINTS): string => {
+export const getApiEndpoint = (
+  endpointKey: keyof typeof API_CONFIG.ENDPOINTS
+): string => {
   return buildApiUrl(API_CONFIG.ENDPOINTS[endpointKey]);
 };
 

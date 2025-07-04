@@ -33,9 +33,7 @@ const Game: React.FC = () => {
 
       try {
         // Verificar acceso al juego
-        const gameResponse = await fetchWithAuth(
-          getApiEndpoint("GAME")
-        );
+        const gameResponse = await fetchWithAuth(getApiEndpoint("GAME"));
         if (!gameResponse.ok) {
           navigate("/login");
           return;

@@ -46,15 +46,12 @@ const Profile: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const res = await fetch(
-        getApiEndpoint("PROFILE"),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch(getApiEndpoint("PROFILE"), {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!res.ok) {
         if (res.status === 401) {
@@ -100,17 +97,14 @@ const Profile: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const res = await fetch(
-        getApiEndpoint("PROFILE"),
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ display_name: displayName }),
-        }
-      );
+      const res = await fetch(getApiEndpoint("PROFILE"), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ display_name: displayName }),
+      });
       if (!res.ok) throw new Error("request failed");
 
       setMessage({ type: "success", text: "Profile updated successfully!" });
