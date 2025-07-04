@@ -14,8 +14,7 @@ import { getApiEndpoint } from "../utils/config";
 
 interface Profile {
   id: string;
-  display_name: string;
-  avatar_url: string | null;
+  username: string;
   created_at: string;
   email: string;
 }
@@ -33,8 +32,6 @@ const Profile: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [gameStats, setGameStats] = useState<GameStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [displayName, setDisplayName] = useState("");
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -64,7 +61,6 @@ const Profile: React.FC = () => {
 
       const data = await res.json();
       setProfile(data.user);
-      setDisplayName(data.user.username || "");
     } catch (error) {
       console.error("Error fetching profile:", error);
       setMessage({ type: "error", text: "Failed to fetch profile" });
@@ -90,32 +86,6 @@ const Profile: React.FC = () => {
       levels_completed: 0,
       zombies_defeated: 0,
     });
-  };
-
-  const updateProfile = async () => {
-    if (!token || !profile) return;
-
-    setIsLoading(true);
-    try {
-      const res = await fetch(getApiEndpoint("PROFILE"), {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ display_name: displayName }),
-      });
-      if (!res.ok) throw new Error("request failed");
-
-      setMessage({ type: "success", text: "Profile updated successfully!" });
-      setIsEditing(false);
-      await fetchProfile();
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      setMessage({ type: "error", text: "Failed to update profile" });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   if (isLoading) {
@@ -172,49 +142,11 @@ const Profile: React.FC = () => {
                         </p>
                       </Col>
                       <Col md={6}>
-                        {isEditing ? (
-                          <Form>
-                            <Form.Group className="mb-3">
-                              <Form.Label>Display Name</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={displayName}
-                                onChange={(e) => setDisplayName(e.target.value)}
-                              />
-                            </Form.Group>
-                            <div className="d-flex gap-2">
-                              <Button
-                                variant="primary"
-                                onClick={updateProfile}
-                                disabled={isLoading}
-                              >
-                                {isLoading ? "Saving..." : "Save"}
-                              </Button>
-                              <Button
-                                variant="secondary"
-                                onClick={() => {
-                                  setIsEditing(false);
-                                  setDisplayName(profile.display_name);
-                                }}
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          </Form>
-                        ) : (
-                          <div>
-                            <p>
-                              <strong>Display Name:</strong>{" "}
-                              {profile.display_name}
-                            </p>
-                            <Button
-                              variant="outline-primary"
-                              onClick={() => setIsEditing(true)}
-                            >
-                              Edit Profile
-                            </Button>
-                          </div>
-                        )}
+                        <div>
+                          <p>
+                            <strong>Warrior Name:</strong> {profile.username}
+                          </p>
+                        </div>
                       </Col>
                     </Row>
                   </div>

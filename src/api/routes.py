@@ -149,32 +149,6 @@ def get_game_access(current_user):
         }
     }), 200
 
-
-@api.route('/profile', methods=['PUT'])
-@token_required
-def update_profile(current_user):
-    data = request.get_json()
-
-    if 'username' in data:
-        # Verificar si el nuevo username ya existe
-        if User.query.filter(User.id != current_user.id, User.username == data['username']).first():
-            return jsonify({'msg': 'El nombre de usuario ya existe'}), 409
-        current_user.username = data['username']
-
-    if 'display_name' in data:
-        current_user.display_name = data['display_name']
-
-    try:
-        db.session.commit()
-        return jsonify({
-            'msg': 'Perfil actualizado correctamente',
-            'user': current_user.serialize()
-        }), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'msg': 'Error al actualizar el perfil'}), 500
-
-
 @api.route('/stats/<int:user_id>', methods=['GET'])
 @token_required
 def get_user_stats(current_user, user_id):
