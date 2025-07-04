@@ -5,12 +5,12 @@ import {
   Col,
   Card,
   Button,
-  Form,
   Alert,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import { getApiEndpoint } from "../utils/config";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 interface Profile {
   id: string;
@@ -28,7 +28,8 @@ interface GameStats {
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const { store, dispatch } = useGlobalReducer();
+  const profile = store.profile;
   const [gameStats, setGameStats] = useState<GameStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -59,14 +60,14 @@ const Profile: React.FC = () => {
       }
 
       const data = await res.json();
-      setProfile(data.user);
+      dispatch({ type: "UPDATE_PROFILE", payload: data.user });
     } catch (error) {
       console.error("Error fetching profile:", error);
       setMessage({ type: "error", text: "Failed to fetch profile" });
     } finally {
       setIsLoading(false);
     }
-  }, [token, navigate]);
+  }, [token, navigate, dispatch]);
 
   useEffect(() => {
     if (!token) {
@@ -76,7 +77,13 @@ const Profile: React.FC = () => {
     fetchProfile();
   }, [token, navigate, fetchProfile]);
 
-  // Placeholder para cuando implementemos las estadísticas
+  useEffect(() => {
+    if (profile && profile.id) {
+      localStorage.setItem("profile", JSON.stringify(profile));
+    }
+  }, [profile]);
+
+
   const fetchGameStats = async () => {
     setGameStats({
       total_games: 0,
