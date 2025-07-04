@@ -1,0 +1,42 @@
+/* Login page specific styles */
+
+.country-autocomplete-container {
+  position: relative;
+}
+
+.country-suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #8b5cf6;
+  border-radius: 0.375rem;
+  background-color: #4900f3;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(56, 228, 13, 0.1);
+}
+
+.country-suggestion-item {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background-color: #8b5cf6;
+  transition: background-color 0.2s ease;
+  color: white !important;
+}
+
+.country-suggestion-item:not(:last-child) {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.country-suggestion-item:hover {
+  background-color: #7c3aed !important;
+  color: white !important;
+}
+
+.switch-mode-button {
+  color: #8b5cf6;
+}

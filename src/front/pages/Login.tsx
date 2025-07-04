@@ -8,10 +8,13 @@ import {
   Button,
   Alert,
   InputGroup,
+  ListGroup,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import { getApiEndpoint } from "../utils/config";
+import { getFilteredCountries } from "../utils/countries";
+import "./Login.css";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -26,6 +29,8 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [countrySuggestions, setCountrySuggestions] = useState<string[]>([]);
+  const [showCountrySuggestions, setShowCountrySuggestions] = useState(false);
   const navigate = useNavigate();
 
   // Redirect if already logged in
@@ -104,9 +109,7 @@ const Login: React.FC = () => {
         });
         const data = await reps.json();
         if (!reps.ok) throw new Error(data.msg || "Error en el registro");
-        setSuccess(
-          "¡Register successfully!"
-        );
+        setSuccess("¡Register successfully!");
         setIsRegister(false);
         setEmail("");
         setPassword("");
@@ -170,6 +173,31 @@ const Login: React.FC = () => {
     setValidationErrors([]);
   };
 
+  const handleCountryChange = (value: string) => {
+    setCountry(value);
+    if (value.trim()) {
+      const suggestions = getFilteredCountries(value);
+      setCountrySuggestions(suggestions);
+      setShowCountrySuggestions(suggestions.length > 0);
+    } else {
+      setCountrySuggestions([]);
+      setShowCountrySuggestions(false);
+    }
+  };
+
+  const selectCountry = (selectedCountry: string) => {
+    setCountry(selectedCountry);
+    setCountrySuggestions([]);
+    setShowCountrySuggestions(false);
+  };
+
+  const handleCountryBlur = () => {
+    // Delay hiding suggestions to allow for clicks
+    setTimeout(() => {
+      setShowCountrySuggestions(false);
+    }, 200);
+  };
+
   const switchMode = () => {
     setIsRegister(!isRegister);
     clearMessages();
@@ -179,6 +207,8 @@ const Login: React.FC = () => {
     setUsername("");
     setAge("");
     setCountry("");
+    setCountrySuggestions([]);
+    setShowCountrySuggestions(false);
   };
 
   return (
@@ -244,21 +274,48 @@ const Login: React.FC = () => {
                           }
                         />
                       </Form.Group>
-                      <Form.Group className="mb-3">
+                      <Form.Group className="mb-3 country-autocomplete-container">
                         <Form.Label>Country *</Form.Label>
                         <Form.Control
                           type="text"
                           value={country}
-                          onChange={(e) => setCountry(e.target.value)}
+                          onChange={(e) => handleCountryChange(e.target.value)}
+                          onFocus={() => {
+                            if (country.trim()) {
+                              const suggestions = getFilteredCountries(country);
+                              setCountrySuggestions(suggestions);
+                              setShowCountrySuggestions(suggestions.length > 0);
+                            }
+                          }}
+                          onBlur={handleCountryBlur}
                           disabled={loading}
+                          placeholder="Start typing a country name..."
+                          autoComplete="off"
                           className={
-                            validationErrors.some((err) =>
-                              err.toLowerCase().includes("país")
+                            validationErrors.some(
+                              (err) =>
+                                err.toLowerCase().includes("país") ||
+                                err.toLowerCase().includes("country")
                             )
                               ? "is-invalid"
                               : ""
                           }
                         />
+                        {showCountrySuggestions &&
+                          countrySuggestions.length > 0 && (
+                            <ListGroup className="country-suggestions-dropdown">
+                              {countrySuggestions.map((suggestion, index) => (
+                                <ListGroup.Item
+                                  key={index}
+                                  action
+                                  onClick={() => selectCountry(suggestion)}
+                                  className="country-suggestion-item"
+                                >
+                                  {suggestion}
+                                </ListGroup.Item>
+                              ))}
+                            </ListGroup>
+                          )}
                       </Form.Group>
                     </>
                   )}
@@ -362,7 +419,7 @@ const Login: React.FC = () => {
                   <Button
                     variant="link"
                     onClick={switchMode}
-                    style={{ color: "#8b5cf6" }}
+                    className="switch-mode-button"
                     disabled={loading}
                   >
                     {isRegister
