@@ -82,7 +82,7 @@ const Navigation: React.FC = () => {
               <>
                 <Nav.Item className="d-flex align-items-center me-3">
                   <span className="text-light">
-                    Welcome, {user.display_name || user.email}!
+                    Welcome, {user.username}!
                   </span>
                 </Nav.Item>
                 <Button
