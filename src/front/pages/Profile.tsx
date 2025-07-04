@@ -15,7 +15,6 @@ import { getApiEndpoint } from "../utils/config";
 interface Profile {
   id: string;
   username: string;
-  created_at: string;
   email: string;
 }
 
@@ -132,10 +131,6 @@ const Profile: React.FC = () => {
                       <Col md={6}>
                         <p>
                           <strong>Email:</strong> {profile.email}
-                        </p>
-                        <p>
-                          <strong>Member Since:</strong>{" "}
-                          {new Date(profile.created_at).toLocaleDateString()}
                         </p>
                         <p>
                           <strong>User ID:</strong> {profile.id}

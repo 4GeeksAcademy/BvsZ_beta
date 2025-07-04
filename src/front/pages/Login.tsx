@@ -19,7 +19,6 @@ const Login: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
   const [age, setAge] = useState("");
-  const [language, setLanguage] = useState("");
   const [country, setCountry] = useState("");
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState("");
@@ -67,10 +66,6 @@ const Login: React.FC = () => {
         errors.push("Age is required");
       }
 
-      if (!language) {
-        errors.push("Language is required");
-      }
-
       if (!country) {
         errors.push("Country is required");
       }
@@ -104,7 +99,6 @@ const Login: React.FC = () => {
             password,
             verify_password: confirmPassword,
             age,
-            language,
             country,
           }),
         });
@@ -119,7 +113,6 @@ const Login: React.FC = () => {
         setConfirmPassword("");
         setUsername("");
         setAge("");
-        setLanguage("");
         setCountry("");
       } else {
         const response = await fetch(getApiEndpoint("LOGIN"), {
@@ -185,7 +178,6 @@ const Login: React.FC = () => {
     setConfirmPassword("");
     setUsername("");
     setAge("");
-    setLanguage("");
     setCountry("");
   };
 
@@ -221,12 +213,11 @@ const Login: React.FC = () => {
                   {isRegister && (
                     <>
                       <Form.Group className="mb-3">
-                        <Form.Label>Nombre de usuario *</Form.Label>
+                        <Form.Label>Warrior Name *</Form.Label>
                         <Form.Control
                           type="text"
                           value={username}
                           onChange={(e) => setUsername(e.target.value)}
-                          placeholder="Nombre de usuario"
                           disabled={loading}
                           className={
                             validationErrors.some((err) =>
@@ -238,12 +229,11 @@ const Login: React.FC = () => {
                         />
                       </Form.Group>
                       <Form.Group className="mb-3">
-                        <Form.Label>Edad *</Form.Label>
+                        <Form.Label>Age *</Form.Label>
                         <Form.Control
                           type="number"
                           value={age}
                           onChange={(e) => setAge(e.target.value)}
-                          placeholder="Edad"
                           disabled={loading}
                           className={
                             validationErrors.some((err) =>
@@ -255,29 +245,11 @@ const Login: React.FC = () => {
                         />
                       </Form.Group>
                       <Form.Group className="mb-3">
-                        <Form.Label>Idioma *</Form.Label>
-                        <Form.Control
-                          type="text"
-                          value={language}
-                          onChange={(e) => setLanguage(e.target.value)}
-                          placeholder="Idioma"
-                          disabled={loading}
-                          className={
-                            validationErrors.some((err) =>
-                              err.toLowerCase().includes("idioma")
-                            )
-                              ? "is-invalid"
-                              : ""
-                          }
-                        />
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Label>País *</Form.Label>
+                        <Form.Label>Country *</Form.Label>
                         <Form.Control
                           type="text"
                           value={country}
                           onChange={(e) => setCountry(e.target.value)}
-                          placeholder="País"
                           disabled={loading}
                           className={
                             validationErrors.some((err) =>
@@ -296,7 +268,6 @@ const Login: React.FC = () => {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
                       disabled={loading}
                       className={
                         validationErrors.some((err) => err.includes("Email"))
@@ -312,7 +283,6 @@ const Login: React.FC = () => {
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
                         disabled={loading}
                         className={
                           validationErrors.some(
@@ -330,7 +300,7 @@ const Login: React.FC = () => {
                         tabIndex={-1}
                         disabled={loading}
                       >
-                        {showPassword ? "Ocultar" : "Ver"}
+                        {showPassword ? "Hide" : "See"}
                       </Button>
                     </InputGroup>
                     {isRegister && (
@@ -341,13 +311,12 @@ const Login: React.FC = () => {
                   </Form.Group>
                   {isRegister && (
                     <Form.Group className="mb-3">
-                      <Form.Label>Confirmar contraseña *</Form.Label>
+                      <Form.Label>Confirm password *</Form.Label>
                       <InputGroup>
                         <Form.Control
                           type={showPassword ? "text" : "password"}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          placeholder="Confirma tu contraseña"
                           disabled={loading}
                           className={
                             validationErrors.some(
@@ -365,7 +334,7 @@ const Login: React.FC = () => {
                           tabIndex={-1}
                           disabled={loading}
                         >
-                          {showPassword ? "Ocultar" : "Ver"}
+                          {showPassword ? "Hide" : "See"}
                         </Button>
                       </InputGroup>
                     </Form.Group>

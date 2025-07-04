@@ -10,7 +10,6 @@ class User(db.Model):
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)  # Debe almacenarse encriptada
     age: Mapped[int] = mapped_column(nullable=False)
-    language: Mapped[str] = mapped_column(String(32), nullable=False)
     country: Mapped[str] = mapped_column(String(64), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
@@ -22,7 +21,6 @@ class User(db.Model):
             "username": self.username,
             "email": self.email,
             "age": self.age,
-            "language": self.language,
             "country": self.country,
             "is_active": self.is_active,
             "is_verified": self.is_verified,

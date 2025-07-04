@@ -58,7 +58,7 @@ def is_valid_password(password):
 def register_user():
     data = request.get_json()
     required_fields = ['username', 'email', 'password',
-                       'verify_password', 'age', 'language', 'country']
+                       'verify_password', 'age', 'country']
     if not all(field in data and data[field] for field in required_fields):
         return jsonify({'msg': 'Todos los campos son obligatorios.'}), 400
 
@@ -67,7 +67,6 @@ def register_user():
     password = data['password']
     verify_password = data['verify_password']
     age = data['age']
-    language = data['language']
     country = data['country']
 
     if not is_valid_username(username):
@@ -90,7 +89,6 @@ def register_user():
         email=email,
         password=hashed_password,
         age=age,
-        language=language,
         country=country,
         is_active=False,
         is_verified=False,
