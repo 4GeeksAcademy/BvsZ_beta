@@ -113,7 +113,8 @@ def login_user():
         return jsonify({'msg': 'Credenciales inválidas.'}), 401
 
     payload = {
-        'user_id': user.id,
+        # Convert UUID to string for JSON serialization
+        'user_id': str(user.id),
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
@@ -146,6 +147,7 @@ def get_game_access(current_user):
             'username': current_user.username
         }
     }), 200
+
 
 @api.route('/stats/<int:user_id>', methods=['GET'])
 @token_required

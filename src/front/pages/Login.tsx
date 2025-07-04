@@ -105,7 +105,7 @@ const Login: React.FC = () => {
         const data = await reps.json();
         if (!reps.ok) throw new Error(data.msg || "Error en el registro");
         setSuccess(
-          "¡Registro exitoso! Revisa tu correo para activar tu cuenta."
+          "¡Register successfully!"
         );
         setIsRegister(false);
         setEmail("");
@@ -133,7 +133,7 @@ const Login: React.FC = () => {
         }
 
         localStorage.setItem("token", data.token);
-        setSuccess("¡Inicio de sesión exitoso! Redirigiendo...");
+        setSuccess("¡Login successfull! Redirecting...");
         setTimeout(() => navigate("/profile"), 1500);
       }
     } catch (error) {
