@@ -1,18 +1,44 @@
-import React from 'react';
-import { Navbar, Nav, Container, Button } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState, useEffect } from "react";
+import { Navbar, Nav, Container, Button } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { isAuthenticated, signOut, getUserProfile } from "../utils/auth";
+
+interface User {
+  id: number;
+  email: string;
+  username?: string;
+  display_name?: string;
+}
 
 const Navigation: React.FC = () => {
-  const { user, signOut, loading } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      if (isAuthenticated()) {
+        try {
+          const profileData = await getUserProfile();
+          setUser(profileData.user);
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+          signOut();
+        }
+      }
+      setLoading(false);
+    };
+
+    loadUserData();
+  }, []);
 
   const handleSignOut = async () => {
     try {
-      await signOut();
-      navigate('/');
+      signOut();
+      setUser(null);
+      navigate("/");
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error("Sign out error:", error);
     }
   };
 
@@ -22,25 +48,35 @@ const Navigation: React.FC = () => {
         <Link to="/" className="navbar-brand">
           🧟‍♂️ Bootstrap vs Zombies
         </Link>
-        
+
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Link to="/" className="nav-link">Home</Link>
+            <Link to="/" className="nav-link">
+              Home
+            </Link>
             {user && (
-              <Link to="/game" className="nav-link">Game</Link>
+              <Link to="/game" className="nav-link">
+                Game
+              </Link>
             )}
-            <Link to="/leaderboard" className="nav-link">Leaderboard</Link>
+            <Link to="/leaderboard" className="nav-link">
+              Leaderboard
+            </Link>
             {user && (
               <>
-                <Link to="/profile" className="nav-link">Profile</Link>
-                {user.email === 'sebasmiramontes@gmail.com' && (
-                  <Link to="/backend-test" className="nav-link">Backend Test</Link>
+                <Link to="/profile" className="nav-link">
+                  Profile
+                </Link>
+                {user.email === "sebasmiramontes@gmail.com" && (
+                  <Link to="/backend-test" className="nav-link">
+                    Backend Test
+                  </Link>
                 )}
               </>
             )}
           </Nav>
-          
+
           <Nav>
             {user ? (
               <>
@@ -49,9 +85,9 @@ const Navigation: React.FC = () => {
                     Welcome, {user.display_name || user.email}!
                   </span>
                 </Nav.Item>
-                <Button 
-                  variant="outline-light" 
-                  size="sm" 
+                <Button
+                  variant="outline-light"
+                  size="sm"
                   onClick={handleSignOut}
                   disabled={loading}
                 >
@@ -60,7 +96,9 @@ const Navigation: React.FC = () => {
               </>
             ) : (
               <Link to="/login">
-                <Button variant="outline-light" size="sm">Login</Button>
+                <Button variant="outline-light" size="sm">
+                  Login
+                </Button>
               </Link>
             )}
           </Nav>

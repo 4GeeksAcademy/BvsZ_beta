@@ -1,10 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Alert, Table } from 'react-bootstrap';
-import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import Navigation from '../components/Navigation';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  Alert,
+  Table,
+} from "react-bootstrap";
+import { isAuthenticated, getUserProfile, fetchWithAuth } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
+import Navigation from "../components/Navigation";
 // Use the Flask backend API
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 interface GameSession {
   id: number;
@@ -23,51 +33,102 @@ interface GameStats {
   zombies_defeated: number;
 }
 
-const AUTHORIZED_EMAILS = ['sebasmiramontes@gmail.com', 'esgo.edwin@gmail.com'];
+interface User {
+  id: number;
+  email: string;
+  username?: string;
+  display_name?: string;
+}
+
+const AUTHORIZED_EMAILS = ["sebasmiramontes@gmail.com", "esgo.edwin@gmail.com"];
 
 const BackendTest: React.FC = () => {
-  const { user, loading } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [gameStats, setGameStats] = useState<GameStats | null>(null);
   const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
   // Form states for testing
-  const [testScore, setTestScore] = useState('');
-  const [testLevel, setTestLevel] = useState('');
-  const [testZombies, setTestZombies] = useState('');
+  const [testScore, setTestScore] = useState("");
+  const [testLevel, setTestLevel] = useState("");
+  const [testZombies, setTestZombies] = useState("");
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
-    } else if (user && !AUTHORIZED_EMAILS.includes(user.email)) {
-      setMessage({ type: 'error', text: 'Access denied. This tool is restricted to authorized users only.' });
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
-    } else if (user && AUTHORIZED_EMAILS.includes(user.email)) {
-      fetchGameData();
-    }
-  }, [user, loading, navigate]);
+    const checkAuthAndLoadData = async () => {
+      if (!isAuthenticated()) {
+        navigate("/login");
+        return;
+      }
 
-  const fetchGameData = async () => {
-    if (!user) return;
-    
+      try {
+        const profileData = await getUserProfile();
+        setUser(profileData.user);
+
+        if (!AUTHORIZED_EMAILS.includes(profileData.user.email)) {
+          setMessage({
+            type: "error",
+            text: "Access denied. This tool is restricted to authorized users only.",
+          });
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+          return;
+        }
+
+        // Fetch game data for authorized users
+        setIsLoading(true);
+        try {
+          const statsRes = await fetchWithAuth(
+            `${API_BASE_URL}/stats/${profileData.user.id}`
+          );
+          if (!statsRes.ok) throw new Error("Stats request failed");
+          const statsData = await statsRes.json();
+          setGameStats(statsData);
+        } catch (error) {
+          console.error("Error fetching game data:", error);
+          setMessage({ type: "error", text: "Error loading game data" });
+        } finally {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        navigate("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuthAndLoadData();
+  }, [navigate]);
+
+  const fetchGameData = async (userData?: User) => {
+    const currentUser = userData || user;
+    if (!currentUser) return;
+
     setIsLoading(true);
     try {
-      const statsRes = await fetch(`${API_BASE_URL}/stats/${user.id}`);
-      if (!statsRes.ok) throw new Error('Stats request failed');
+      const statsRes = await fetchWithAuth(
+        `${API_BASE_URL}/stats/${currentUser.id}`
+      );
+      if (!statsRes.ok) throw new Error("Stats request failed");
       const statsData = await statsRes.json();
       setGameStats(statsData);
 
-      const sessionsRes = await fetch(`${API_BASE_URL}/sessions?user_id=${user.id}`);
-      if (!sessionsRes.ok) throw new Error('Sessions request failed');
+      const sessionsRes = await fetchWithAuth(
+        `${API_BASE_URL}/sessions?user_id=${currentUser.id}`
+      );
+      if (!sessionsRes.ok) throw new Error("Sessions request failed");
       const sessionsData = await sessionsRes.json();
       setGameSessions(sessionsData);
     } catch (error) {
-      console.error('Error fetching game data:', error);
-      setMessage({ type: 'error', text: 'Failed to fetch game data' });
+      console.error("Error fetching game data:", error);
+      setMessage({ type: "error", text: "Failed to fetch game data" });
     } finally {
       setIsLoading(false);
     }
@@ -83,26 +144,25 @@ const BackendTest: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await fetch(`${API_BASE_URL}/sessions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetchWithAuth(`${API_BASE_URL}/sessions`, {
+        method: "POST",
         body: JSON.stringify({
           user_id: user.id,
           score,
           level_reached: level,
           zombies_defeated: zombies,
-          duration_seconds: duration
-        })
+          duration_seconds: duration,
+        }),
       });
 
-      setMessage({ type: 'success', text: 'Test score added successfully!' });
-      setTestScore('');
-      setTestLevel('');
-      setTestZombies('');
+      setMessage({ type: "success", text: "Test score added successfully!" });
+      setTestScore("");
+      setTestLevel("");
+      setTestZombies("");
       await fetchGameData();
     } catch (error) {
-      console.error('Error adding test score:', error);
-      setMessage({ type: 'error', text: 'Failed to add test score' });
+      console.error("Error adding test score:", error);
+      setMessage({ type: "error", text: "Failed to add test score" });
     } finally {
       setIsLoading(false);
     }
@@ -111,8 +171,9 @@ const BackendTest: React.FC = () => {
   const generateRandomScore = () => {
     const randomScore = Math.floor(Math.random() * 10000) + 1000;
     const randomLevel = Math.floor(Math.random() * 10) + 1;
-    const randomZombies = Math.floor(randomScore / 100) + Math.floor(Math.random() * 50);
-    
+    const randomZombies =
+      Math.floor(randomScore / 100) + Math.floor(Math.random() * 50);
+
     setTestScore(randomScore.toString());
     setTestLevel(randomLevel.toString());
     setTestZombies(randomZombies.toString());
@@ -154,9 +215,13 @@ const BackendTest: React.FC = () => {
         <Row>
           <Col>
             <h2 className="mb-4">🧪 Backend Testing Dashboard</h2>
-            
+
             {message && (
-              <Alert variant={message.type} onClose={() => setMessage(null)} dismissible>
+              <Alert
+                variant={message.type}
+                onClose={() => setMessage(null)}
+                dismissible
+              >
                 {message.text}
               </Alert>
             )}
@@ -203,14 +268,17 @@ const BackendTest: React.FC = () => {
                         />
                       </Form.Group>
                       <div className="d-grid gap-2">
-                        <Button 
-                          variant="primary" 
+                        <Button
+                          variant="primary"
                           onClick={addTestScore}
                           disabled={isLoading || !testScore}
                         >
-                          {isLoading ? 'Adding...' : 'Add Test Score'}
+                          {isLoading ? "Adding..." : "Add Test Score"}
                         </Button>
-                        <Button variant="outline-secondary" onClick={generateRandomScore}>
+                        <Button
+                          variant="outline-secondary"
+                          onClick={generateRandomScore}
+                        >
                           Generate Random Score
                         </Button>
                       </div>
@@ -227,11 +295,25 @@ const BackendTest: React.FC = () => {
                   <Card.Body>
                     {gameStats ? (
                       <div>
-                        <p><strong>Total Games:</strong> {gameStats.total_games}</p>
-                        <p><strong>High Score:</strong> {gameStats.high_score.toLocaleString()}</p>
-                        <p><strong>Total Score:</strong> {gameStats.total_score.toLocaleString()}</p>
-                        <p><strong>Levels Completed:</strong> {gameStats.levels_completed}</p>
-                        <p><strong>Zombies Defeated:</strong> {gameStats.zombies_defeated}</p>
+                        <p>
+                          <strong>Total Games:</strong> {gameStats.total_games}
+                        </p>
+                        <p>
+                          <strong>High Score:</strong>{" "}
+                          {gameStats.high_score.toLocaleString()}
+                        </p>
+                        <p>
+                          <strong>Total Score:</strong>{" "}
+                          {gameStats.total_score.toLocaleString()}
+                        </p>
+                        <p>
+                          <strong>Levels Completed:</strong>{" "}
+                          {gameStats.levels_completed}
+                        </p>
+                        <p>
+                          <strong>Zombies Defeated:</strong>{" "}
+                          {gameStats.zombies_defeated}
+                        </p>
                       </div>
                     ) : (
                       <p>No game data yet. Add a test score to get started!</p>
@@ -263,14 +345,23 @@ const BackendTest: React.FC = () => {
                           <td>{session.score.toLocaleString()}</td>
                           <td>{session.level_reached}</td>
                           <td>{session.zombies_defeated}</td>
-                          <td>{Math.floor(session.duration_seconds / 60)}m {session.duration_seconds % 60}s</td>
-                          <td>{new Date(session.completed_at).toLocaleDateString()}</td>
+                          <td>
+                            {Math.floor(session.duration_seconds / 60)}m{" "}
+                            {session.duration_seconds % 60}s
+                          </td>
+                          <td>
+                            {new Date(
+                              session.completed_at
+                            ).toLocaleDateString()}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </Table>
                 ) : (
-                  <p>No game sessions yet. Add some test scores to see them here!</p>
+                  <p>
+                    No game sessions yet. Add some test scores to see them here!
+                  </p>
                 )}
               </Card.Body>
             </Card>

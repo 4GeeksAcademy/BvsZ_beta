@@ -1,145 +1,174 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import Navigation from '../components/Navigation';
-import { useAuth } from '../hooks/useAuth';
-
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Form,
+  Button,
+  Alert,
+  InputGroup,
+} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import Navigation from "../components/Navigation";
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [age, setAge] = useState('');
-  const [language, setLanguage] = useState('');
-  const [country, setCountry] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [age, setAge] = useState("");
+  const [language, setLanguage] = useState("");
+  const [country, setCountry] = useState("");
   const [isRegister, setIsRegister] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
-  
-  const { user, signIn } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user) {
-      navigate('/profile');
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/profile");
     }
-  }, [user, navigate]);
+  }, [navigate]);
 
   const validateForm = (): boolean => {
     const errors: string[] = [];
-    
+
     if (!email) {
-      errors.push('Email is required');
+      errors.push("Email is required");
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.push('Email is invalid');
+      errors.push("Email is invalid");
     }
-    
+
     if (!password) {
-      errors.push('Password is required');
+      errors.push("Password is required");
     } else if (password.length < 6) {
-      errors.push('Password must be at least 6 characters');
+      errors.push("Password must be at least 6 characters");
     }
-    
+
     if (isRegister) {
       if (!confirmPassword) {
-        errors.push('Password confirmation is required');
+        errors.push("Password confirmation is required");
       } else if (password !== confirmPassword) {
-        errors.push('Passwords do not match');
+        errors.push("Passwords do not match");
       }
 
       if (!username) {
-        errors.push('Username is required');
+        errors.push("Username is required");
       }
 
       if (!age) {
-        errors.push('Age is required');
+        errors.push("Age is required");
       }
 
       if (!language) {
-        errors.push('Language is required');
+        errors.push("Language is required");
       }
 
       if (!country) {
-        errors.push('Country is required');
+        errors.push("Country is required");
       }
     }
-    
+
     setValidationErrors(errors);
     return errors.length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-    
+    setError("");
+    setSuccess("");
+
     if (!validateForm()) {
       return;
     }
-    
+
     setLoading(true);
 
     try {
       if (isRegister) {
-        const reps = await fetch('https://organic-succotash-w97wrg996pjfg6jg-3001.app.github.dev/api/register/', {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            username,
-            email,
-            password,
-            verify_password: confirmPassword,
-            age,
-            language,
-            country
-          })
-        });
+        const reps = await fetch(
+          "https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username,
+              email,
+              password,
+              verify_password: confirmPassword,
+              age,
+              language,
+              country,
+            }),
+          }
+        );
         const data = await reps.json();
-        if (!reps.ok) throw new Error(data.msg || 'Error en el registro');
-        setSuccess('¡Registro exitoso! Revisa tu correo para activar tu cuenta.');
+        if (!reps.ok) throw new Error(data.msg || "Error en el registro");
+        setSuccess(
+          "¡Registro exitoso! Revisa tu correo para activar tu cuenta."
+        );
         setIsRegister(false);
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        setUsername('');
-        setAge('');
-        setLanguage('');
-        setCountry('');
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        setUsername("");
+        setAge("");
+        setLanguage("");
+        setCountry("");
       } else {
-        const { data, error } = await signIn(email, password);
-        if (error) throw error;
-        
-        if (data.user) {
-          setSuccess('Successfully signed in! Redirecting...');
-          setTimeout(() => navigate('/profile'), 1500);
+        const response = await fetch(
+          "https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api/login",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              password,
+            }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.msg || "Error en el inicio de sesión");
         }
+
+        localStorage.setItem("token", data.token);
+        setSuccess("¡Inicio de sesión exitoso! Redirigiendo...");
+        setTimeout(() => navigate("/profile"), 1500);
       }
     } catch (error) {
-      console.error('Auth error:', error);
-      
+      console.error("Auth error:", error);
+
       // Handle specific error messages
-      let errorMessage = 'An error occurred during authentication';
-      
-      if (error instanceof Error && typeof error.message === 'string') {
-        if (error.message.includes('Invalid login credentials')) {
-          errorMessage = 'Invalid email or password. Please try again.';
-        } else if (error.message.includes('User already registered')) {
-          errorMessage = 'An account with this email already exists. Please sign in instead.';
-        } else if (error.message.includes('Email not confirmed')) {
-          errorMessage = 'Please check your email and click the confirmation link before signing in.';
+      let errorMessage = "An error occurred during authentication";
+
+      if (error instanceof Error && typeof error.message === "string") {
+        if (error.message.includes("Invalid login credentials")) {
+          errorMessage = "Invalid email or password. Please try again.";
+        } else if (error.message.includes("User already registered")) {
+          errorMessage =
+            "An account with this email already exists. Please sign in instead.";
+        } else if (error.message.includes("Email not confirmed")) {
+          errorMessage =
+            "Please check your email and click the confirmation link before signing in.";
         } else {
           errorMessage = error.message;
         }
       } else {
         errorMessage = String(error);
       }
-      
+
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -147,21 +176,21 @@ const Login: React.FC = () => {
   };
 
   const clearMessages = () => {
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
     setValidationErrors([]);
   };
 
   const switchMode = () => {
     setIsRegister(!isRegister);
     clearMessages();
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-    setUsername('');
-    setAge('');
-    setLanguage('');
-    setCountry('');
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setUsername("");
+    setAge("");
+    setLanguage("");
+    setCountry("");
   };
 
   return (
@@ -173,7 +202,10 @@ const Login: React.FC = () => {
             <Card>
               <Card.Header>
                 <h4 className="mb-0 text-center">
-                  🧟‍♂️ {isRegister ? 'Join the Fight Against Zombies' : 'Enter the Battle'}
+                  🧟‍♂️{" "}
+                  {isRegister
+                    ? "Join the Fight Against Zombies"
+                    : "Enter the Battle"}
                 </h4>
               </Card.Header>
               <Card.Body>
@@ -188,7 +220,7 @@ const Login: React.FC = () => {
                     </ul>
                   </Alert>
                 )}
-                
+
                 <Form onSubmit={handleSubmit}>
                   {isRegister && (
                     <>
@@ -200,7 +232,13 @@ const Login: React.FC = () => {
                           onChange={(e) => setUsername(e.target.value)}
                           placeholder="Nombre de usuario"
                           disabled={loading}
-                          className={validationErrors.some(err => err.toLowerCase().includes('usuario')) ? 'is-invalid' : ''}
+                          className={
+                            validationErrors.some((err) =>
+                              err.toLowerCase().includes("usuario")
+                            )
+                              ? "is-invalid"
+                              : ""
+                          }
                         />
                       </Form.Group>
                       <Form.Group className="mb-3">
@@ -211,7 +249,13 @@ const Login: React.FC = () => {
                           onChange={(e) => setAge(e.target.value)}
                           placeholder="Edad"
                           disabled={loading}
-                          className={validationErrors.some(err => err.toLowerCase().includes('edad')) ? 'is-invalid' : ''}
+                          className={
+                            validationErrors.some((err) =>
+                              err.toLowerCase().includes("edad")
+                            )
+                              ? "is-invalid"
+                              : ""
+                          }
                         />
                       </Form.Group>
                       <Form.Group className="mb-3">
@@ -222,7 +266,13 @@ const Login: React.FC = () => {
                           onChange={(e) => setLanguage(e.target.value)}
                           placeholder="Idioma"
                           disabled={loading}
-                          className={validationErrors.some(err => err.toLowerCase().includes('idioma')) ? 'is-invalid' : ''}
+                          className={
+                            validationErrors.some((err) =>
+                              err.toLowerCase().includes("idioma")
+                            )
+                              ? "is-invalid"
+                              : ""
+                          }
                         />
                       </Form.Group>
                       <Form.Group className="mb-3">
@@ -233,7 +283,13 @@ const Login: React.FC = () => {
                           onChange={(e) => setCountry(e.target.value)}
                           placeholder="País"
                           disabled={loading}
-                          className={validationErrors.some(err => err.toLowerCase().includes('país')) ? 'is-invalid' : ''}
+                          className={
+                            validationErrors.some((err) =>
+                              err.toLowerCase().includes("país")
+                            )
+                              ? "is-invalid"
+                              : ""
+                          }
                         />
                       </Form.Group>
                     </>
@@ -246,19 +302,31 @@ const Login: React.FC = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
                       disabled={loading}
-                      className={validationErrors.some(err => err.includes('Email')) ? 'is-invalid' : ''}
+                      className={
+                        validationErrors.some((err) => err.includes("Email"))
+                          ? "is-invalid"
+                          : ""
+                      }
                     />
                   </Form.Group>
                   <Form.Group className="mb-3">
                     <Form.Label>Password *</Form.Label>
                     <InputGroup>
                       <Form.Control
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter your password"
                         disabled={loading}
-                        className={validationErrors.some(err => err.toLowerCase().includes('contraseña') || err.toLowerCase().includes('password')) ? 'is-invalid' : ''}
+                        className={
+                          validationErrors.some(
+                            (err) =>
+                              err.toLowerCase().includes("contraseña") ||
+                              err.toLowerCase().includes("password")
+                          )
+                            ? "is-invalid"
+                            : ""
+                        }
                       />
                       <Button
                         variant="outline-secondary"
@@ -266,7 +334,7 @@ const Login: React.FC = () => {
                         tabIndex={-1}
                         disabled={loading}
                       >
-                        {showPassword ? 'Ocultar' : 'Ver'}
+                        {showPassword ? "Ocultar" : "Ver"}
                       </Button>
                     </InputGroup>
                     {isRegister && (
@@ -280,12 +348,20 @@ const Login: React.FC = () => {
                       <Form.Label>Confirmar contraseña *</Form.Label>
                       <InputGroup>
                         <Form.Control
-                          type={showPassword ? 'text' : 'password'}
+                          type={showPassword ? "text" : "password"}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           placeholder="Confirma tu contraseña"
                           disabled={loading}
-                          className={validationErrors.some(err => err.toLowerCase().includes('confirm') || err.toLowerCase().includes('match')) ? 'is-invalid' : ''}
+                          className={
+                            validationErrors.some(
+                              (err) =>
+                                err.toLowerCase().includes("confirm") ||
+                                err.toLowerCase().includes("match")
+                            )
+                              ? "is-invalid"
+                              : ""
+                          }
                         />
                         <Button
                           variant="outline-secondary"
@@ -293,13 +369,22 @@ const Login: React.FC = () => {
                           tabIndex={-1}
                           disabled={loading}
                         >
-                          {showPassword ? 'Ocultar' : 'Ver'}
+                          {showPassword ? "Ocultar" : "Ver"}
                         </Button>
                       </InputGroup>
                     </Form.Group>
                   )}
-                  <Button variant="primary" type="submit" className="w-100 mb-3" disabled={loading}>
-                    {loading ? 'Loading...' : (isRegister ? 'Registrarse' : 'Entrar')}
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    className="w-100 mb-3"
+                    disabled={loading}
+                  >
+                    {loading
+                      ? "Loading..."
+                      : isRegister
+                      ? "Registrarse"
+                      : "Entrar"}
                   </Button>
                 </Form>
                 {!isRegister && (
@@ -307,16 +392,16 @@ const Login: React.FC = () => {
                     <a href="/forgot-password">Forgot your password?</a>
                   </div>
                 )}
-                
+
                 <div className="text-center">
                   <Button
                     variant="link"
                     onClick={switchMode}
-                    style={{ color: '#8b5cf6' }}
+                    style={{ color: "#8b5cf6" }}
                     disabled={loading}
                   >
-                    {isRegister 
-                      ? 'Already a warrior? Sign in here' 
+                    {isRegister
+                      ? "Already a warrior? Sign in here"
                       : "New recruit? Join the fight"}
                   </Button>
                 </div>
@@ -324,8 +409,9 @@ const Login: React.FC = () => {
                 {isRegister && (
                   <div className="mt-3">
                     <small className="text-muted">
-                      <strong>Note:</strong> You'll receive a confirmation email after registration. 
-                      Click the link in the email to activate your account.
+                      <strong>Note:</strong> You'll receive a confirmation email
+                      after registration. Click the link in the email to
+                      activate your account.
                     </small>
                   </div>
                 )}

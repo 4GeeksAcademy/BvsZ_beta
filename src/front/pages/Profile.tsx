@@ -1,16 +1,22 @@
-
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Alert } from 'react-bootstrap';
-import { useAuth } from '../hooks/useAuth';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-import { useNavigate } from 'react-router-dom';
-import Navigation from '../components/Navigation';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  Alert,
+} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import Navigation from "../components/Navigation";
 
 interface Profile {
   id: string;
   display_name: string;
   avatar_url: string | null;
   created_at: string;
+  email: string;
 }
 
 interface GameStats {
@@ -22,89 +28,102 @@ interface GameStats {
 }
 
 const Profile: React.FC = () => {
-  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [gameStats, setGameStats] = useState<GameStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [displayName, setDisplayName] = useState('');
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [displayName, setDisplayName] = useState("");
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
-    } else if (user) {
-      fetchProfile();
-      fetchGameStats();
+    if (!token) {
+      navigate("/login");
+      return;
     }
-  }, [user, loading, navigate]);
+    fetchProfile();
+  }, [token, navigate]);
 
   const fetchProfile = async () => {
-    if (!user) return;
+    if (!token) return;
 
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (!res.ok) throw new Error('request failed');
+      const res = await fetch(
+        "https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api/profile",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+        throw new Error("request failed");
+      }
+
       const data = await res.json();
-      setProfile({
-        id: data.id,
-        display_name: data.display_name || data.email,
-        avatar_url: null,
-        created_at: new Date().toISOString()
-      });
-      setDisplayName(data.display_name || '');
+      setProfile(data.user);
+      setDisplayName(data.user.username || "");
     } catch (error) {
-      console.error('Error fetching profile:', error);
-      setMessage({ type: 'error', text: 'Failed to fetch profile' });
+      console.error("Error fetching profile:", error);
+      setMessage({ type: "error", text: "Failed to fetch profile" });
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Placeholder para cuando implementemos las estadísticas
   const fetchGameStats = async () => {
-    if (!user) return;
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/stats/${user.id}`);
-      if (!res.ok) throw new Error('request failed');
-      const data = await res.json();
-      setGameStats(data);
-    } catch (error) {
-      console.error('Error fetching game stats:', error);
-    }
+    setGameStats({
+      total_games: 0,
+      high_score: 0,
+      total_score: 0,
+      levels_completed: 0,
+      zombies_defeated: 0,
+    });
   };
 
   const updateProfile = async () => {
-    if (!user || !profile) return;
+    if (!token || !profile) return;
 
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/profiles/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ display_name: displayName })
-      });
-      if (!res.ok) throw new Error('request failed');
+      const res = await fetch(
+        `https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api/profile`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ display_name: displayName }),
+        }
+      );
+      if (!res.ok) throw new Error("request failed");
 
-      setMessage({ type: 'success', text: 'Profile updated successfully!' });
+      setMessage({ type: "success", text: "Profile updated successfully!" });
       setIsEditing(false);
       await fetchProfile();
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setMessage({ type: 'error', text: 'Failed to update profile' });
+      console.error("Error updating profile:", error);
+      setMessage({ type: "error", text: "Failed to update profile" });
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <>
         <Navigation />
@@ -115,7 +134,7 @@ const Profile: React.FC = () => {
     );
   }
 
-  if (!user) {
+  if (!profile) {
     return null;
   }
 
@@ -126,9 +145,13 @@ const Profile: React.FC = () => {
         <Row className="justify-content-center">
           <Col lg={8}>
             <h2 className="mb-4">👤 User Profile</h2>
-            
+
             {message && (
-              <Alert variant={message.type} onClose={() => setMessage(null)} dismissible>
+              <Alert
+                variant={message.type}
+                onClose={() => setMessage(null)}
+                dismissible
+              >
                 {message.text}
               </Alert>
             )}
@@ -142,9 +165,16 @@ const Profile: React.FC = () => {
                   <div>
                     <Row>
                       <Col md={6}>
-                        <p><strong>Email:</strong> {user.email}</p>
-                        <p><strong>Member Since:</strong> {new Date(profile.created_at).toLocaleDateString()}</p>
-                        <p><strong>User ID:</strong> {profile.id}</p>
+                        <p>
+                          <strong>Email:</strong> {profile.email}
+                        </p>
+                        <p>
+                          <strong>Member Since:</strong>{" "}
+                          {new Date(profile.created_at).toLocaleDateString()}
+                        </p>
+                        <p>
+                          <strong>User ID:</strong> {profile.id}
+                        </p>
                       </Col>
                       <Col md={6}>
                         {isEditing ? (
@@ -158,15 +188,15 @@ const Profile: React.FC = () => {
                               />
                             </Form.Group>
                             <div className="d-flex gap-2">
-                              <Button 
-                                variant="primary" 
+                              <Button
+                                variant="primary"
                                 onClick={updateProfile}
                                 disabled={isLoading}
                               >
-                                {isLoading ? 'Saving...' : 'Save'}
+                                {isLoading ? "Saving..." : "Save"}
                               </Button>
-                              <Button 
-                                variant="secondary" 
+                              <Button
+                                variant="secondary"
                                 onClick={() => {
                                   setIsEditing(false);
                                   setDisplayName(profile.display_name);
@@ -178,8 +208,14 @@ const Profile: React.FC = () => {
                           </Form>
                         ) : (
                           <div>
-                            <p><strong>Display Name:</strong> {profile.display_name}</p>
-                            <Button variant="outline-primary" onClick={() => setIsEditing(true)}>
+                            <p>
+                              <strong>Display Name:</strong>{" "}
+                              {profile.display_name}
+                            </p>
+                            <Button
+                              variant="outline-primary"
+                              onClick={() => setIsEditing(true)}
+                            >
                               Edit Profile
                             </Button>
                           </div>
@@ -226,10 +262,11 @@ const Profile: React.FC = () => {
                       <div className="stat-item mb-3">
                         <h6 className="text-secondary">Average Score</h6>
                         <h4>
-                          {gameStats.total_games > 0 
-                            ? Math.round(gameStats.total_score / gameStats.total_games).toLocaleString()
-                            : '0'
-                          }
+                          {gameStats.total_games > 0
+                            ? Math.round(
+                                gameStats.total_score / gameStats.total_games
+                              ).toLocaleString()
+                            : "0"}
                         </h4>
                       </div>
                     </Col>
@@ -237,7 +274,10 @@ const Profile: React.FC = () => {
                 ) : (
                   <div className="text-center">
                     <p>No game statistics yet!</p>
-                    <p>Play some games or use the <strong>Backend Test</strong> page to add test scores.</p>
+                    <p>
+                      Play some games or use the <strong>Backend Test</strong>{" "}
+                      page to add test scores.
+                    </p>
                   </div>
                 )}
               </Card.Body>
@@ -249,13 +289,19 @@ const Profile: React.FC = () => {
               </Card.Header>
               <Card.Body>
                 <div className="d-flex gap-2 flex-wrap">
-                  <Button variant="primary" onClick={() => navigate('/game')}>
+                  <Button variant="primary" onClick={() => navigate("/game")}>
                     Play Game
                   </Button>
-                  <Button variant="success" onClick={() => navigate('/leaderboard')}>
+                  <Button
+                    variant="success"
+                    onClick={() => navigate("/leaderboard")}
+                  >
                     View Leaderboard
                   </Button>
-                  <Button variant="info" onClick={() => navigate('/backend-test')}>
+                  <Button
+                    variant="info"
+                    onClick={() => navigate("/backend-test")}
+                  >
                     Backend Test
                   </Button>
                 </div>
