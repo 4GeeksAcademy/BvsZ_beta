@@ -1,0 +1,12 @@
+#game-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 768px;
+  min-height: 576px;
+  overflow: hidden;
+}
+#game-container canvas {
+  width: 100% !important;
+  height: auto !important;
+  margin: 0 auto;
+}

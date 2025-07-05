@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import { isAuthenticated, fetchWithAuth } from "../utils/auth";
 import { getApiEndpoint } from "../utils/config";
-import PhaserGame from "../components/PhaserGame";
+import PhaserGame from "../game/PhaserGame";
 
 interface User {
   id: number;
@@ -83,13 +83,7 @@ const Game: React.FC = () => {
   return (
     <>
       <Navigation />
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-8">
             <PhaserGame ref={phaserRef} />
-          </div>
-        </div>
-      </div>
     </>
   );
 };

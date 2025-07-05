@@ -1,0 +1,18 @@
+.terminal-btn {
+  background: #181c1f;
+  color: #39ff14;
+  border: 1.5px solid #39ff14;
+  font-family: 'Fira Mono', 'Consolas', monospace;
+  font-size: 1.1rem;
+  padding: 0.5em 1.5em;
+  border-radius: 4px;
+  margin: 0.5em;
+  box-shadow: 0 2px 8px #000a;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  cursor: pointer;
+}
+.terminal-btn:hover {
+  background: #39ff14;
+  color: #181c1f;
+  border: 1.5px solid #181c1f;
+}
