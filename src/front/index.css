@@ -96,8 +96,10 @@ body {
   background: var(--pixel-black);
 }
 
-/* Pixel Art Button Styling */
-.btn-primary {
+/* Pixel Art Button Styling - Estilo unificado */
+.btn-primary,
+.btn-success,
+.btn-info {
   background: var(--pixel-primary);
   border: 4px solid var(--pixel-black);
   border-radius: 0;
@@ -107,47 +109,25 @@ body {
   font-size: 1.4rem;
   color: var(--pixel-black);
   transition: none;
-  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
+  box-shadow: 4px 4px 0 var(--pixel-black);
   text-transform: uppercase;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-success:hover,
+.btn-info:hover {
   background: var(--pixel-accent);
   color: var(--pixel-black);
   border: 4px solid var(--pixel-black);
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--pixel-black), 4px 4px 0 var(--pixel-gray);
+  box-shadow: 2px 2px 0 var(--pixel-black);
 }
 
-.btn-primary:active {
+.btn-primary:active,
+.btn-success:active,
+.btn-info:active {
   transform: translate(4px, 4px);
   box-shadow: none;
-}
-
-.btn-success {
-  background: var(--pixel-primary);
-  border: 4px solid var(--pixel-black);
-  border-radius: 0;
-  padding: 13px 22px;
-  font-weight: 400;
-  font-family: "VT323", monospace;
-  font-size: 1.4rem;
-  color: var(--pixel-black);
-  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
-  text-transform: uppercase;
-}
-
-.btn-info {
-  background: var(--pixel-blue);
-  border: 4px solid var(--pixel-black);
-  border-radius: 0;
-  padding: 13px 22px;
-  font-weight: 400;
-  font-family: "VT323", monospace;
-  font-size: 1.4rem;
-  color: var(--pixel-white);
-  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
-  text-transform: uppercase;
 }
 
 .btn-outline-light {
@@ -191,6 +171,62 @@ body {
   color: var(--pixel-white);
   font-weight: 700;
   font-size: 1.2rem;
+}
+
+/* Títulos de las cards del mismo tamaño que h3 */
+.card-title {
+  font-size: 1.6rem !important; /* Mismo tamaño que h3 */
+  font-family: "VT323", monospace !important;
+  font-weight: 400 !important; /* Sin bold */
+  text-shadow: none !important; /* Eliminar cualquier sombreado */
+}
+
+/* Body de las cards 30% más grande */
+.card-text {
+  font-size: 1.43rem !important; /* 30% más grande que el tamaño base */
+  font-family: "VT323", monospace !important;
+  line-height: 1.4 !important;
+}
+
+/* Aplicar el mismo tamaño al contenido de todas las cards */
+.card-body small,
+.bg-light small {
+  font-size: 1.43rem !important; /* 30% más grande */
+  font-family: "VT323", monospace !important;
+}
+
+/* Para los elementos small específicamente, un poco más pequeños pero aún aumentados */
+.card-body small,
+.bg-light small {
+  font-size: 1.2rem !important; /* Un poco más pequeño que strong pero aún aumentado */
+}
+
+/* Body de la sección "How to Survive" y párrafos del hero */
+.card-body p,
+.card-body ul,
+.card-body li,
+.lead,
+.text-muted {
+  font-size: 1.43rem !important; /* 30% más grande */
+  font-family: "VT323", monospace !important;
+  line-height: 1.4 !important;
+}
+
+/* Títulos h5 dentro de las cards con el mismo tamaño aumentado */
+.card-body h5 {
+  font-size: 1.75rem !important; /* Mismo tamaño que los títulos de cards */
+  font-family: "VT323", monospace !important;
+  font-weight: 400 !important; /* Sin bold */
+  text-shadow: none !important;
+}
+
+/* Mayor especificidad para eliminar sombreado de h5 */
+.card-body h5.text-danger,
+.card-body h5.text-primary,
+.card-body h5.text-success,
+.card-body h5.text-warning,
+.card-body h5.text-info {
+  text-shadow: none !important;
 }
 
 .bg-light {
@@ -557,12 +593,6 @@ li {
 .is-invalid {
   border-color: var(--pixel-danger) !important;
   box-shadow: 0 0 0 4px var(--pixel-danger), 4px 4px 0 var(--pixel-black) !important;
-}
-
-/* Strong text styling */
-strong {
-  color: var(--pixel-accent);
-  font-weight: 700;
 }
 
 /* Colores especiales para el título principal Bootstrap vs Zombies */

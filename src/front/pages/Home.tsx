@@ -174,7 +174,7 @@ const Home: React.FC = () => {
                       <Col sm={6} md={3} className="mb-2">
                         <div className="text-center p-3 bg-light rounded">
                           <div className="fs-2 mb-2">1️⃣</div>
-                          <strong>Choose Class</strong>
+                          Choose Class
                           <br />
                           <small>
                             Select a{" "}
@@ -186,7 +186,7 @@ const Home: React.FC = () => {
                       <Col sm={6} md={3} className="mb-2">
                         <div className="text-center p-3 bg-light rounded">
                           <div className="fs-2 mb-2">2️⃣</div>
-                          <strong>Place Turret</strong>
+                          Place Turret
                           <br />
                           <small>Click grid column to deploy</small>
                         </div>
@@ -194,7 +194,7 @@ const Home: React.FC = () => {
                       <Col sm={6} md={3} className="mb-2">
                         <div className="text-center p-3 bg-light rounded">
                           <div className="fs-2 mb-2">3️⃣</div>
-                          <strong>Watch Magic</strong>
+                          Watch Magic
                           <br />
                           <small>See flexbox in action</small>
                         </div>
@@ -202,7 +202,7 @@ const Home: React.FC = () => {
                       <Col sm={6} md={3} className="mb-2">
                         <div className="text-center p-3 bg-light rounded">
                           <div className="fs-2 mb-2">4️⃣</div>
-                          <strong>Learn & Win</strong>
+                          Learn & Win
                           <br />
                           <small>Master CSS through gameplay</small>
                         </div>
