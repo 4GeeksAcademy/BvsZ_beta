@@ -1,267 +1,602 @@
-
 /* Import Bootstrap CSS */
-@import 'bootstrap/dist/css/bootstrap.min.css';
+@import "bootstrap/dist/css/bootstrap.min.css";
 
-/* Custom Bootstrap theme variables - Dark theme with purple accents */
+/* Pixel Art Theme Variables */
 :root {
-  --bs-primary: #8b5cf6;
-  --bs-secondary: #6b7280;
-  --bs-success: #10b981;
-  --bs-info: #06b6d4;
-  --bs-warning: #f59e0b;
-  --bs-danger: #ef4444;
-  --bs-dark: #1e1b4b;
-  --bs-light: #f8fafc;
-  --bs-body-bg: #0f0f23;
-  --bs-body-color: #e2e8f0;
+  --bs-primary: #00ff00;
+  --bs-secondary: #808080;
+  --bs-success: #00ff00;
+  --bs-info: #00ffff;
+  --bs-warning: #ffff00;
+  --bs-danger: #ff0000;
+  --bs-dark: #000000;
+  --bs-light: #ffffff;
+  --bs-body-bg: #1a1a2e;
+  --bs-body-color: #ffffff;
+
+  /* Pixel Art Colors */
+  --pixel-bg: #1a1a2e;
+  --pixel-primary: #00ff00;
+  --pixel-secondary: #ff00ff;
+  --pixel-accent: #ffff00;
+  --pixel-danger: #ff0000;
+  --pixel-white: #ffffff;
+  --pixel-black: #000000;
+  --pixel-gray: #808080;
+  --pixel-dark-blue: #16213e;
+  --pixel-blue: #0066ff;
+  --pixel-purple: #8b00ff;
+  --pixel-purple-dark: #6600cc;
 }
 
-/* Global dark theme */
+/* Global Pixel Art Theme */
+* {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
 body {
-  background: linear-gradient(135deg, #0f0f23 0%, #1e1b4b 50%, #312e81 100%);
-  color: #e2e8f0;
+  background: repeating-linear-gradient(
+    0deg,
+    var(--pixel-bg) 0px,
+    var(--pixel-bg) 2px,
+    #0f0f1a 2px,
+    #0f0f1a 4px
+  );
+  color: var(--pixel-white);
   min-height: 100vh;
+  font-family: "VT323", monospace;
+  font-size: 25px;
+  letter-spacing: 0px;
 }
 
-/* Custom navbar styling */
+/* Pixel Art Navbar Styling */
 .navbar-dark {
-  background: rgba(30, 27, 75, 0.95) !important;
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  background: var(--pixel-dark-blue) !important;
+  border-bottom: 4px solid var(--pixel-purple);
+  box-shadow: 0 4px 0 var(--pixel-black), 0 8px 0 var(--pixel-purple-dark);
 }
 
 .navbar-brand {
-  color: #8b5cf6 !important;
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
+  font-family: "VT323", monospace;
+  text-shadow: 2px 0 var(--pixel-black), -2px 0 var(--pixel-black),
+    0 2px var(--pixel-black), 0 -2px var(--pixel-black),
+    2px 2px var(--pixel-black);
+}
+
+/* Estilos específicos para cada palabra del título */
+.navbar-brand .text-bootstrap {
+  color: var(--pixel-purple) !important;
+}
+
+.navbar-brand .text-vs {
+  color: var(--pixel-danger) !important;
+}
+
+.navbar-brand .text-zombies {
+  color: var(--pixel-primary) !important;
 }
 
 .nav-link {
-  color: #e2e8f0 !important;
-  transition: all 0.3s ease;
+  color: var(--pixel-white) !important;
+  font-family: "VT323", monospace;
+  font-size: 1.6rem;
+  border: 2px solid transparent;
+  margin: 0 4px;
+  transition: none;
+  padding: 8px 12px !important;
 }
 
 .nav-link:hover {
-  color: #8b5cf6 !important;
-  transform: translateY(-1px);
+  color: var(--pixel-accent) !important;
+  border: 2px solid var(--pixel-accent);
+  background: var(--pixel-black);
 }
 
-/* Button styling */
+/* Pixel Art Button Styling */
 .btn-primary {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  border: none;
-  border-radius: 50px;
-  padding: 12px 30px;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  background: var(--pixel-primary);
+  border: 4px solid var(--pixel-black);
+  border-radius: 0;
+  padding: 13px 22px;
+  font-weight: 400;
+  font-family: "VT323", monospace;
+  font-size: 1.4rem;
+  color: var(--pixel-black);
+  transition: none;
+  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
+  text-transform: uppercase;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+  background: var(--pixel-accent);
+  color: var(--pixel-black);
+  border: 4px solid var(--pixel-black);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--pixel-black), 4px 4px 0 var(--pixel-gray);
+}
+
+.btn-primary:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
 
 .btn-success {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border: none;
-  border-radius: 50px;
-  padding: 12px 30px;
-  font-weight: 600;
+  background: var(--pixel-primary);
+  border: 4px solid var(--pixel-black);
+  border-radius: 0;
+  padding: 13px 22px;
+  font-weight: 400;
+  font-family: "VT323", monospace;
+  font-size: 1.4rem;
+  color: var(--pixel-black);
+  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
+  text-transform: uppercase;
 }
 
 .btn-info {
-  background: linear-gradient(135deg, #06b6d4, #0891b2);
-  border: none;
-  border-radius: 50px;
-  padding: 12px 30px;
-  font-weight: 600;
+  background: var(--pixel-blue);
+  border: 4px solid var(--pixel-black);
+  border-radius: 0;
+  padding: 13px 22px;
+  font-weight: 400;
+  font-family: "VT323", monospace;
+  font-size: 1.4rem;
+  color: var(--pixel-white);
+  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
+  text-transform: uppercase;
 }
 
 .btn-outline-light {
-  border: 2px solid #8b5cf6;
-  color: #8b5cf6;
-  border-radius: 50px;
-  padding: 8px 20px;
-  transition: all 0.3s ease;
+  border: 4px solid var(--pixel-primary);
+  color: var(--pixel-primary);
+  background: var(--pixel-black);
+  border-radius: 0;
+  padding: 10px 16px;
+  font-family: "VT323", monospace;
+  font-weight: 400;
+  font-size: 1.3rem;
+  transition: none;
+  text-transform: uppercase;
 }
 
 .btn-outline-light:hover {
-  background: #8b5cf6;
-  color: white;
-  transform: translateY(-1px);
+  background: var(--pixel-primary);
+  color: var(--pixel-black);
+  border: 4px solid var(--pixel-black);
 }
 
-/* Card styling */
+/* Pixel Art Card Styling */
 .card {
-  background: rgba(30, 27, 75, 0.8);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: var(--pixel-dark-blue);
+  border: 4px solid var(--pixel-purple);
+  border-radius: 0;
+  transition: none;
+  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-purple-dark);
+  font-family: "VT323", monospace;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--pixel-black), 10px 10px 0 var(--pixel-purple-dark);
 }
 
 .card-header {
-  background: rgba(139, 92, 246, 0.1);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 20px 20px 0 0 !important;
+  background: var(--pixel-purple);
+  border-bottom: 4px solid var(--pixel-black);
+  border-radius: 0 !important;
+  color: var(--pixel-white);
+  font-weight: 700;
+  font-size: 1.2rem;
 }
 
 .bg-light {
-  background: rgba(30, 27, 75, 0.6) !important;
-  border: 1px solid rgba(139, 92, 246, 0.1);
+  background: var(--pixel-dark-blue) !important;
+  border: 4px solid var(--pixel-gray);
 }
 
-/* Game-specific custom styles */
+/* Pixel Art Game-specific Styles */
 .game-board {
   min-height: 80vh;
-  background: linear-gradient(180deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
-  border: 3px solid #8b5cf6;
-  border-radius: 20px;
+  background: repeating-linear-gradient(
+      90deg,
+      var(--pixel-dark-blue) 0px,
+      var(--pixel-dark-blue) 8px,
+      #0a0a1a 8px,
+      #0a0a1a 16px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      var(--pixel-dark-blue) 0px,
+      var(--pixel-dark-blue) 8px,
+      #0a0a1a 8px,
+      #0a0a1a 16px
+    );
+  border: 8px solid var(--pixel-purple);
+  border-radius: 0;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
+  box-shadow: 8px 8px 0 var(--pixel-black), 16px 16px 0 var(--pixel-gray);
 }
 
 .zombie {
   position: absolute;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-  border-radius: 10px;
-  border: 2px solid #991b1b;
+  background: var(--pixel-danger);
+  border: 4px solid var(--pixel-black);
+  border-radius: 0;
   transition: bottom 0.1s linear;
-  box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 #800000;
 }
 
 .flex-turret {
   height: 80px;
-  background: linear-gradient(135deg, #10b981, #059669);
-  border: 2px solid #065f46;
-  border-radius: 15px;
+  background: var(--pixel-primary);
+  border: 4px solid var(--pixel-black);
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  color: white;
+  font-family: "VT323", monospace;
+  font-size: 1.2rem;
+  color: var(--pixel-black);
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+  transition: none;
+  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
 }
 
 .flex-turret:hover {
-  background: linear-gradient(135deg, #059669, #047857);
-  transform: scale(1.05);
-  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+  background: var(--pixel-accent);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--pixel-black), 4px 4px 0 var(--pixel-gray);
 }
 
 .flex-turret.active {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  border-color: #6d28d9;
-  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+  background: var(--pixel-secondary);
+  border-color: var(--pixel-black);
+  color: var(--pixel-white);
+  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
 }
 
 .pellet {
   position: absolute;
   width: 8px;
   height: 8px;
-  background: radial-gradient(circle, #fbbf24, #f59e0b);
-  border-radius: 50%;
+  background: var(--pixel-accent);
+  border: 2px solid var(--pixel-black);
+  border-radius: 0;
   transition: bottom 0.1s linear;
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+  box-shadow: 2px 2px 0 var(--pixel-black);
 }
 
 .class-selector {
-  background: rgba(30, 27, 75, 0.9);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
-  backdrop-filter: blur(15px);
+  background: var(--pixel-dark-blue);
+  border: 4px solid var(--pixel-primary);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
+  font-family: "VT323", monospace;
 }
 
 .game-stats {
-  background: rgba(15, 15, 35, 0.9);
-  color: white;
+  background: var(--pixel-black);
+  color: var(--pixel-white);
   padding: 20px;
-  border-radius: 20px;
+  border: 4px solid var(--pixel-primary);
+  border-radius: 0;
   margin-bottom: 20px;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
-  backdrop-filter: blur(15px);
+  box-shadow: 4px 4px 0 var(--pixel-gray), 8px 8px 0 var(--pixel-dark-blue);
+  font-family: "VT323", monospace;
+  font-size: 1.1rem;
 }
 
-/* Bootstrap flex utility demonstrations */
+/* Pixel Art Bootstrap Flex Utility Demonstrations */
 .flex-demo {
   min-height: 100px;
-  border: 2px dashed #8b5cf6;
-  background: rgba(139, 92, 246, 0.1);
+  border: 4px dashed var(--pixel-primary);
+  background: repeating-linear-gradient(
+    45deg,
+    var(--pixel-dark-blue),
+    var(--pixel-dark-blue) 4px,
+    var(--pixel-black) 4px,
+    var(--pixel-black) 8px
+  );
   margin: 10px 0;
-  border-radius: 10px;
+  border-radius: 0;
 }
 
-/* Hero section styling */
+/* Pixel Art Hero Section Styling */
 .display-4 {
-  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  background: var(--pixel-purple);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-weight: 800;
+  font-family: "VT323", monospace;
+  text-shadow: 4px 0 var(--pixel-black), -4px 0 var(--pixel-black),
+    0 4px var(--pixel-black), 0 -4px var(--pixel-black),
+    4px 4px var(--pixel-black);
+  -webkit-text-fill-color: var(--pixel-purple);
+  letter-spacing: 2px;
 }
 
 .lead {
-  color: #cbd5e1;
-  font-size: 1.2rem;
+  color: var(--pixel-white);
+  font-size: 1.3rem;
+  font-family: "VT323", monospace;
+  letter-spacing: 1px;
 }
 
-/* Table styling for leaderboard */
+/* Pixel Art Table Styling for Leaderboard */
 .table-dark {
-  background: rgba(30, 27, 75, 0.8);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  background: var(--pixel-black);
+  border: 4px solid var(--pixel-primary);
+  font-family: "VT323", monospace;
+  font-size: 1.1rem;
 }
 
 .table-dark th {
-  border-color: rgba(139, 92, 246, 0.3);
-  color: #8b5cf6;
+  border: 2px solid var(--pixel-primary);
+  color: var(--pixel-primary);
+  background: var(--pixel-dark-blue);
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 .table-dark td {
-  border-color: rgba(139, 92, 246, 0.2);
+  border: 2px solid var(--pixel-gray);
+  color: var(--pixel-white);
 }
 
-/* Form styling */
+.table-dark tr:hover {
+  background: var(--pixel-dark-blue);
+}
+
+/* Pixel Art Form Styling */
 .form-control {
-  background: rgba(30, 27, 75, 0.8);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  color: #e2e8f0;
-  border-radius: 10px;
+  background: var(--pixel-black);
+  border: 4px solid var(--pixel-gray);
+  color: var(--pixel-white);
+  border-radius: 0;
+  font-family: "VT323", monospace;
+  font-size: 1.43rem;
+  padding: 12px;
 }
 
 .form-control:focus {
-  background: rgba(30, 27, 75, 0.9);
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
-  color: #e2e8f0;
+  background: var(--pixel-dark-blue);
+  border-color: var(--pixel-primary);
+  box-shadow: 0 0 0 4px var(--pixel-primary), 4px 4px 0 var(--pixel-black);
+  color: var(--pixel-white);
 }
 
+/* Placeholder styling */
+.form-control::placeholder {
+  color: var(--pixel-white) !important;
+  opacity: 0.8;
+}
+
+.form-control::-webkit-input-placeholder {
+  color: var(--pixel-white) !important;
+  opacity: 0.8;
+}
+
+.form-control::-moz-placeholder {
+  color: var(--pixel-white) !important;
+  opacity: 0.8;
+}
+
+.form-control:-ms-input-placeholder {
+  color: var(--pixel-white) !important;
+  opacity: 0.8;
+}
+
+.form-control:-moz-placeholder {
+  color: var(--pixel-white) !important;
+  opacity: 0.8;
+}
+
+/* Form Labels Enhancement */
 .form-label {
-  color: #e2e8f0;
-  font-weight: 600;
+  color: var(--pixel-primary) !important;
+  font-weight: 700;
+  font-family: "VT323", monospace;
+  font-size: 1.3rem !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 2px 0 var(--pixel-black), -2px 0 var(--pixel-black),
+    0 2px var(--pixel-black), 0 -2px var(--pixel-black);
+  margin-bottom: 8px !important;
 }
 
-/* Alert styling */
+.text-muted {
+  color: var(--pixel-gray) !important;
+  font-family: "VT323", monospace;
+}
+
+.text-center a {
+  color: var(--pixel-accent) !important;
+  font-family: "VT323", monospace;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  border: 2px solid var(--pixel-accent);
+  padding: 4px 8px;
+  background: var(--pixel-black);
+}
+
+.text-center a:hover {
+  background: var(--pixel-accent);
+  color: var(--pixel-black) !important;
+}
+
+.text-light {
+  color: var(--pixel-white) !important;
+  font-family: "VT323", monospace;
+  font-size: 1.3rem;
+  font-weight: 400;
+  text-shadow: 1px 0 var(--pixel-black), -1px 0 var(--pixel-black),
+    0 1px var(--pixel-black), 0 -1px var(--pixel-black);
+}
+
+small,
+.small {
+  font-family: "VT323", monospace;
+  font-size: 1rem !important;
+  color: var(--pixel-gray);
+}
+
+.form-text {
+  color: var(--pixel-gray) !important;
+  font-family: "VT323", monospace;
+  font-size: 1rem !important;
+}
+
+a {
+  color: var(--pixel-accent);
+  font-family: "VT323", monospace;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--pixel-primary);
+}
+
+.navbar .text-light {
+  background: var(--pixel-dark-blue);
+  padding: 6px 10px;
+  border: 2px solid var(--pixel-primary);
+  margin-right: 8px;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+/* Pixel Art Alert Styling */
 .alert-danger {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  background: var(--pixel-danger);
+  border: 4px solid var(--pixel-black);
+  color: var(--pixel-white);
+  border-radius: 0;
+  font-family: "VT323", monospace;
+  font-size: 1.1rem;
+  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
 }
 
 .alert-success {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #6ee7b7;
+  background: var(--pixel-primary);
+  border: 4px solid var(--pixel-black);
+  color: var(--pixel-black);
+  border-radius: 0;
+  font-family: "VT323", monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
 }
+
+/* Enhanced visibility fixes */
+/* Override any conflicting Bootstrap text colors */
+.text-dark {
+  color: var(--pixel-white) !important;
+}
+
+/* Ensure all paragraphs are visible */
+p {
+  color: var(--pixel-white);
+  font-family: "VT323", monospace;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
+/* List items styling */
+li {
+  color: var(--pixel-white);
+  font-family: "VT323", monospace;
+  font-size: 1rem;
+}
+
+/* Alert text contrast improvements */
+.alert {
+  font-family: "VT323", monospace !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.alert ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.alert li {
+  margin-bottom: 4px;
+}
+
+/* Input group button styling */
+.input-group .btn {
+  font-family: "VT323", monospace;
+  font-size: 1.2rem;
+  border: 4px solid var(--pixel-gray) !important;
+  background: var(--pixel-dark-blue) !important;
+  color: var(--pixel-white) !important;
+  text-transform: uppercase;
+  font-weight: 400;
+  padding: 10px 13px !important;
+}
+
+.input-group .btn:hover {
+  background: var(--pixel-primary) !important;
+  color: var(--pixel-black) !important;
+  border-color: var(--pixel-black) !important;
+}
+
+/* Make sure card body text is visible */
+.card-body p,
+.card-body span,
+.card-body div:not(.alert):not(.form-group):not(.input-group) {
+  color: var(--pixel-white) !important;
+}
+
+/* Validation error styling */
+.is-invalid {
+  border-color: var(--pixel-danger) !important;
+  box-shadow: 0 0 0 4px var(--pixel-danger), 4px 4px 0 var(--pixel-black) !important;
+}
+
+/* Strong text styling */
+strong {
+  color: var(--pixel-accent);
+  font-weight: 700;
+}
+
+/* Colores especiales para el título principal Bootstrap vs Zombies */
+.text-bootstrap {
+  color: var(--pixel-purple) !important;
+  text-shadow: 2px 0 var(--pixel-black), -2px 0 var(--pixel-black),
+    0 2px var(--pixel-black), 0 -2px var(--pixel-black),
+    2px 2px var(--pixel-black);
+}
+.text-vs {
+  color: var(--pixel-danger) !important;
+  text-shadow: 2px 0 var(--pixel-black), -2px 0 var(--pixel-black),
+    0 2px var(--pixel-black), 0 -2px var(--pixel-black),
+    2px 2px var(--pixel-black);
+}
+.text-zombies {
+  color: var(--pixel-primary) !important;
+  text-shadow: 2px 0 var(--pixel-black), -2px 0 var(--pixel-black),
+    0 2px var(--pixel-black), 0 -2px var(--pixel-black),
+    2px 2px var(--pixel-black);
+}
+
+/* Ejemplo de uso en HTML/JSX:
+  <h1>
+    <span class="text-bootstrap">Bootstrap</span>
+    <span class="text-vs"> VS </span>
+    <span class="text-zombies">Zombies</span>
+  </h1>
+*/

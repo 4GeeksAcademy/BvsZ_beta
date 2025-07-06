@@ -259,7 +259,9 @@ const BackendTest: React.FC = () => {
                         </Col>
                       </Row>
                       <Form.Group className="mb-3">
-                        <Form.Label>Zombies Defeated</Form.Label>
+                        <Form.Label>
+                          <span className="text-zombies">Zombies</span> Defeated
+                        </Form.Label>
                         <Form.Control
                           type="number"
                           value={testZombies}
@@ -311,7 +313,10 @@ const BackendTest: React.FC = () => {
                           {gameStats.levels_completed}
                         </p>
                         <p>
-                          <strong>Zombies Defeated:</strong>{" "}
+                          <strong>
+                            <span className="text-zombies">Zombies</span>{" "}
+                            Defeated:
+                          </strong>{" "}
                           {gameStats.zombies_defeated}
                         </p>
                       </div>
@@ -334,7 +339,9 @@ const BackendTest: React.FC = () => {
                       <tr>
                         <th>Score</th>
                         <th>Level</th>
-                        <th>Zombies</th>
+                        <th>
+                          <span className="text-zombies">Zombies</span>
+                        </th>
                         <th>Duration</th>
                         <th>Date</th>
                       </tr>

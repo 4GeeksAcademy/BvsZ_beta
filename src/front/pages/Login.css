@@ -1,7 +1,8 @@
-/* Login page specific styles */
+/* Pixel Art Login Page Styles */
 
 .country-autocomplete-container {
   position: relative;
+  font-family: "VT323", monospace;
 }
 
 .country-suggestions-dropdown {
@@ -12,31 +13,87 @@
   z-index: 1000;
   max-height: 200px;
   overflow-y: auto;
-  border: 1px solid #8b5cf6;
-  border-radius: 0.375rem;
-  background-color: #4900f3;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 6px rgba(56, 228, 13, 0.1);
+  border: 4px solid var(--pixel-primary);
+  border-radius: 0;
+  background-color: var(--pixel-black);
+  box-shadow: 4px 4px 0 var(--pixel-gray), 8px 8px 0 var(--pixel-dark-blue);
+  font-family: "VT323", monospace;
 }
 
 .country-suggestion-item {
   cursor: pointer;
-  padding: 0.5rem 0.75rem;
+  padding: 0.75rem;
   border: none;
-  background-color: #8b5cf6;
-  transition: background-color 0.2s ease;
-  color: white !important;
+  background-color: var(--pixel-dark-blue);
+  transition: none;
+  color: var(--pixel-white) !important;
+  font-family: "VT323", monospace;
+  font-size: 1.43rem;
+  border-bottom: 2px solid var(--pixel-gray);
 }
 
 .country-suggestion-item:not(:last-child) {
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 2px solid var(--pixel-gray);
 }
 
 .country-suggestion-item:hover {
-  background-color: #7c3aed !important;
-  color: white !important;
+  background-color: var(--pixel-primary) !important;
+  color: var(--pixel-black) !important;
+  border-left: 4px solid var(--pixel-accent);
 }
 
 .switch-mode-button {
-  color: #8b5cf6;
+  color: var(--pixel-primary);
+  font-family: "VT323", monospace;
+  font-size: 1.4rem;
+  border: 2px solid var(--pixel-primary);
+  background: var(--pixel-black);
+  padding: 10px 16px;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.switch-mode-button:hover {
+  background: var(--pixel-primary);
+  color: var(--pixel-black);
+}
+
+/* Login page title enhancements */
+.card .card-header h4 {
+  color: var(--pixel-black) !important;
+  background: none !important;
+  text-shadow: 2px 0 var(--pixel-white), -2px 0 var(--pixel-white),
+    0 2px var(--pixel-white), 0 -2px var(--pixel-white),
+    2px 2px var(--pixel-white);
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+}
+
+/* Emoji styling in titles */
+.card-header h4 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Button link styling improvements */
+.btn-link {
+  color: var(--pixel-primary) !important;
+  font-family: "VT323", monospace;
+  font-size: 1.3rem !important;
+  text-transform: uppercase;
+  font-weight: 400 !important;
+  text-decoration: none !important;
+  border: 2px solid var(--pixel-primary) !important;
+  background: var(--pixel-black) !important;
+  padding: 10px 16px !important;
+  border-radius: 0 !important;
+}
+
+.btn-link:hover {
+  background: var(--pixel-primary) !important;
+  color: var(--pixel-black) !important;
+  border-color: var(--pixel-black) !important;
 }

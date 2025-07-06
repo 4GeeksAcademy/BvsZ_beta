@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Button,
-  Alert,
-} from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import { getApiEndpoint } from "../utils/config";
@@ -82,7 +75,6 @@ const Profile: React.FC = () => {
       localStorage.setItem("profile", JSON.stringify(profile));
     }
   }, [profile]);
-
 
   const fetchGameStats = async () => {
     setGameStats({
@@ -185,7 +177,9 @@ const Profile: React.FC = () => {
                         <h4>{gameStats.levels_completed}</h4>
                       </div>
                       <div className="stat-item mb-3">
-                        <h6 className="text-danger">Zombies Defeated</h6>
+                        <h6 className="text-danger">
+                          <span className="text-zombies">Zombies</span> Defeated
+                        </h6>
                         <h4>{gameStats.zombies_defeated.toLocaleString()}</h4>
                       </div>
                       <div className="stat-item mb-3">

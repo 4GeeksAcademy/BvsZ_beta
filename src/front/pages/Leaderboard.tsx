@@ -11,7 +11,8 @@ import {
   TableCell,
 } from "../components/ui/table";
 import Navigation from "../components/Navigation";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 interface LeaderboardRow {
   display_name: string | null;
@@ -29,7 +30,7 @@ const Leaderboard: React.FC = () => {
       setLoading(true);
       try {
         const res = await fetch(`${API_BASE_URL}/leaderboard`);
-        if (!res.ok) throw new Error('request failed');
+        if (!res.ok) throw new Error("request failed");
         const data = await res.json();
         setRows(data);
       } catch (err) {
@@ -50,7 +51,11 @@ const Leaderboard: React.FC = () => {
           <Col lg={10}>
             <Card bg="dark" text="light">
               <Card.Header>
-                <h3>🏆 Bootstrap vs Zombies: Hall of Fame</h3>
+                <h3>
+                  🏆 <span className="text-bootstrap">Bootstrap</span>{" "}
+                  <span className="text-vs">vs</span>{" "}
+                  <span className="text-zombies">Zombies</span>: Hall of Fame
+                </h3>
               </Card.Header>
               <Card.Body>
                 {loading ? (
@@ -60,7 +65,10 @@ const Leaderboard: React.FC = () => {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Rank</TableHead>
-                        <TableHead>Bootstrap Warrior</TableHead>
+                        <TableHead>
+                          <span className="text-bootstrap">Bootstrap</span>{" "}
+                          Warrior
+                        </TableHead>
                         <TableHead>High Score</TableHead>
                         <TableHead>Games Played</TableHead>
                         <TableHead>Levels Completed</TableHead>
@@ -100,10 +108,3 @@ const Leaderboard: React.FC = () => {
 };
 
 export default Leaderboard;
-
-
-
-
-
-
-

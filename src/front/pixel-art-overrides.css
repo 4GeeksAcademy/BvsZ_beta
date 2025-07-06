@@ -1,0 +1,334 @@
+/* Pixel Art Theme Overrides - Import this after other CSS files */
+
+/* Additional Pixel Art Variables */
+:root {
+  --pixel-border-width: 4px;
+  --pixel-shadow-sm: 2px 2px 0;
+  --pixel-shadow-md: 4px 4px 0;
+  --pixel-shadow-lg: 8px 8px 0;
+  --pixel-shadow-xl: 16px 16px 0;
+}
+
+/* Ensure all borders are sharp and pixelated */
+* {
+  box-sizing: border-box;
+  border-radius: 0 !important;
+}
+
+/* Pixel Art Typography */
+.pixel-title {
+  font-family: "Press Start 2P", "VT323", monospace;
+  font-size: 2rem;
+  color: var(--pixel-primary);
+  text-shadow: 4px 0 var(--pixel-black), -4px 0 var(--pixel-black),
+    0 4px var(--pixel-black), 0 -4px var(--pixel-black),
+    4px 4px var(--pixel-black);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.pixel-subtitle {
+  font-family: "VT323", monospace;
+  font-size: 1.5rem;
+  color: var(--pixel-accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+/* Pixel Art Buttons with Special Effects */
+.btn-pixel {
+  font-family: "VT323", monospace;
+  background: var(--pixel-primary);
+  border: var(--pixel-border-width) solid var(--pixel-black);
+  color: var(--pixel-black);
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: none;
+  box-shadow: var(--pixel-shadow-md) var(--pixel-black),
+    var(--pixel-shadow-lg) var(--pixel-gray);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-pixel:hover {
+  background: var(--pixel-accent);
+  transform: translate(2px, 2px);
+  box-shadow: var(--pixel-shadow-sm) var(--pixel-black),
+    var(--pixel-shadow-md) var(--pixel-gray);
+}
+
+.btn-pixel:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.btn-pixel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.btn-pixel:hover::after {
+  left: 100%;
+}
+
+/* Pixel Art Input Styling */
+.input-pixel {
+  font-family: "VT323", monospace;
+  background: var(--pixel-black);
+  border: var(--pixel-border-width) solid var(--pixel-gray);
+  color: var(--pixel-white);
+  padding: 12px 16px;
+  font-size: 1.1rem;
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.5),
+    inset -2px -2px 0 rgba(255, 255, 255, 0.1);
+}
+
+.input-pixel:focus {
+  border-color: var(--pixel-primary);
+  box-shadow: 0 0 0 4px var(--pixel-primary), inset 2px 2px 0 rgba(0, 0, 0, 0.5);
+  outline: none;
+}
+
+/* Pixel Art Card with Scanlines */
+.card-pixel {
+  background: var(--pixel-dark-blue);
+  border: var(--pixel-border-width) solid var(--pixel-primary);
+  box-shadow: var(--pixel-shadow-md) var(--pixel-black),
+    var(--pixel-shadow-lg) var(--pixel-gray);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-pixel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 255, 0, 0.05) 2px,
+    rgba(0, 255, 0, 0.05) 4px
+  );
+  pointer-events: none;
+}
+
+/* Pixel Art Progress Bar */
+.progress-pixel {
+  background: var(--pixel-black);
+  border: 2px solid var(--pixel-gray);
+  height: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-pixel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(255, 255, 255, 0.1) 2px,
+    rgba(255, 255, 255, 0.1) 4px
+  );
+  pointer-events: none;
+}
+
+.progress-bar-pixel {
+  background: var(--pixel-primary);
+  height: 100%;
+  border-right: 2px solid var(--pixel-black);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Pixel Art Table */
+.table-pixel {
+  font-family: "VT323", monospace;
+  border: var(--pixel-border-width) solid var(--pixel-primary);
+  background: var(--pixel-black);
+}
+
+.table-pixel th {
+  background: var(--pixel-primary);
+  color: var(--pixel-black);
+  border: 2px solid var(--pixel-black);
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 12px;
+}
+
+.table-pixel td {
+  border: 1px solid var(--pixel-gray);
+  color: var(--pixel-white);
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.table-pixel tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.table-pixel tr:hover {
+  background: var(--pixel-dark-blue);
+}
+
+/* Pixel Art Modal */
+.modal-pixel {
+  background: var(--pixel-dark-blue);
+  border: var(--pixel-border-width) solid var(--pixel-primary);
+  box-shadow: var(--pixel-shadow-lg) var(--pixel-black),
+    var(--pixel-shadow-xl) var(--pixel-gray);
+}
+
+.modal-pixel .modal-header {
+  background: var(--pixel-primary);
+  color: var(--pixel-black);
+  border-bottom: var(--pixel-border-width) solid var(--pixel-black);
+  font-family: "VT323", monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Pixel Art Animations */
+@keyframes pixel-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px var(--pixel-primary), 0 0 10px var(--pixel-primary),
+      0 0 15px var(--pixel-primary);
+  }
+  50% {
+    box-shadow: 0 0 10px var(--pixel-primary), 0 0 20px var(--pixel-primary),
+      0 0 30px var(--pixel-primary);
+  }
+}
+
+@keyframes pixel-pulse {
+  0%,
+  100% {
+    background: var(--pixel-primary);
+  }
+  50% {
+    background: var(--pixel-accent);
+  }
+}
+
+.pixel-glow {
+  animation: pixel-glow 2s infinite;
+}
+
+.pixel-pulse {
+  animation: pixel-pulse 1s infinite;
+}
+
+/* Retro CRT Effect */
+.crt-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.crt-effect::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 255, 0, 0.1) 2px,
+    rgba(0, 255, 0, 0.1) 4px
+  );
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Pixel Art Menu Items */
+.menu-pixel {
+  background: var(--pixel-black);
+  border: 2px solid var(--pixel-primary);
+  color: var(--pixel-white);
+  font-family: "VT323", monospace;
+  font-size: 1.1rem;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: none;
+  text-transform: uppercase;
+}
+
+.menu-pixel:hover {
+  background: var(--pixel-primary);
+  color: var(--pixel-black);
+  border-color: var(--pixel-accent);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--pixel-black);
+  border: 2px solid var(--pixel-gray);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--pixel-primary);
+  border: 2px solid var(--pixel-black);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--pixel-accent);
+}
+
+/* Override Bootstrap rounded elements */
+.rounded,
+.rounded-1,
+.rounded-2,
+.rounded-3,
+.rounded-4,
+.rounded-5,
+.rounded-top,
+.rounded-end,
+.rounded-bottom,
+.rounded-start,
+.rounded-circle,
+.rounded-pill {
+  border-radius: 0 !important;
+}
+
+/* Override transition effects for true pixel art feel */
+.btn,
+.card,
+.nav-link,
+.form-control,
+.alert {
+  transition: none !important;
+}

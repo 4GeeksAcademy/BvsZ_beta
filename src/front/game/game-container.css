@@ -4,9 +4,35 @@
   min-width: 768px;
   min-height: 576px;
   overflow: hidden;
+  border: 8px solid var(--pixel-primary);
+  background: var(--pixel-black);
+  box-shadow: 8px 8px 0 var(--pixel-black), 16px 16px 0 var(--pixel-gray);
+  position: relative;
 }
+
+#game-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 1px,
+    rgba(0, 255, 0, 0.1) 1px,
+    rgba(0, 255, 0, 0.1) 2px
+  );
+  pointer-events: none;
+  z-index: 1000;
+}
+
 #game-container canvas {
   width: 100% !important;
   height: auto !important;
   margin: 0 auto;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }

@@ -222,7 +222,7 @@ const Login: React.FC = () => {
                 <h4 className="mb-0 text-center">
                   🧟‍♂️{" "}
                   {isRegister
-                    ? "Join the Fight Against Zombies"
+                    ? "Join the Fight Against <span className='text-zombies'>Zombies</span>"
                     : "Enter the Battle"}
                 </h4>
               </Card.Header>

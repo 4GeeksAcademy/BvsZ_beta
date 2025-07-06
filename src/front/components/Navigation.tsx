@@ -46,7 +46,9 @@ const Navigation: React.FC = () => {
     <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
       <Container>
         <Link to="/" className="navbar-brand">
-          🧟‍♂️ Bootstrap vs Zombies
+          🧟‍♂️ <span className="text-bootstrap">Bootstrap</span>{" "}
+          <span className="text-vs">vs</span>{" "}
+          <span className="text-zombies">Zombies</span>
         </Link>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -81,9 +83,7 @@ const Navigation: React.FC = () => {
             {user ? (
               <>
                 <Nav.Item className="d-flex align-items-center me-3">
-                  <span className="text-light">
-                    Welcome, {user.username}!
-                  </span>
+                  <span className="text-light">Welcome, {user.username}!</span>
                 </Nav.Item>
                 <Button
                   variant="outline-light"
