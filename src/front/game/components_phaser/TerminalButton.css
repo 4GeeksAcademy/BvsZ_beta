@@ -1,14 +1,13 @@
 .terminal-btn {
   background: var(--pixel-black);
   color: var(--pixel-primary);
-  border: 4px solid var(--pixel-primary);
   font-family: "VT323", monospace;
   font-size: 1.2rem;
   font-weight: 700;
   padding: 12px 24px;
+  border: none;
   border-radius: 0;
   margin: 8px;
-  box-shadow: 4px 4px 0 var(--pixel-gray), 8px 8px 0 var(--pixel-dark-blue);
   transition: none;
   cursor: pointer;
   text-transform: uppercase;
@@ -19,12 +18,9 @@
 .terminal-btn:hover {
   background: var(--pixel-primary);
   color: var(--pixel-black);
-  border: 4px solid var(--pixel-black);
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--pixel-gray), 4px 4px 0 var(--pixel-dark-blue);
 }
 
 .terminal-btn:active {
-  transform: translate(4px, 4px);
-  box-shadow: none;
+  background: var(--pixel-primary);
+  color: var(--pixel-black);
 }

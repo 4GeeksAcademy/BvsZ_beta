@@ -359,6 +359,33 @@ body {
   letter-spacing: 1px;
 }
 
+/* Hero Section Container with Pixel Art Frame */
+.hero-section {
+  background: var(--pixel-dark-blue);
+  border: 8px solid var(--pixel-primary);
+  box-shadow: 8px 8px 0 var(--pixel-black), 16px 16px 0 var(--pixel-gray);
+  padding: 1rem 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 255, 0, 0.1) 2px,
+    rgba(0, 255, 0, 0.1) 4px
+  );
+  pointer-events: none;
+}
+
 /* Pixel Art Table Styling for Leaderboard */
 .table-dark {
   background: var(--pixel-black);

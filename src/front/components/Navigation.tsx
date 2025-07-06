@@ -43,12 +43,14 @@ const Navigation: React.FC = () => {
   };
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
-      <Container>
+    <Navbar  bg="dark" variant="dark" expand="lg"  className="sticky-top mb-4">
+      <Container >
         <Link to="/" className="navbar-brand">
-          🧟‍♂️ <span className="text-bootstrap">Bootstrap</span>{" "}
-          <span className="text-vs">vs</span>{" "}
-          <span className="text-zombies">Zombies</span>
+          🧟‍♂️ <span className="text-bootstrap">B</span>
+          {""}
+          <span className="text-vs">vs</span>
+          {""}
+          <span className="text-zombies">Z</span>
         </Link>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

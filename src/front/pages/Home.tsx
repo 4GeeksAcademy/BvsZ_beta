@@ -37,11 +37,11 @@ const Home: React.FC = () => {
       <Navigation />
       <Container>
         {/* Hero Section - Introduction to the Game */}
-        <Row className="justify-content-center text-center mb-5">
-          <Col lg={8}>
+        <Row className="justify-content-center text-center mb-1">
+          <Col lg={12} className="hero-section">
             {/* Main heading using Bootstrap display utility */}
             <h1 className="display-4 fw-bold mb-4">
-              🧟‍♂️ <span className="text-bootstrap">Bootstrap</span>{" "}
+              <span className="text-bootstrap">Bootstrap</span>{" "}
               <span className="text-vs">vs</span>{" "}
               <span className="text-zombies">Zombies</span>
             </h1>
@@ -61,9 +61,9 @@ const Home: React.FC = () => {
         </Row>
 
         {/* Feature Cards Section */}
-        <Row className="justify-content-center mb-5">
+        <Row className="justify-content-center mb-1">
           {/* Game Mode Card */}
-          <Col md={4} className="mb-3">
+          <Col md={6} className="mb-3">
             <Card className="h-100 shadow-sm border-success">
               <Card.Body className="text-center d-flex flex-column">
                 <Card.Title className="text-success">🎮 Battle Mode</Card.Title>
@@ -83,7 +83,7 @@ const Home: React.FC = () => {
           </Col>
 
           {/* Leaderboard Card */}
-          <Col md={4} className="mb-3">
+          <Col md={6} className="mb-1">
             <Card className="h-100 shadow-sm border-info">
               <Card.Body className="text-center d-flex flex-column">
                 <Card.Title className="text-info">🏆 Hall of Fame</Card.Title>
@@ -105,7 +105,7 @@ const Home: React.FC = () => {
 
         {/* How to Play Section */}
         <Row className="justify-content-center">
-          <Col lg={10}>
+          <Col lg={12}>
             <Card className="shadow">
               <Card.Header className="bg-dark text-white">
                 <h3 className="mb-0">

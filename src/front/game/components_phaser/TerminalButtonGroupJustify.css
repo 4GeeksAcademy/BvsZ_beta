@@ -1,9 +1,6 @@
 .row {
   margin-top: 2em;
-  background: var(--pixel-dark-blue);
-  border: 2px solid var(--pixel-primary);
   padding: 16px;
-  box-shadow: 4px 4px 0 var(--pixel-black), 8px 8px 0 var(--pixel-gray);
 }
 
 .col-4 {
