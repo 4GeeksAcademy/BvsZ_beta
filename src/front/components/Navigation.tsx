@@ -43,9 +43,9 @@ const Navigation: React.FC = () => {
   };
 
   return (
-    <Navbar  bg="dark" variant="dark" expand="lg"  className="sticky-top mb-4">
+    <Navbar  bg="dark" variant="dark" expand="lg"  className="sticky-top mb-2">
       <Container >
-        <Link to="/" className="navbar-brand">
+        <Link to="/" className="navbar-brand p-0 m-0">
           🧟‍♂️ <span className="text-bootstrap">B</span>
           {""}
           <span className="text-vs">vs</span>

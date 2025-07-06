@@ -3,14 +3,14 @@
   color: var(--pixel-primary);
   font-family: "VT323", monospace;
   font-size: 1.2rem;
-  font-weight: 700;
-  padding: 12px 24px;
+  font-weight: 500;
+  padding: 4px 12px;
   border: none;
   border-radius: 0;
-  margin: 8px;
+  margin: 4px;
   transition: none;
   cursor: pointer;
-  text-transform: uppercase;
+  text-transform: lowercase;
   letter-spacing: 1px;
   position: relative;
 }

@@ -1,7 +1,8 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
 import StartGame from './main';
 import { EventBus } from './EventBus';
-import TerminalButtonGroup from './components_phaser/TerminalButtonGroupJustify';
+import Stats from './components_phaser/Stats';
+import TerminalButtonGroupJustify from './components_phaser/TerminalButtonGroupJustify';
 import './game-container.css';
 
 const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
@@ -49,12 +50,13 @@ const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
 
     return (
         <div className='container'>
-            <div className='row align-items-start no-wrap'>
-                <div className='col-8'>
+            <div className='row no-wrap'>
+                <div className='col-9'>
                     <div id="game-container"></div>
                 </div>
-                <div className='col-4'>
-                    <TerminalButtonGroup />
+                <div className='col-3'>                    
+                    <Stats/>
+                    <TerminalButtonGroupJustify />
                 </div>
             </div>
         </div>
