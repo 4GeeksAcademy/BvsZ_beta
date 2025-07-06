@@ -8,16 +8,14 @@ const Stats = () => {
     const nivel = 3;
 
     return (
-        <div className="stats-pixelart d-flex container">
-            <div className="stat-row">
+        <div className="stats-pixelart d-flex row container m-0">
+            <div className="stat-row col m-0 p-0">
                 <span className="stat-label">⏱️</span>
                 <span className="stat-value">{tiempoDeJuego}</span>
-            </div>
-            <div className="stat-row">
                 <span className="stat-label">🧟‍♂️</span>
                 <span className="stat-value">{zombiesMuertos}</span>
             </div>
-            <div className="stat-row">
+            <div className="stat-row col m-0 p-0">
                 <span className="stat-label">⭐</span>
                 <span className="stat-value">{nivel}</span>
             </div>

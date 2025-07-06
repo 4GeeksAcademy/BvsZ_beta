@@ -1,6 +1,6 @@
 import React from 'react';
 import TerminalButton from './TerminalButton';
-import './TerminalButtonGroupJustify.css';
+import './TerminalButtonGroup.css';
 
 const TerminalButtonGroupJustify = () => (
   <div className='container d-inline mt-4'>
