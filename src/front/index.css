@@ -311,16 +311,8 @@ body {
 
 /* Pixel Art Hero Section Styling */
 .display-4 {
-  background: var(--pixel-purple);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   font-weight: 800;
   font-family: "VT323", monospace;
-  text-shadow: 4px 0 var(--pixel-black), -4px 0 var(--pixel-black),
-    0 4px var(--pixel-black), 0 -4px var(--pixel-black),
-    4px 4px var(--pixel-black);
-  -webkit-text-fill-color: var(--pixel-purple);
   letter-spacing: 2px;
 }
 
@@ -591,6 +583,25 @@ strong {
   text-shadow: 2px 0 var(--pixel-black), -2px 0 var(--pixel-black),
     0 2px var(--pixel-black), 0 -2px var(--pixel-black),
     2px 2px var(--pixel-black);
+}
+
+/* Mayor especificidad para que funcionen dentro de cards */
+.card-body .text-bootstrap,
+p .text-bootstrap,
+span .text-bootstrap {
+  color: var(--pixel-purple) !important;
+}
+
+.card-body .text-vs,
+p .text-vs,
+span .text-vs {
+  color: var(--pixel-danger) !important;
+}
+
+.card-body .text-zombies,
+p .text-zombies,
+span .text-zombies {
+  color: var(--pixel-primary) !important;
 }
 
 /* Ejemplo de uso en HTML/JSX:
