@@ -70,11 +70,6 @@ const Navigation: React.FC = () => {
                 <Link to="/profile" className="nav-link">
                   Profile
                 </Link>
-                {user.email === "sebasmiramontes@gmail.com" && (
-                  <Link to="/backend-test" className="nav-link">
-                    Backend Test
-                  </Link>
-                )}
               </>
             )}
           </Nav>
@@ -83,7 +78,7 @@ const Navigation: React.FC = () => {
             {user ? (
               <>
                 <Nav.Item className="d-flex align-items-center me-3">
-                  <span className="text-light">Welcome, {user.username}!</span>
+                  <span className="text-light">{user.username}</span>
                 </Nav.Item>
                 <Button
                   variant="outline-light"

@@ -121,26 +121,22 @@ const Profile: React.FC = () => {
 
             <Card className="mb-4">
               <Card.Header>
-                <h5>Profile Information</h5>
+                <h3>Profile Information</h3>
               </Card.Header>
               <Card.Body>
                 {profile ? (
                   <div>
                     <Row>
                       <Col md={6}>
-                        <p>
-                          <strong>Email:</strong> {profile.email}
-                        </p>
-                        <p>
-                          <strong>User ID:</strong> {profile.id}
-                        </p>
+                        <p>Email: {profile.email}</p>
                       </Col>
                       <Col md={6}>
-                        <div>
-                          <p>
-                            <strong>Warrior Name:</strong> {profile.username}
-                          </p>
-                        </div>
+                        <p>Warrior Name: {profile.username}</p>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md={12}>
+                        <p>User ID: {profile.id}</p>
                       </Col>
                     </Row>
                   </div>
@@ -152,7 +148,7 @@ const Profile: React.FC = () => {
 
             <Card className="mb-4">
               <Card.Header>
-                <h5>🎮 Game Statistics</h5>
+                <h3>🎮 Game Statistics</h3>
               </Card.Header>
               <Card.Body>
                 {gameStats ? (
@@ -208,7 +204,7 @@ const Profile: React.FC = () => {
 
             <Card>
               <Card.Header>
-                <h5>🔗 Quick Actions</h5>
+                <h3>🔗 Quick Actions</h3>
               </Card.Header>
               <Card.Body>
                 <div className="d-flex gap-2 flex-wrap">
