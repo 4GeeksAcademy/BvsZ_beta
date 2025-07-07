@@ -11,14 +11,29 @@ import { levels } from "../config/levels";
 export class Game extends Phaser.Scene {
   constructor() {
     super({ key: "Game" });
+    // Variables para estadísticas del juego
+    this.gameStats = {
+      zombiesKilled: 0,
+      gameStartTime: null,
+    };
   }
 
   create() {
     // Personalizar el cursor para toda la escena de juego
     this.input.setDefaultCursor("crosshair");
 
+    // Inicializar estadísticas del juego
+    this.gameStats.zombiesKilled = 0;
+    this.gameStats.gameStartTime = Date.now();
+
     // Emitir evento de inicio de juego
     EventBus.emit("game:start");
+
+    // Escuchar eventos de zombies eliminados para actualizar estadísticas
+    this.zombieKilledHandler = () => {
+      this.gameStats.zombiesKilled++;
+    };
+    EventBus.on("zombie:killed", this.zombieKilledHandler);
 
     this.level = levels[0];
 
@@ -208,6 +223,12 @@ export class Game extends Phaser.Scene {
         this.reorganizeTurretsHandler
       );
       this.reorganizeTurretsHandler = null;
+    }
+
+    // Limpiar listener de zombies eliminados
+    if (this.zombieKilledHandler) {
+      EventBus.removeListener("zombie:killed", this.zombieKilledHandler);
+      this.zombieKilledHandler = null;
     }
 
     // Detener música de fondo
