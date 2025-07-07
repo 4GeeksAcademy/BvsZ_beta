@@ -60,10 +60,14 @@ export class Game extends Phaser.Scene {
     this.effects = new EffectsObjects(this);
     this.effects.resetEmitters();
 
+    // Limpiar cualquier listener previo y configurar el nuevo
+    EventBus.removeAllListeners("reorganize-turrets");
+
     // Escuchar evento para reorganizar torretas
-    EventBus.on("reorganize-turrets", (data) => {
+    this.reorganizeTurretsHandler = (data) => {
       this.turret.reorganizeTurrets(data.justifyClass);
-    });
+    };
+    EventBus.on("reorganize-turrets", this.reorganizeTurretsHandler);
 
     this.bgMusic = this.sound.add("closeEncounter4", {
       loop: true,
@@ -189,7 +193,13 @@ export class Game extends Phaser.Scene {
     EventBus.emit("game:stop");
 
     // Limpiar listeners de eventos cuando la escena se destruya
-    EventBus.removeListener("reorganize-turrets");
+    if (this.reorganizeTurretsHandler) {
+      EventBus.removeListener(
+        "reorganize-turrets",
+        this.reorganizeTurretsHandler
+      );
+      this.reorganizeTurretsHandler = null;
+    }
 
     // Detener música de fondo
     if (this.bgMusic) {
