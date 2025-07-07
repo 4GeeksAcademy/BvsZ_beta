@@ -138,7 +138,7 @@ export class Game extends Phaser.Scene {
 
     // --- DISPARO AUTOMÁTICO DE TORRETAS ---
     this.time.addEvent({
-      delay: 2000,
+      delay: 1000,
       callback: () => {
         this.turret.turrets.forEach((turret) => {
           const turretCol = turret.getData("col");
@@ -175,10 +175,10 @@ export class Game extends Phaser.Scene {
 
     // --- GENERACIÓN AUTOMÁTICA DE ZOMBIES ---
     this.time.addEvent({
-      delay: 3000,
+      delay: 500,
       callback: () => {
         if (
-          this.zombies.getChildren().length < 10 &&
+          this.zombies.getChildren().length < 7 &&
           this.server.servers.length > 0
         ) {
           const newZombie = this.zombieManager.createZombie(

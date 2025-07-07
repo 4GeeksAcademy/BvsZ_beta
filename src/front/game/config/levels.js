@@ -9,9 +9,9 @@ export const levels = [
     gridCols: 12,
     serverCols: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     serverHealth: 50,
-    zombieVelocityY: -500, //Negativo
-    zombieHealth: 30,
-    zombieDamage: 50,
+    zombieVelocityY: -70, //Negativo
+    zombieHealth: 20,
+    zombieDamage: 10,
     bulletVelocityY: 100,
     bulletDamage: 10
     // Puedes agregar más parámetros aquí
