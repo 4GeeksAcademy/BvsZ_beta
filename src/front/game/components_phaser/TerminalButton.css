@@ -8,7 +8,7 @@
   border: none;
   border-radius: 0;
   margin: 4px;
-  transition: none;  
+  transition: none;
   text-transform: lowercase;
   letter-spacing: 1px;
   position: relative;
@@ -23,4 +23,10 @@
 .terminal-btn:active {
   background: var(--pixel-primary);
   color: var(--pixel-black);
+}
+
+.terminal-btn-selected {
+  background: var(--pixel-primary) !important;
+  color: var(--pixel-black) !important;
+  border: 2px solid var(--pixel-primary);
 }

@@ -54,6 +54,11 @@ export class Game extends Phaser.Scene {
     this.effects = new EffectsObjects(this);
     this.effects.resetEmitters();
 
+    // Escuchar evento para reorganizar torretas
+    EventBus.on("reorganize-turrets", (data) => {
+      this.turret.reorganizeTurrets(data.justifyClass);
+    });
+
     this.bgMusic = this.sound.add("closeEncounter4", {
       loop: true,
       volume: 0.8, // Ajusta el volumen entre 0 y 1
@@ -169,5 +174,15 @@ export class Game extends Phaser.Scene {
         }
       }
     });
+  }
+
+  shutdown() {
+    // Limpiar listeners de eventos cuando la escena se destruya
+    EventBus.removeListener("reorganize-turrets");
+
+    // Detener música de fondo
+    if (this.bgMusic) {
+      this.bgMusic.stop();
+    }
   }
 }
