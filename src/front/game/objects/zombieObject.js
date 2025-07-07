@@ -109,7 +109,7 @@ export class ZombieObject {
     bar.fillRect(40 * percent, 0, 40 * (1 - percent), 5);
   }
 
-  receiveDamage(scene, zombie, amount) {
+  receiveDamage(scene, zombie, amount, countAsKill = true) {
     let health = Number(zombie.getData("health"));
     const maxHealth = Number(zombie.getData("maxHealth"));
     health -= amount;
@@ -121,13 +121,13 @@ export class ZombieObject {
       scene.effects.bloodEmitter(zombie, 0, -10, 10);
     }
     if (health <= 0) {
-      this.destroyZombie(zombie);
+      this.destroyZombie(zombie, countAsKill);
       scene.sound.play("zombieDead1");
       scene.effects.bloodEmitter(zombie, 0, -10, 100);
     }
   }
 
-  destroyZombie(zombie) {
+  destroyZombie(zombie, countAsKill = true) {
     zombie.healthBar.destroy();
     zombie.healthBar = null;
     // Eliminar de la lista de actualizables
@@ -144,7 +144,9 @@ export class ZombieObject {
       zombie.destroy();
     }
 
-    // Emitir evento de zombie eliminado para actualizar stats
-    EventBus.emit("zombie:killed");
+    // Emitir evento de zombie eliminado solo si debe contar como kill
+    if (countAsKill) {
+      EventBus.emit("zombie:killed");
+    }
   }
 }

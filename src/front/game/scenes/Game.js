@@ -139,7 +139,7 @@ export class Game extends Phaser.Scene {
           server,
           Number(zombie.getData("damage"))
         );
-        this.zombieManager.destroyZombie(zombie);
+        this.zombieManager.destroyZombie(zombie, false); // No contar como kill
         this.sound.play("zombieDead2");
       },
       null,
@@ -157,7 +157,7 @@ export class Game extends Phaser.Scene {
           turret,
           Number(zombie.getData("damage"))
         );
-        this.zombieManager.destroyZombie(zombie);
+        this.zombieManager.destroyZombie(zombie, false); // No contar como kill
         this.sound.play("zombieDead2");
       },
       null,
@@ -258,11 +258,11 @@ export class Game extends Phaser.Scene {
         // Los zombies se mueven hacia arriba (velocidad Y negativa)
         // Si el zombie sale por arriba de la pantalla, destruirlo
         if (zombie.y < -50) {
-          this.zombieManager.destroyZombie(zombie);
+          this.zombieManager.destroyZombie(zombie, false); // No contar como kill
         }
         // Si el zombie sale por abajo de la pantalla (por si hay algún error), destruirlo
         else if (zombie.y > this.sys.game.config.height + 100) {
-          this.zombieManager.destroyZombie(zombie);
+          this.zombieManager.destroyZombie(zombie, false); // No contar como kill
         }
       }
     });
