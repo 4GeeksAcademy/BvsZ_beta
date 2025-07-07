@@ -16,6 +16,10 @@ export class Game extends Phaser.Scene {
       zombiesKilled: 0,
       gameStartTime: null,
     };
+    // Variables para manejo de niveles
+    this.currentLevelIndex = 0;
+    this.zombiesSpawned = 0;
+    this.levelCompleted = false;
   }
 
   create() {
@@ -26,19 +30,25 @@ export class Game extends Phaser.Scene {
     this.gameStats.zombiesKilled = 0;
     this.gameStats.gameStartTime = Date.now();
 
+    // Inicializar variables de nivel
+    this.currentLevelIndex = 0;
+    this.zombiesSpawned = 0;
+    this.levelCompleted = false;
+
     // Emitir evento de inicio de juego
     EventBus.emit("game:start");
 
     // Escuchar eventos de zombies eliminados para actualizar estadísticas
     this.zombieKilledHandler = () => {
       this.gameStats.zombiesKilled++;
+      this.checkLevelCompletion();
     };
     EventBus.on("zombie:killed", this.zombieKilledHandler);
 
-    this.level = levels[0];
+    this.level = levels[this.currentLevelIndex];
 
     // Emitir evento de nivel inicial
-    EventBus.emit("level:change", 1);
+    EventBus.emit("level:change", this.currentLevelIndex + 1);
 
     this.cameras.main.setBackgroundColor("#1c1f2b");
     this.physics.resume();
@@ -178,16 +188,23 @@ export class Game extends Phaser.Scene {
       delay: 500,
       callback: () => {
         if (
-          this.zombies.getChildren().length < 7 &&
-          this.server.servers.length > 0
+          this.zombies.getChildren().length < this.level.maxZombiesOnScreen &&
+          this.server.servers.length > 0 &&
+          this.zombiesSpawned < this.level.zombiesPerLevel &&
+          !this.levelCompleted
         ) {
           const newZombie = this.zombieManager.createZombie(
             this.level.zombieVelocityY,
             this.level.zombieHealth,
             this.level.zombieDamage
           );
-          // Si no se pudo crear el zombie (no hay servidores), no hacer nada
-          if (!newZombie) {
+          // Si se pudo crear el zombie, incrementar contador
+          if (newZombie) {
+            this.zombiesSpawned++;
+            console.log(
+              `Zombies spawned: ${this.zombiesSpawned}/${this.level.zombiesPerLevel}`
+            );
+          } else {
             console.log(
               "No se puede crear zombie: no hay servidores disponibles"
             );
@@ -262,6 +279,82 @@ export class Game extends Phaser.Scene {
         }
       }
     });
+
+    // Verificar si el nivel se ha completado
+    this.checkLevelCompletion();
+  }
+
+  // Verificar si el nivel se ha completado
+  checkLevelCompletion() {
+    // Verificar si todos los zombies han sido spawneados y eliminados
+    if (
+      this.zombiesSpawned >= this.level.zombiesPerLevel &&
+      this.zombies.getChildren().length === 0 &&
+      !this.levelCompleted
+    ) {
+      this.levelCompleted = true;
+      console.log(`¡Nivel ${this.currentLevelIndex + 1} completado!`);
+
+      // Esperar un poco antes de cambiar al siguiente nivel
+      this.time.delayedCall(2000, () => {
+        this.nextLevel();
+      });
+    }
+  }
+
+  // Avanzar al siguiente nivel
+  nextLevel() {
+    if (this.currentLevelIndex < levels.length - 1) {
+      this.currentLevelIndex++;
+      this.zombiesSpawned = 0;
+      this.levelCompleted = false;
+
+      // Actualizar configuración del nivel
+      this.level = levels[this.currentLevelIndex];
+
+      // Emitir evento de cambio de nivel
+      EventBus.emit("level:change", this.currentLevelIndex + 1);
+
+      console.log(`Iniciando nivel ${this.currentLevelIndex + 1}`);
+
+      // Recrear elementos del juego con nuevos parámetros
+      this.recreateGameElements();
+    } else {
+      // Todos los niveles completados - victoria
+      console.log("¡Todos los niveles completados! ¡Victoria!");
+      EventBus.emit("game:victory");
+    }
+  }
+
+  // Recrear elementos del juego para el nuevo nivel
+  recreateGameElements() {
+    // Limpiar zombies existentes
+    this.zombies.clear(true, true);
+
+    // Recrear servidores con nueva salud
+    this.server.servers.forEach((server) => {
+      server.setData("health", this.level.serverHealth);
+      server.setData("maxHealth", this.level.serverHealth);
+      // Actualizar visualmente la barra de vida si existe
+      if (server.healthBar) {
+        server.healthBar.setScale(1, 1);
+      }
+    });
+
+    // Recrear torretas con nueva salud
+    this.turret.turrets.forEach((turret) => {
+      turret.setData("health", this.level.turretHealth);
+      turret.setData("maxHealth", this.level.turretHealth);
+      // Actualizar visualmente la barra de vida si existe
+      if (turret.healthBar) {
+        turret.healthBar.setScale(1, 1);
+      }
+    });
+
+    // Actualizar el zombie manager con los nuevos parámetros
+    this.zombieManager.zombieVelocityY = this.level.zombieVelocityY;
+    this.zombieManager.zombieHealth = this.level.zombieHealth;
+    this.zombieManager.zombieDamage = this.level.zombieDamage;
   }
 
   shutdown() {

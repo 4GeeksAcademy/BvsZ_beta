@@ -13,15 +13,23 @@ export const levels = [
     zombieHealth: 20,
     zombieDamage: 10,
     bulletVelocityY: 100,
-    bulletDamage: 10
-    // Puedes agregar más parámetros aquí
+    bulletDamage: 10,
+    zombiesPerLevel: 10,
+    maxZombiesOnScreen: 5
   },
-  // Ejemplo de otro nivel
-  // {
-  //   turretHealth: 120,
-  //   gridCols: 10,
-  //   turretCols: [1,2,3,4,5,6,7,8,9,10],
-  //   serverHealth: 150,
-  //   zombieVelocityY: 60,
-  // },
+  {
+    turretHealth: 50,
+    turretsCount: 4,
+    turretsCols: [5, 6, 7, 8],
+    gridCols: 12,
+    serverCols: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    serverHealth: 50,
+    zombieVelocityY: -80, //Negativo
+    zombieHealth: 30,
+    zombieDamage: 10,
+    bulletVelocityY: 110,
+    bulletDamage: 10,
+    zombiesPerLevel: 20,
+    maxZombiesOnScreen: 10
+  },
 ];
