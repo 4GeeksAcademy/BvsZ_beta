@@ -21,12 +21,40 @@ const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
         }
 
         return () => {
+            console.log("PhaserGame: Iniciando cleanup...");
 
+            // Limpiar EventBus
+            EventBus.removeAllListeners();
+
+            // Destruir el juego de Phaser
             if (game.current) {
-                game.current.destroy(true);
-                game.current = undefined;
+                console.log("PhaserGame: Destruyendo instancia de Phaser...");
+                try {
+                    // Parar todos los sonidos antes de destruir
+                    if (game.current.sound) {
+                        game.current.sound.stopAll();
+                    }
+
+                    // Destruir el juego
+                    game.current.destroy(true);
+                    game.current = undefined;
+                    console.log("PhaserGame: Instancia de Phaser destruida correctamente");
+                } catch (error) {
+                    console.error("Error al destruir Phaser:", error);
+                    game.current = undefined;
+                }
             }
 
+            // Limpiar la referencia
+            if (ref && ref.current) {
+                ref.current = null;
+            }
+
+            // Limpiar el contenedor DOM
+            const container = document.getElementById("game-container");
+            if (container) {
+                container.innerHTML = "";
+            }
         }
     }, [ref]);
 
@@ -55,8 +83,8 @@ const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
                 <div className='col-9'>
                     <div id="game-container"></div>
                 </div>
-                <div className='col-3'>                    
-                    <Stats/>
+                <div className='col-3'>
+                    <Stats />
                     <TerminalButtonGroupJustify />
                     <TerminalButtonGroupAlign />
                 </div>

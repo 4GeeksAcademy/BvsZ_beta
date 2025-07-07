@@ -56,6 +56,13 @@ export class Game extends Phaser.Scene {
     };
     EventBus.on("zombie:killed", this.zombieKilledHandler);
 
+    // Escuchar evento de cleanup para limpiar cuando se sale del juego
+    this.gameCleanupHandler = () => {
+      console.log("Game scene: Recibido evento de cleanup");
+      this.forceCleanup();
+    };
+    EventBus.on("game:cleanup", this.gameCleanupHandler);
+
     this.level = levels[this.currentLevelIndex];
 
     // Emitir evento de nivel inicial
@@ -201,7 +208,7 @@ export class Game extends Phaser.Scene {
         if (
           this.zombies.getChildren().length < this.level.maxZombiesOnScreen &&
           this.server.servers.length > 0 &&
-          this.zombiesSpawned < (this.level.zombiesPerLevel -1) &&
+          this.zombiesSpawned < this.level.zombiesPerLevel - 1 &&
           !this.levelCompleted
         ) {
           const newZombie = this.zombieManager.createZombie(
@@ -285,7 +292,7 @@ export class Game extends Phaser.Scene {
 
     // Verificar si todos los zombies han sido spawneados y eliminados
     if (
-      this.zombiesSpawned === (this.level.zombiesPerLevel -1) &&
+      this.zombiesSpawned === this.level.zombiesPerLevel - 1 &&
       this.zombies.getChildren().length === 0 &&
       !this.levelCompleted
     ) {
@@ -366,19 +373,13 @@ export class Game extends Phaser.Scene {
   }
 
   shutdown() {
+    console.log("Game scene: Ejecutando shutdown...");
+
     // Emitir evento de parar el juego
     EventBus.emit("game:stop");
 
-    // Limpiar todos los listeners
-    this.cleanupEventListeners();
-
-    // Detener música de fondo
-    if (this.bgMusic) {
-      this.bgMusic.stop();
-    }
-
-    // Limpiar UIs de nivel superado
-    this.hideLevelCompletedUI();
+    // Ejecutar limpieza forzada
+    this.forceCleanup();
   }
 
   // Método para limpiar listeners de eventos
@@ -397,6 +398,62 @@ export class Game extends Phaser.Scene {
       EventBus.removeListener("zombie:killed", this.zombieKilledHandler);
       this.zombieKilledHandler = null;
     }
+
+    // Limpiar listener de cleanup
+    if (this.gameCleanupHandler) {
+      EventBus.removeListener("game:cleanup", this.gameCleanupHandler);
+      this.gameCleanupHandler = null;
+    }
+  }
+
+  // Método para forzar limpieza completa cuando se sale del juego
+  forceCleanup() {
+    console.log("Game scene: Iniciando limpieza forzada...");
+
+    // Detener música de fondo inmediatamente
+    if (this.bgMusic && this.bgMusic.isPlaying) {
+      this.bgMusic.stop();
+      this.bgMusic.destroy();
+      this.bgMusic = null;
+    }
+
+    // Detener todos los sonidos
+    if (this.sound) {
+      this.sound.stopAll();
+    }
+
+    // Limpiar todos los grupos de physics
+    if (this.zombies) {
+      this.zombies.clear(true, true);
+    }
+
+    // Limpiar balas
+    if (this.bulletManager && this.bulletManager.bullets) {
+      this.bulletManager.bullets.clear(true, true);
+    }
+
+    // Limpiar efectos
+    if (this.effects) {
+      this.effects.resetEmitters();
+    }
+
+    // Detener todos los timers
+    if (this.time) {
+      this.time.removeAllEvents();
+    }
+
+    // Limpiar UIs
+    this.hideLevelCompletedUI();
+
+    // Limpiar listeners
+    this.cleanupEventListeners();
+
+    // Pausar physics para evitar errores
+    if (this.physics) {
+      this.physics.pause();
+    }
+
+    console.log("Game scene: Limpieza forzada completada");
   }
 
   // Crear UI de nivel superado

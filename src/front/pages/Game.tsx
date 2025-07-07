@@ -63,6 +63,25 @@ const Game: React.FC = () => {
     };
 
     checkAuthAndLoadGame();
+
+    // Cleanup function que se ejecuta cuando el componente se desmonta
+    return () => {
+      // Limpiar EventBus y notificar a Phaser que se está saliendo del juego
+      import("../game/EventBus").then(({ EventBus }) => {
+        EventBus.emit("game:cleanup");
+        EventBus.removeAllListeners();
+      });
+
+      // Si hay una referencia al juego de Phaser, asegurarse de que se destruya
+      if (phaserRef.current?.game) {
+        console.log("Limpiando juego de Phaser...");
+        try {
+          phaserRef.current.game.destroy(true);
+        } catch (error) {
+          console.warn("Error al destruir el juego de Phaser:", error);
+        }
+      }
+    };
   }, [navigate]);
 
   if (loading) {
@@ -83,7 +102,7 @@ const Game: React.FC = () => {
   return (
     <>
       <Navigation />
-            <PhaserGame ref={phaserRef} />
+      <PhaserGame ref={phaserRef} />
     </>
   );
 };

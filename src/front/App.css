@@ -81,3 +81,30 @@
   padding: 10px;
   background: var(--pixel-black);
 }
+
+/* Navigation button styles */
+.nav-link.btn.btn-link {
+  color: rgba(255, 255, 255, 0.55) !important;
+  text-decoration: none !important;
+  transition: color 0.15s ease-in-out !important;
+  border: none !important;
+  background: none !important;
+  font-size: 1rem !important;
+  padding: 0.5rem 1rem !important;
+  margin: 0 !important;
+}
+
+.nav-link.btn.btn-link:hover,
+.nav-link.btn.btn-link:focus {
+  color: rgba(255, 255, 255, 0.75) !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.nav-link.btn.btn-link:active {
+  color: rgba(255, 255, 255, 1) !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}

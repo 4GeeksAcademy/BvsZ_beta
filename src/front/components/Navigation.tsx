@@ -15,6 +15,12 @@ const Navigation: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Función para manejar navegación y cleanup
+  const handleNavigation = (path: string) => {
+    console.log(`Navegando de ${window.location.pathname} a ${path}`);
+    navigate(path);
+  };
+
   useEffect(() => {
     const loadUserData = async () => {
       if (isAuthenticated()) {
@@ -57,22 +63,38 @@ const Navigation: React.FC = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
-            <Link to="/" className="nav-link">
+            <button
+              type="button"
+              className="nav-link btn btn-link p-0"
+              onClick={() => handleNavigation("/")}
+            >
               Home
-            </Link>
+            </button>
             {user && (
-              <Link to="/game" className="nav-link">
+              <button
+                type="button"
+                className="nav-link btn btn-link p-0"
+                onClick={() => handleNavigation("/game")}
+              >
                 Game
-              </Link>
+              </button>
             )}
-            <Link to="/leaderboard" className="nav-link">
+            <button
+              type="button"
+              className="nav-link btn btn-link p-0"
+              onClick={() => handleNavigation("/leaderboard")}
+            >
               Leaderboard
-            </Link>
+            </button>
             {user && (
               <>
-                <Link to="/profile" className="nav-link">
+                <button
+                  type="button"
+                  className="nav-link btn btn-link p-0"
+                  onClick={() => handleNavigation("/profile")}
+                >
                   Profile
-                </Link>
+                </button>
               </>
             )}
           </Nav>
