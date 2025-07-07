@@ -45,8 +45,8 @@ export class Game extends Phaser.Scene {
     this.turret = new TurretObject(
       this,
       this.level.turretHealth,
-      this.level.gridCols,
-      this.level.serverCols
+      this.level.turretsCount,
+      this.level.turretsCols
     );
     this.turret.createTurrets();
 

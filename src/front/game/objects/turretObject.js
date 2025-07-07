@@ -1,6 +1,6 @@
 // Clase para crear y gestionar las torretas
 export class TurretObject {
-    constructor(scene, health = 100, turretCount = 12, turretColumns = null) {
+    constructor(scene, health, turretCount, turretColumns) {
         this.scene = scene;
         this.health = health;
         this.turretCount = turretCount;
