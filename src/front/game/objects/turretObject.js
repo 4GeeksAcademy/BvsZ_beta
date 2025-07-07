@@ -32,7 +32,7 @@ export class TurretObject {
       const bar = this.scene.add.graphics();
       bar.setDepth(3);
       this.drawHealthBar(bar, turret.getData("health"));
-      bar.x = turret.x + 30;
+      bar.x = turret.x + 25;
       bar.y = turret.y - 25;
       turret.healthBar = bar;
       this.turrets.push(turret);
