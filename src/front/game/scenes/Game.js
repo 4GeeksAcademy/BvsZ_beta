@@ -55,13 +55,22 @@ export class Game extends Phaser.Scene {
     this.server.createServers();
 
     this.zombies = this.physics.add.group();
+
+    // Limpiar cualquier zombie previo (por si quedan de sesiones anteriores)
+    this.zombies.clear(true, true);
+
     this.zombieManager = new ZombieObject(
       this,
       this.level.zombieVelocityY,
       this.level.zombieHealth,
       this.level.zombieDamage
     );
-    this.zombieManager.createZombie();
+    // Crear el primer zombie con los parámetros correctos
+    this.zombieManager.createZombie(
+      this.level.zombieVelocityY,
+      this.level.zombieHealth,
+      this.level.zombieDamage
+    );
 
     this.turret = new TurretObject(
       this,
@@ -199,6 +208,49 @@ export class Game extends Phaser.Scene {
         if (zombie.update) zombie.update();
       });
     }
+
+    // Debug: Verificar si hay zombies fuera de la pantalla visible
+    let zombiesOutOfBounds = 0;
+    this.zombies.children.iterate((zombie) => {
+      if (zombie && zombie.active) {
+        // Contar zombies que están fuera del área visible pero no completamente fuera
+        if (zombie.y < 0 || zombie.y > this.sys.game.config.height) {
+          zombiesOutOfBounds++;
+        }
+      }
+    });
+
+    // Log solo si hay zombies problemáticos
+    if (zombiesOutOfBounds > 0) {
+      console.log(
+        `Zombies fuera de pantalla: ${zombiesOutOfBounds}, Total zombies: ${this.zombies.children.size}`
+      );
+    }
+
+    // Destruir zombies que salen de la pantalla
+    this.zombies.children.iterate((zombie) => {
+      if (zombie && zombie.active) {
+        // Los zombies se mueven hacia arriba (velocidad Y negativa)
+        // Si el zombie sale por arriba de la pantalla, destruirlo
+        if (zombie.y < -50) {
+          console.log(
+            `Destruyendo zombie por arriba en Y: ${
+              zombie.y
+            }, Col: ${zombie.getData("col")}`
+          );
+          this.zombieManager.destroyZombie(zombie);
+        }
+        // Si el zombie sale por abajo de la pantalla (por si hay algún error), destruirlo
+        else if (zombie.y > this.sys.game.config.height + 100) {
+          console.log(
+            `Destruyendo zombie por abajo en Y: ${
+              zombie.y
+            }, Col: ${zombie.getData("col")}`
+          );
+          this.zombieManager.destroyZombie(zombie);
+        }
+      }
+    });
 
     // Mover y destruir balas fuera de pantalla
     this.bulletManager.bullets.children.iterate((bullet) => {

@@ -9,7 +9,11 @@ export class ZombieObject {
     this.zombies = scene.zombies;
   }
 
-  createZombie(velocityY, healht, damage) {
+  createZombie(
+    velocityY = this.velocityY,
+    health = this.health,
+    damage = this.damage
+  ) {
     const cols = this.scene.gridCells.length;
     const colWidth = this.scene.sys.game.config.width / cols;
 
@@ -49,12 +53,12 @@ export class ZombieObject {
     const zombiesInCol = this.zombies
       .getChildren()
       .filter((z) => z.getData("col") === col);
-    let zombieY = 600; // Posición inicial
+    let zombieY = this.scene.sys.game.config.height + 50; // Crear zombies justo fuera de la pantalla por abajo
 
     // Si hay zombies en esta columna, colocar el nuevo zombie más atrás
     if (zombiesInCol.length > 0) {
       const maxY = Math.max(...zombiesInCol.map((z) => z.y));
-      zombieY = Math.max(600, maxY + 60); // Espaciado de 60 pixels entre zombies
+      zombieY = Math.max(this.scene.sys.game.config.height + 50, maxY + 60); // Espaciado de 60 pixels entre zombies
     }
 
     const zombie = this.scene.physics.add
@@ -62,7 +66,7 @@ export class ZombieObject {
       .setDisplaySize(40, 40)
       .setCollideWorldBounds(true);
     zombie.body.setAllowGravity(false);
-    zombie.setData("health", healht);
+    zombie.setData("health", health);
     zombie.setData("col", col);
     zombie.setData("damage", damage); // Daño que causa el zombie al colisionar
     this.zombies.add(zombie);
