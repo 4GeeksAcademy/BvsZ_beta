@@ -67,6 +67,7 @@ export class ZombieObject {
       .setCollideWorldBounds(true);
     zombie.body.setAllowGravity(false);
     zombie.setData("health", health);
+    zombie.setData("maxHealth", health); // Almacenar la vida máxima también
     zombie.setData("col", col);
     zombie.setData("damage", damage); // Daño que causa el zombie al colisionar
     this.zombies.add(zombie);
@@ -75,7 +76,7 @@ export class ZombieObject {
     // Crear barra de vida debajo del zombie
     const bar = this.scene.add.graphics();
     bar.setDepth(3);
-    this.drawHealthBar(bar, zombie.getData("health"));
+    this.drawHealthBar(bar, health, health); // Pasar tanto vida actual como máxima
     bar.x = zombie.x - 20;
     bar.y = zombie.y + 25;
     zombie.healthBar = bar;
@@ -95,9 +96,11 @@ export class ZombieObject {
     return zombie;
   }
 
-  drawHealthBar(bar, health) {
+  drawHealthBar(bar, health, maxHealth = null) {
     bar.clear();
-    const percent = Phaser.Math.Clamp(health / this.health, 0, 1);
+    // Si no se proporciona maxHealth, usar this.health como fallback
+    const actualMaxHealth = maxHealth || this.health;
+    const percent = Phaser.Math.Clamp(health / actualMaxHealth, 0, 1);
     // Barra verde (vida restante)
     bar.fillStyle(0x00ff00, 1);
     bar.fillRect(0, 0, 40 * percent, 5);
@@ -108,18 +111,19 @@ export class ZombieObject {
 
   receiveDamage(scene, zombie, amount) {
     let health = Number(zombie.getData("health"));
+    const maxHealth = Number(zombie.getData("maxHealth"));
     health -= amount;
     zombie.setData("health", health);
     // Actualizar barra de vida
     if (zombie.healthBar) {
-      this.drawHealthBar(zombie.healthBar, health);
-      this.scene.sound.play("zombieHit1");
-      this.scene.effects.bloodEmitter(zombie, 0, -10, 10);
+      this.drawHealthBar(zombie.healthBar, health, maxHealth);
+      scene.sound.play("zombieHit1");
+      scene.effects.bloodEmitter(zombie, 0, -10, 10);
     }
     if (health <= 0) {
       this.destroyZombie(zombie);
-      this.scene.sound.play("zombieDead1");
-      this.scene.effects.bloodEmitter(zombie, 0, -10, 100);
+      scene.sound.play("zombieDead1");
+      scene.effects.bloodEmitter(zombie, 0, -10, 100);
     }
   }
 
