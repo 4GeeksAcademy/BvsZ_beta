@@ -153,12 +153,21 @@ export class Game extends Phaser.Scene {
     this.time.addEvent({
       delay: 3000,
       callback: () => {
-        if (this.zombies.getChildren().length < 10) {
-          this.zombieManager.createZombie(
+        if (
+          this.zombies.getChildren().length < 10 &&
+          this.server.servers.length > 0
+        ) {
+          const newZombie = this.zombieManager.createZombie(
             this.level.zombieVelocityY,
             this.level.zombieHealth,
             this.level.zombieDamage
           );
+          // Si no se pudo crear el zombie (no hay servidores), no hacer nada
+          if (!newZombie) {
+            console.log(
+              "No se puede crear zombie: no hay servidores disponibles"
+            );
+          }
         }
       },
       loop: true,

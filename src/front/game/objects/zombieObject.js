@@ -13,20 +13,34 @@ export class ZombieObject {
     const cols = this.scene.gridCells.length;
     const colWidth = this.scene.sys.game.config.width / cols;
 
-    // Obtener las columnas que tienen menos zombies para mejor distribución
-    const columnCounts = Array(cols).fill(0);
+    // Obtener las columnas que tienen servidores
+    const serverCols = this.scene.servers.map((server) =>
+      server.getData("col")
+    );
+
+    if (serverCols.length === 0) {
+      // Si no hay servidores, no crear zombies
+      return null;
+    }
+
+    // Obtener las columnas que tienen menos zombies para mejor distribución (solo en columnas con servidores)
+    const columnCounts = {};
+    serverCols.forEach((col) => {
+      columnCounts[col] = 0;
+    });
+
     this.zombies.getChildren().forEach((zombie) => {
       const zombieCol = zombie.getData("col");
-      if (zombieCol !== undefined && zombieCol >= 0 && zombieCol < cols) {
+      if (zombieCol !== undefined && columnCounts.hasOwnProperty(zombieCol)) {
         columnCounts[zombieCol]++;
       }
     });
 
-    // Encontrar la columna con menos zombies
-    const minCount = Math.min(...columnCounts);
-    const availableCols = columnCounts
-      .map((count, index) => (count === minCount ? index : null))
-      .filter((col) => col !== null);
+    // Encontrar la columna con menos zombies (solo entre las que tienen servidores)
+    const minCount = Math.min(...Object.values(columnCounts));
+    const availableCols = Object.keys(columnCounts)
+      .filter((col) => columnCounts[col] === minCount)
+      .map((col) => parseInt(col));
 
     const col = availableCols[Phaser.Math.Between(0, availableCols.length - 1)];
     const zombieX = col * colWidth + colWidth / 2;
