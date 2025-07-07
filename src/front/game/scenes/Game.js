@@ -144,19 +144,8 @@ export class Game extends Phaser.Scene {
       null,
       this
     );
-  }
 
-  update() {
-    // Actualizar barras de vida de zombies
-    if (this.zombieUpdatables) {
-      this.zombieUpdatables = this.zombieUpdatables.filter(
-        (zombie) => zombie.active
-      );
-      this.zombieUpdatables.forEach((zombie) => {
-        if (zombie.update) zombie.update();
-      });
-    }
-
+    // --- GENERACIÓN AUTOMÁTICA DE ZOMBIES ---
     this.time.addEvent({
       delay: 3000,
       callback: () => {
@@ -170,6 +159,19 @@ export class Game extends Phaser.Scene {
       },
       loop: true,
     });
+  }
+
+  update() {
+    // Actualizar barras de vida de zombies
+    if (this.zombieUpdatables) {
+      this.zombieUpdatables = this.zombieUpdatables.filter(
+        (zombie) => zombie.active
+      );
+      this.zombieUpdatables.forEach((zombie) => {
+        if (zombie.update) zombie.update();
+      });
+    }
+
     // Mover y destruir balas fuera de pantalla
     this.bulletManager.bullets.children.iterate((bullet) => {
       if (bullet && bullet.active) {

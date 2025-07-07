@@ -12,9 +12,37 @@ export class ZombieObject {
   createZombie(velocityY, healht, damage) {
     const cols = this.scene.gridCells.length;
     const colWidth = this.scene.sys.game.config.width / cols;
-    const zombieY = 600;
-    const col = Phaser.Math.Between(0, cols - 1);
+
+    // Obtener las columnas que tienen menos zombies para mejor distribución
+    const columnCounts = Array(cols).fill(0);
+    this.zombies.getChildren().forEach((zombie) => {
+      const zombieCol = zombie.getData("col");
+      if (zombieCol !== undefined && zombieCol >= 0 && zombieCol < cols) {
+        columnCounts[zombieCol]++;
+      }
+    });
+
+    // Encontrar la columna con menos zombies
+    const minCount = Math.min(...columnCounts);
+    const availableCols = columnCounts
+      .map((count, index) => (count === minCount ? index : null))
+      .filter((col) => col !== null);
+
+    const col = availableCols[Phaser.Math.Between(0, availableCols.length - 1)];
     const zombieX = col * colWidth + colWidth / 2;
+
+    // Calcular Y position para evitar solapamiento
+    const zombiesInCol = this.zombies
+      .getChildren()
+      .filter((z) => z.getData("col") === col);
+    let zombieY = 600; // Posición inicial
+
+    // Si hay zombies en esta columna, colocar el nuevo zombie más atrás
+    if (zombiesInCol.length > 0) {
+      const maxY = Math.max(...zombiesInCol.map((z) => z.y));
+      zombieY = Math.max(600, maxY + 60); // Espaciado de 60 pixels entre zombies
+    }
+
     const zombie = this.scene.physics.add
       .image(zombieX, zombieY, "zombie")
       .setDisplaySize(40, 40)
