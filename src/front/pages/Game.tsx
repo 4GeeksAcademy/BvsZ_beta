@@ -69,7 +69,6 @@ const Game: React.FC = () => {
       // Limpiar EventBus y notificar a Phaser que se está saliendo del juego
       import("../game/EventBus").then(({ EventBus }) => {
         EventBus.emit("game:cleanup");
-        EventBus.removeAllListeners();
       });
 
       // Si hay una referencia al juego de Phaser, asegurarse de que se destruya

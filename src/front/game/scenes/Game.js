@@ -333,6 +333,12 @@ export class Game extends Phaser.Scene {
         this.checkLevelCompletion();
       };
       EventBus.on("zombie:killed", this.zombieKilledHandler);
+
+      // Reconfigurar listener de reorganizar torretas para el nuevo nivel
+      this.reorganizeTurretsHandler = (data) => {
+        this.turret.reorganizeTurrets(data.justifyClass);
+      };
+      EventBus.on("reorganize-turrets", this.reorganizeTurretsHandler);
     } else {
       // Todos los niveles completados - victoria
       console.log("¡Todos los niveles completados! ¡Victoria!");
