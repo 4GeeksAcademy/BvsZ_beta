@@ -87,13 +87,15 @@ export class ServerObject {
       this.scene.time.delayedCall(1000, () => {
         // Calcular tiempo final de juego
         const gameTime = this.formatGameTime();
-        
+
         // Preparar estadísticas finales
         const finalStats = {
-          zombiesKilled: this.scene.gameStats ? this.scene.gameStats.zombiesKilled : 0,
-          gameTime: gameTime
+          zombiesKilled: this.scene.gameStats
+            ? this.scene.gameStats.zombiesKilled
+            : 0,
+          gameTime: gameTime,
         };
-        
+
         this.scene.scene.start("GameOver", { stats: finalStats });
       });
     }
@@ -102,12 +104,16 @@ export class ServerObject {
   // Función para formatear el tiempo de juego
   formatGameTime() {
     if (!this.scene.gameStats || !this.scene.gameStats.gameStartTime) {
-      return '00:00';
+      return "00:00";
     }
-    
-    const elapsed = Math.floor((Date.now() - this.scene.gameStats.gameStartTime) / 1000);
+
+    const elapsed = Math.floor(
+      (Date.now() - this.scene.gameStats.gameStartTime) / 1000
+    );
     const mins = Math.floor(elapsed / 60);
     const secs = elapsed % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   }
 }

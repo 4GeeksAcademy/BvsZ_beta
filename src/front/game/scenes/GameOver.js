@@ -6,7 +6,7 @@ export class GameOver extends Scene {
     super("GameOver");
     this.finalStats = {
       zombiesKilled: 0,
-      gameTime: '00:00'
+      gameTime: "00:00",
     };
   }
 
@@ -69,26 +69,36 @@ export class GameOver extends Scene {
       .setDepth(100);
 
     this.add
-      .text(centerX, centerY + 45, `⏱️ Tiempo de juego: ${this.finalStats.gameTime}`, {
-        fontFamily: "Arial",
-        fontSize: 18,
-        color: "#ffffff",
-        stroke: "#000000",
-        strokeThickness: 2,
-        align: "center",
-      })
+      .text(
+        centerX,
+        centerY + 45,
+        `⏱️ Tiempo de juego: ${this.finalStats.gameTime}`,
+        {
+          fontFamily: "Arial",
+          fontSize: 18,
+          color: "#ffffff",
+          stroke: "#000000",
+          strokeThickness: 2,
+          align: "center",
+        }
+      )
       .setOrigin(0.5)
       .setDepth(100);
 
     this.add
-      .text(centerX, centerY + 75, `🧟‍♂️ Zombies eliminados: ${this.finalStats.zombiesKilled}`, {
-        fontFamily: "Arial",
-        fontSize: 18,
-        color: "#ffffff",
-        stroke: "#000000",
-        strokeThickness: 2,
-        align: "center",
-      })
+      .text(
+        centerX,
+        centerY + 75,
+        `🧟‍♂️ Zombies eliminados: ${this.finalStats.zombiesKilled}`,
+        {
+          fontFamily: "Arial",
+          fontSize: 18,
+          color: "#ffffff",
+          stroke: "#000000",
+          strokeThickness: 2,
+          align: "center",
+        }
+      )
       .setOrigin(0.5)
       .setDepth(100);
 
