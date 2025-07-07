@@ -10,6 +10,9 @@ export class MainMenu extends Scene {
   }
 
   create() {
+    // Personalizar el cursor para toda la escena
+    this.input.setDefaultCursor("crosshair");
+
     const bg = this.add.image(0, 0, "background").setOrigin(0);
     bg.displayWidth = this.sys.game.config.width;
     bg.displayHeight = this.sys.game.config.height;
@@ -33,10 +36,12 @@ export class MainMenu extends Scene {
       .on("pointerdown", () => this.changeScene())
       .on("pointerover", () => {
         battleButton.setTint(0x6600cc);
+        this.input.setDefaultCursor("pointer");
       })
       .on("pointerout", () => {
         battleButton.clearTint();
         buttonBg.setFillStyle(0x000000);
+        this.input.setDefaultCursor("crosshair");
       });
 
     const battleButton = this.add

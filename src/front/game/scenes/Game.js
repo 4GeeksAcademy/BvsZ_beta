@@ -15,6 +15,9 @@ export class Game extends Phaser.Scene {
 
     create() {
 
+        // Personalizar el cursor para toda la escena de juego
+        this.input.setDefaultCursor('crosshair');
+
         this.level = levels[0];
 
         this.cameras.main.setBackgroundColor('#1c1f2b');
