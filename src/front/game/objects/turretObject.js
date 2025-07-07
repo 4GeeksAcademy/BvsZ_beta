@@ -120,15 +120,33 @@ export class TurretObject {
         return;
     }
 
-    // Aplicar nuevas posiciones a las torretas existentes
+    // Aplicar nuevas posiciones a las torretas existentes con animación
     this.turrets.forEach((turret, index) => {
       if (newPositions[index]) {
-        turret.x = newPositions[index].x;
-        turret.setData("col", newPositions[index].colIndex);
+        const targetX = newPositions[index].x;
+        const newColIndex = newPositions[index].colIndex;
 
-        // Actualizar posición de la barra de vida también
-        if (turret.healthBar) {
-          turret.healthBar.x = turret.x + 30;
+        // Solo animar si la posición realmente cambió
+        if (Math.abs(turret.x - targetX) > 1) {
+          // Animar la torreta hacia su nueva posición
+          this.scene.tweens.add({
+            targets: turret,
+            x: targetX,
+            duration: 300, // Duración de la animación en milisegundos// Tipo de easing con un poco de rebote para mayor fluidez
+            onUpdate: () => {
+              // Actualizar la posición de la barra de vida durante la animación
+              if (turret.healthBar) {
+                turret.healthBar.x = turret.x + 25;
+              }
+            },
+            onComplete: () => {
+              // Actualizar el índice de columna cuando la animación termine
+              turret.setData("col", newColIndex);
+            },
+          });
+        } else {
+          // Si no hay cambio de posición, solo actualizar el índice de columna
+          turret.setData("col", newColIndex);
         }
       }
     });
