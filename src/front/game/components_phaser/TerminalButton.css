@@ -30,3 +30,16 @@
   color: var(--pixel-black) !important;
   border: 2px solid var(--pixel-primary);
 }
+
+.terminal-btn-disabled {
+  background: var(--pixel-gray) !important;
+  color: var(--pixel-dark-blue) !important;
+  cursor: not-allowed !important;
+  opacity: 0.5;
+}
+
+.terminal-btn-disabled:hover {
+  background: var(--pixel-gray) !important;
+  color: var(--pixel-dark-blue) !important;
+  cursor: not-allowed !important;
+}
