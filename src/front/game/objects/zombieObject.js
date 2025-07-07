@@ -1,3 +1,5 @@
+import { EventBus } from '../EventBus';
+
 export class ZombieObject {
     constructor(scene, velocityY, health, damage) {
         this.scene = scene;
@@ -90,5 +92,8 @@ export class ZombieObject {
         if (zombie && zombie.destroy) {
             zombie.destroy();
         }
+        
+        // Emitir evento de zombie eliminado para actualizar stats
+        EventBus.emit('zombie:killed');
     }
 }

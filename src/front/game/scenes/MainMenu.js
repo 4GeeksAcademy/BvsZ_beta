@@ -12,6 +12,9 @@ export class MainMenu extends Scene {
   create() {
     // Personalizar el cursor para toda la escena
     this.input.setDefaultCursor("crosshair");
+    
+    // Emitir evento de parar el juego cuando regresamos al menú
+    EventBus.emit('game:stop');
 
     const bg = this.add.image(0, 0, "background").setOrigin(0);
     bg.displayWidth = this.sys.game.config.width;

@@ -17,7 +17,13 @@ export class Game extends Phaser.Scene {
     // Personalizar el cursor para toda la escena de juego
     this.input.setDefaultCursor("crosshair");
 
+    // Emitir evento de inicio de juego
+    EventBus.emit('game:start');
+
     this.level = levels[0];
+    
+    // Emitir evento de nivel inicial
+    EventBus.emit('level:change', 1);
 
     this.cameras.main.setBackgroundColor("#1c1f2b");
     this.physics.resume();
@@ -177,6 +183,9 @@ export class Game extends Phaser.Scene {
   }
 
   shutdown() {
+    // Emitir evento de parar el juego
+    EventBus.emit('game:stop');
+    
     // Limpiar listeners de eventos cuando la escena se destruya
     EventBus.removeListener("reorganize-turrets");
 
