@@ -35,24 +35,24 @@ const TerminalButtonGroupAlign = () => {
     return (
         <div className='container d-inline mt-4'>
             <div className="col-auto">
-                <TerminalButton 
-                    label="align-items-start" 
+                <TerminalButton
+                    label="align-items-start"
                     onClick={() => handleAlignClick('align-items-start')}
                     isSelected={selectedAlign === 'align-items-start'}
                     disabled={!gameActive}
                 />
             </div>
             <div className="col-auto">
-                <TerminalButton 
-                    label="align-items-center" 
+                <TerminalButton
+                    label="align-items-center"
                     onClick={() => handleAlignClick('align-items-center')}
                     isSelected={selectedAlign === 'align-items-center'}
                     disabled={!gameActive}
                 />
             </div>
             <div className="col-auto">
-                <TerminalButton 
-                    label="align-items-end" 
+                <TerminalButton
+                    label="align-items-end"
                     onClick={() => handleAlignClick('align-items-end')}
                     isSelected={selectedAlign === 'align-items-end'}
                     disabled={!gameActive}
