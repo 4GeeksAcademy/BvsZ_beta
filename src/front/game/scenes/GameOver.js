@@ -44,7 +44,7 @@ export class GameOver extends Scene {
       .setDepth(100);
 
     this.add
-      .text(centerX, centerY - 40, "Todos los servidores han sido destruidos", {
+      .text(centerX, centerY - 40, "All servers was destroy", {
         fontFamily: "Arial",
         fontSize: 24,
         color: "#ffffff",
@@ -57,7 +57,7 @@ export class GameOver extends Scene {
 
     // Mostrar estadísticas finales
     this.add
-      .text(centerX, centerY + 10, "ESTADÍSTICAS FINALES", {
+      .text(centerX, centerY + 10, "FINALS STATS", {
         fontFamily: "Arial Black",
         fontSize: 20,
         color: "#ffff00",
@@ -89,7 +89,7 @@ export class GameOver extends Scene {
       .text(
         centerX,
         centerY + 75,
-        `🧟‍♂️ Zombies eliminados: ${this.finalStats.zombiesKilled}`,
+        `🧟‍♂️ Zombies destroy: ${this.finalStats.zombiesKilled}`,
         {
           fontFamily: "Arial",
           fontSize: 18,

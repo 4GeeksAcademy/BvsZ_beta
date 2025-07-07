@@ -7,4 +7,6 @@ export const audioAssets = [
     { key: 'shot', path: 'sfx/shot.wav' },
     { key: 'hurt1', path: 'sfx/hurt_1.wav' },
     { key: 'closeEncounter4', path: 'sfx/close_encounter_4.wav' },
+    //{ key: 'popupOpen', path: 'popup_open.wav' },
+    //{ key: 'popupClose', path: 'popup_close.wav' },
 ];

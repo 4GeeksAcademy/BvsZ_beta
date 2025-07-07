@@ -7,6 +7,8 @@ import { TurretObject } from "../objects/turretObject";
 import { EventBus } from "../EventBus";
 import { BulletObject } from "../objects/bulletObject";
 import { levels } from "../config/levels";
+// Importar constante para el nombre de la fuente
+const VT323_GENERIC = "VT323";
 
 export class Game extends Phaser.Scene {
   constructor() {
@@ -20,11 +22,20 @@ export class Game extends Phaser.Scene {
     this.currentLevelIndex = 0;
     this.zombiesSpawned = 0;
     this.levelCompleted = false;
+
+    // Variables para UI de nivel superado
+    this.levelCompletedUI = null;
+    this.levelCompletedBackground = null;
+    this.levelCompletedText = null;
+    this.nextLevelButton = null;
   }
 
   create() {
     // Personalizar el cursor para toda la escena de juego
     this.input.setDefaultCursor("crosshair");
+
+    // Limpiar listeners previos para evitar duplicados
+    this.cleanupEventListeners();
 
     // Inicializar estadísticas del juego
     this.gameStats.zombiesKilled = 0;
@@ -286,6 +297,12 @@ export class Game extends Phaser.Scene {
 
   // Verificar si el nivel se ha completado
   checkLevelCompletion() {
+    // Verificar que el nivel existe y está definido
+    if (!this.level) {
+      console.warn("checkLevelCompletion: nivel no definido");
+      return;
+    }
+
     // Verificar si todos los zombies han sido spawneados y eliminados
     if (
       this.zombiesSpawned >= this.level.zombiesPerLevel &&
@@ -295,15 +312,18 @@ export class Game extends Phaser.Scene {
       this.levelCompleted = true;
       console.log(`¡Nivel ${this.currentLevelIndex + 1} completado!`);
 
-      // Esperar un poco antes de cambiar al siguiente nivel
-      this.time.delayedCall(2000, () => {
-        this.nextLevel();
+      // Mostrar UI de nivel superado
+      this.time.delayedCall(1000, () => {
+        this.createLevelCompletedUI();
       });
     }
   }
 
   // Avanzar al siguiente nivel
   nextLevel() {
+    // Limpiar listeners del nivel anterior
+    this.cleanupEventListeners();
+
     if (this.currentLevelIndex < levels.length - 1) {
       this.currentLevelIndex++;
       this.zombiesSpawned = 0;
@@ -319,10 +339,18 @@ export class Game extends Phaser.Scene {
 
       // Recrear elementos del juego con nuevos parámetros
       this.recreateGameElements();
+
+      // Reconfigurar listener de zombies para el nuevo nivel
+      this.zombieKilledHandler = () => {
+        this.gameStats.zombiesKilled++;
+        this.checkLevelCompletion();
+      };
+      EventBus.on("zombie:killed", this.zombieKilledHandler);
     } else {
       // Todos los niveles completados - victoria
       console.log("¡Todos los niveles completados! ¡Victoria!");
       EventBus.emit("game:victory");
+      this.createVictoryUI();
     }
   }
 
@@ -361,7 +389,21 @@ export class Game extends Phaser.Scene {
     // Emitir evento de parar el juego
     EventBus.emit("game:stop");
 
-    // Limpiar listeners de eventos cuando la escena se destruya
+    // Limpiar todos los listeners
+    this.cleanupEventListeners();
+
+    // Detener música de fondo
+    if (this.bgMusic) {
+      this.bgMusic.stop();
+    }
+
+    // Limpiar UIs de nivel superado
+    this.hideLevelCompletedUI();
+  }
+
+  // Método para limpiar listeners de eventos
+  cleanupEventListeners() {
+    // Limpiar listener de reorganizar torretas
     if (this.reorganizeTurretsHandler) {
       EventBus.removeListener(
         "reorganize-turrets",
@@ -375,10 +417,228 @@ export class Game extends Phaser.Scene {
       EventBus.removeListener("zombie:killed", this.zombieKilledHandler);
       this.zombieKilledHandler = null;
     }
+  }
 
-    // Detener música de fondo
-    if (this.bgMusic) {
-      this.bgMusic.stop();
+  // Crear UI de nivel superado
+  createLevelCompletedUI() {
+    const centerX = this.sys.game.config.width / 2;
+    const centerY = this.sys.game.config.height / 2;
+
+    // Crear fondo semitransparente
+    this.levelCompletedBackground = this.add.rectangle(
+      centerX,
+      centerY,
+      this.sys.game.config.width,
+      this.sys.game.config.height,
+      0x000000,
+      0.7
+    );
+
+    // Crear contenedor para la UI
+    this.levelCompletedUI = this.add.container(centerX, centerY);
+
+    // Crear panel de fondo
+    const panel = this.add.rectangle(0, 0, 400, 250, 0x2a2a2a, 0.9);
+    panel.setStrokeStyle(3, 0x00ff00);
+
+    // Crear texto de nivel superado
+    this.levelCompletedText = this.add.text(
+      0,
+      -50,
+      `¡Level ${this.currentLevelIndex + 1} complete!`,
+      {
+        fontSize: "36px",
+        fill: "#00ff00",
+        fontFamily: VT323_GENERIC,
+        fontStyle: "bold",
+        align: "center",
+      }
+    );
+    this.levelCompletedText.setOrigin(0.5);
+
+    // Crear texto de estadísticas
+    const statsText = this.add.text(
+      0,
+      -10,
+      `Zombies killed: ${this.gameStats.zombiesKilled}`,
+      {
+        fontSize: "26px",
+        fill: "#ffffff",
+        fontFamily: VT323_GENERIC,
+        align: "center",
+      }
+    );
+    statsText.setOrigin(0.5);
+
+    // Crear botón "Next Level"
+    this.nextLevelButton = this.add.rectangle(0, 60, 200, 50, 0x00aa00);
+    this.nextLevelButton.setStrokeStyle(2, 0x00ff00);
+    this.nextLevelButton.setInteractive({ useHandCursor: true });
+
+    const buttonText = this.add.text(0, 60, "Next Level", {
+      fontSize: "26px",
+      fill: "#ffffff",
+      fontFamily: VT323_GENERIC,
+    });
+    buttonText.setOrigin(0.5);
+
+    // Agregar elementos al contenedor
+    this.levelCompletedUI.add([
+      panel,
+      this.levelCompletedText,
+      statsText,
+      this.nextLevelButton,
+      buttonText,
+    ]);
+
+    // Configurar evento del botón
+    this.nextLevelButton.on("pointerdown", () => {
+      this.hideLevelCompletedUI();
+      this.nextLevel();
+    });
+
+    // Efectos de hover para el botón
+    this.nextLevelButton.on("pointerover", () => {
+      this.nextLevelButton.setFillStyle(0x00cc00);
+    });
+
+    this.nextLevelButton.on("pointerout", () => {
+      this.nextLevelButton.setFillStyle(0x00aa00);
+    });
+
+    // Hacer visible la UI
+    this.levelCompletedUI.setVisible(true);
+    this.levelCompletedBackground.setVisible(true);
+    this.bgMusic.stop();
+    //this.sound.play("popupOpen");
+
+    // Pausar el juego
+    this.physics.pause();
+  }
+
+  // Ocultar UI de nivel superado
+  hideLevelCompletedUI() {
+    if (this.levelCompletedUI) {
+      this.levelCompletedUI.setVisible(false);
+      this.levelCompletedUI.destroy();
+      this.levelCompletedUI = null;
     }
+    if (this.levelCompletedBackground) {
+      this.levelCompletedBackground.setVisible(false);
+      this.levelCompletedBackground.destroy();
+      this.levelCompletedBackground = null;
+    }
+
+    // Reanudar el juego
+    //this.sound.play("popupClose");
+    this.physics.resume();
+  }
+
+  // Crear UI de victoria (todos los niveles completados)
+  createVictoryUI() {
+    const centerX = this.sys.game.config.width / 2;
+    const centerY = this.sys.game.config.height / 2;
+
+    // Crear fondo semitransparente
+    this.levelCompletedBackground = this.add.rectangle(
+      centerX,
+      centerY,
+      this.sys.game.config.width,
+      this.sys.game.config.height,
+      0x000000,
+      0.8
+    );
+
+    // Crear contenedor para la UI
+    this.levelCompletedUI = this.add.container(centerX, centerY);
+
+    // Crear panel de fondo
+    const panel = this.add.rectangle(0, 0, 500, 300, 0x1a1a1a, 0.95);
+    panel.setStrokeStyle(4, 0xffd700);
+
+    // Crear texto de victoria
+    const victoryText = this.add.text(0, -80, "¡VICTORIA!", {
+      fontSize: "48px",
+      fill: "#ffd700",
+      fontFamily: VT323_GENERIC,
+      fontStyle: "bold",
+      align: "center",
+    });
+    victoryText.setOrigin(0.5);
+
+    // Crear texto de felicitaciones
+    const congratsText = this.add.text(
+      0,
+      -30,
+      "Todos los niveles completados",
+      {
+        fontSize: "24px",
+        fill: "#ffffff",
+        fontFamily: VT323_GENERIC,
+        align: "center",
+      }
+    );
+    congratsText.setOrigin(0.5);
+
+    // Crear texto de estadísticas finales
+    const gameTime = Math.floor(
+      (Date.now() - this.gameStats.gameStartTime) / 1000
+    );
+    const statsText = this.add.text(
+      0,
+      20,
+      `Zombies eliminados: ${this.gameStats.zombiesKilled}\nTiempo total: ${gameTime}s`,
+      {
+        fontSize: "18px",
+        fill: "#ffffff",
+        fontFamily: VT323_GENERIC,
+        align: "center",
+      }
+    );
+    statsText.setOrigin(0.5);
+
+    // Crear botón "Jugar de nuevo"
+    const playAgainButton = this.add.rectangle(0, 90, 200, 50, 0x004400);
+    playAgainButton.setStrokeStyle(2, 0x00ff00);
+    playAgainButton.setInteractive({ useHandCursor: true });
+
+    const buttonText = this.add.text(0, 90, "Jugar de nuevo", {
+      fontSize: "18px",
+      fill: "#ffffff",
+      fontFamily: VT323_GENERIC,
+      fontStyle: "bold",
+    });
+    buttonText.setOrigin(0.5);
+
+    // Agregar elementos al contenedor
+    this.levelCompletedUI.add([
+      panel,
+      victoryText,
+      congratsText,
+      statsText,
+      playAgainButton,
+      buttonText,
+    ]);
+
+    // Configurar evento del botón
+    playAgainButton.on("pointerdown", () => {
+      this.scene.restart();
+    });
+
+    // Efectos de hover para el botón
+    playAgainButton.on("pointerover", () => {
+      playAgainButton.setFillStyle(0x006600);
+    });
+
+    playAgainButton.on("pointerout", () => {
+      playAgainButton.setFillStyle(0x004400);
+    });
+
+    // Hacer visible la UI
+    this.levelCompletedUI.setVisible(true);
+    this.levelCompletedBackground.setVisible(true);
+
+    // Pausar el juego
+    this.physics.pause();
   }
 }
