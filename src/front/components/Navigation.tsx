@@ -45,17 +45,17 @@ const Navigation: React.FC = () => {
   return (
     <Navbar  bg="dark" variant="dark" expand="lg"  className="sticky-top mb-2">
       <Container >
-        <Link to="/" className="navbar-brand p-0 m-0">
+        <Link to="/" className="navbar-brand p-0 m-0">{"<"}
           🧟‍♂️ <span className="text-bootstrap">B</span>
           {""}
           <span className="text-vs">vs</span>
           {""}
-          <span className="text-zombies">Z</span>
+          <span className="text-zombies">Z</span> {"/>"}
         </Link>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
+          <Nav className="mx-auto">
             <Link to="/" className="nav-link">
               Home
             </Link>
