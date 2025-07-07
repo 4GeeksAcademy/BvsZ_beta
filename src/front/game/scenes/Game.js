@@ -201,7 +201,7 @@ export class Game extends Phaser.Scene {
         if (
           this.zombies.getChildren().length < this.level.maxZombiesOnScreen &&
           this.server.servers.length > 0 &&
-          this.zombiesSpawned < this.level.zombiesPerLevel &&
+          this.zombiesSpawned < (this.level.zombiesPerLevel -1) &&
           !this.levelCompleted
         ) {
           const newZombie = this.zombieManager.createZombie(
@@ -212,9 +212,6 @@ export class Game extends Phaser.Scene {
           // Si se pudo crear el zombie, incrementar contador
           if (newZombie) {
             this.zombiesSpawned++;
-            console.log(
-              `Zombies spawned: ${this.zombiesSpawned}/${this.level.zombiesPerLevel}`
-            );
           } else {
             console.log(
               "No se puede crear zombie: no hay servidores disponibles"
@@ -248,33 +245,16 @@ export class Game extends Phaser.Scene {
       }
     });
 
-    // Log solo si hay zombies problemáticos
-    if (zombiesOutOfBounds > 0) {
-      console.log(
-        `Zombies fuera de pantalla: ${zombiesOutOfBounds}, Total zombies: ${this.zombies.children.size}`
-      );
-    }
-
     // Destruir zombies que salen de la pantalla
     this.zombies.children.iterate((zombie) => {
       if (zombie && zombie.active) {
         // Los zombies se mueven hacia arriba (velocidad Y negativa)
         // Si el zombie sale por arriba de la pantalla, destruirlo
         if (zombie.y < -50) {
-          console.log(
-            `Destruyendo zombie por arriba en Y: ${
-              zombie.y
-            }, Col: ${zombie.getData("col")}`
-          );
           this.zombieManager.destroyZombie(zombie);
         }
         // Si el zombie sale por abajo de la pantalla (por si hay algún error), destruirlo
         else if (zombie.y > this.sys.game.config.height + 100) {
-          console.log(
-            `Destruyendo zombie por abajo en Y: ${
-              zombie.y
-            }, Col: ${zombie.getData("col")}`
-          );
           this.zombieManager.destroyZombie(zombie);
         }
       }
@@ -305,7 +285,7 @@ export class Game extends Phaser.Scene {
 
     // Verificar si todos los zombies han sido spawneados y eliminados
     if (
-      this.zombiesSpawned >= this.level.zombiesPerLevel &&
+      this.zombiesSpawned === (this.level.zombiesPerLevel -1) &&
       this.zombies.getChildren().length === 0 &&
       !this.levelCompleted
     ) {
