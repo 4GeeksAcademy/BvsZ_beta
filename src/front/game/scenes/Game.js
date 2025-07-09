@@ -579,6 +579,8 @@ export class Game extends Phaser.Scene {
 
   // Crear UI de victoria (todos los niveles completados)
   createVictoryUI() {
+    
+    EventBus.emit("game:stop");
     const centerX = this.sys.game.config.width / 2;
     const centerY = this.sys.game.config.height / 2;
 
