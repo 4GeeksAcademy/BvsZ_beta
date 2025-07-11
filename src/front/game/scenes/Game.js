@@ -39,6 +39,13 @@ export class Game extends Phaser.Scene {
     // Array para almacenar los datos de tiempo de cada nivel completado
     this.levelData = [];
 
+    // Variables para tracking de muertes de zombies del nivel actual
+    this.currentLevelZombieDeaths = {
+      byPlayer: 0,
+      byCollision: 0,
+      byTrap: 0,
+    };
+
     // Variables para UI de nivel superado
     this.levelCompletedUI = null;
     this.levelCompletedBackground = null;
@@ -60,6 +67,13 @@ export class Game extends Phaser.Scene {
     // Inicializar array de datos de tiempo de niveles
     this.levelData = [];
 
+    // Inicializar contadores de muertes de zombies del nivel actual
+    this.currentLevelZombieDeaths = {
+      byPlayer: 0,
+      byCollision: 0,
+      byTrap: 0,
+    };
+
     // Inicializar variables de nivel
     this.currentLevelIndex = 0;
     this.zombiesSpawned = 0;
@@ -71,6 +85,7 @@ export class Game extends Phaser.Scene {
     // Escuchar eventos de zombies eliminados para actualizar estadísticas
     this.zombieKilledHandler = () => {
       this.gameStats.zombiesKilled++;
+      this.currentLevelZombieDeaths.byPlayer++;
       this.checkLevelCompletion();
     };
     EventBus.on(ZOMBIE_KILLED, this.zombieKilledHandler);
@@ -158,6 +173,7 @@ export class Game extends Phaser.Scene {
           server,
           Number(zombie.getData("damage"))
         );
+        this.currentLevelZombieDeaths.byCollision++;
         this.zombieManager.destroyZombie(zombie, false); // No contar como kill
         this.sound.play("zombieDead2");
       },
@@ -176,6 +192,7 @@ export class Game extends Phaser.Scene {
           turret,
           Number(zombie.getData("damage"))
         );
+        this.currentLevelZombieDeaths.byCollision++;
         this.zombieManager.destroyZombie(zombie, false); // No contar como kill
         this.sound.play("zombieDead2");
       },
@@ -335,6 +352,13 @@ export class Game extends Phaser.Scene {
       this.zombiesSpawned = 0;
       this.levelCompleted = false;
 
+      // Resetear contadores de muertes de zombies para el nuevo nivel
+      this.currentLevelZombieDeaths = {
+        byPlayer: 0,
+        byCollision: 0,
+        byTrap: 0,
+      };
+
       // Actualizar configuración del nivel
       this.level = levels[this.currentLevelIndex];
 
@@ -352,6 +376,7 @@ export class Game extends Phaser.Scene {
       // Reconfigurar listener de zombies para el nuevo nivel
       this.zombieKilledHandler = () => {
         this.gameStats.zombiesKilled++;
+        this.currentLevelZombieDeaths.byPlayer++;
         this.checkLevelCompletion();
       };
       EventBus.on(ZOMBIE_KILLED, this.zombieKilledHandler);
@@ -515,18 +540,22 @@ export class Game extends Phaser.Scene {
       const currentLevelTime = timeData.seconds - previousLevelsTime;
 
       // Calcular los zombies killed del nivel actual restando los zombies de los niveles anteriores
-      const previousLevelsZombies = this.levelData.reduce(
-        (total, level) => total + (level.zombiesKilled || 0),
+      const previousLevelsZombiesByPlayer = this.levelData.reduce(
+        (total, level) => total + (level.zombieDeathStats?.byPlayer || 0),
         0
       );
-      const currentLevelZombies =
-        this.gameStats.zombiesKilled - previousLevelsZombies;
+      const currentLevelZombiesByPlayer =
+        this.gameStats.zombiesKilled - previousLevelsZombiesByPlayer;
 
       // Agregar timeData al array con información del nivel
       this.levelData.push({
         level: this.currentLevelIndex + 1,
         timeInSeconds: currentLevelTime,
-        zombiesKilled: currentLevelZombies,
+        zombieDeathStats: {
+          byPlayer: this.currentLevelZombieDeaths.byPlayer,
+          byCollision: this.currentLevelZombieDeaths.byCollision,
+          byTrap: this.currentLevelZombieDeaths.byTrap,
+        },
         totalZombiesKilled: this.gameStats.zombiesKilled,
         totalTime: timeData.seconds,
       });
@@ -573,9 +602,9 @@ export class Game extends Phaser.Scene {
       const statsText = this.add.text(
         0,
         -30,
-        `Zombies killed: ${currentLevelZombies}`,
+        `Zombies killed by player: ${this.currentLevelZombieDeaths.byPlayer}\nZombies killed by collision: ${this.currentLevelZombieDeaths.byCollision}`,
         {
-          fontSize: "26px",
+          fontSize: "20px",
           fill: "#ffffff",
           fontFamily: VT323_GENERIC,
           align: "center",
@@ -705,13 +734,20 @@ export class Game extends Phaser.Scene {
     congratsText.setOrigin(0.5);
 
     // Calcular estadísticas finales desde levelData
-    let totalZombiesKilled = 0;
+    let totalZombiesKilledByPlayer = 0;
+    let totalZombiesKilledByCollision = 0;
     let totalGameTime = 0;
 
     if (this.levelData.length > 0) {
-      // Sumatoria de todos los zombies killed
-      totalZombiesKilled = this.levelData.reduce(
-        (total, level) => total + (level.zombiesKilled || 0),
+      // Sumatoria de todos los zombies killed by player
+      totalZombiesKilledByPlayer = this.levelData.reduce(
+        (total, level) => total + (level.zombieDeathStats?.byPlayer || 0),
+        0
+      );
+
+      // Sumatoria de todos los zombies killed by collision
+      totalZombiesKilledByCollision = this.levelData.reduce(
+        (total, level) => total + (level.zombieDeathStats?.byCollision || 0),
         0
       );
 
@@ -723,7 +759,7 @@ export class Game extends Phaser.Scene {
     const statsText = this.add.text(
       0,
       -10,
-      `Total zombies killed: ${totalZombiesKilled}\nTotal time: ${totalGameTime}s`,
+      `Zombies killed by player: ${totalZombiesKilledByPlayer}\nZombies killed by collision: ${totalZombiesKilledByCollision}\nTotal time: ${totalGameTime}s`,
       {
         fontSize: "22px",
         fill: "#ffffff",
