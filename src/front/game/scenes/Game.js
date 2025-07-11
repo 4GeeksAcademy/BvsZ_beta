@@ -6,10 +6,17 @@ import { EffectsObjects } from "../objects/effectsObject";
 import { TurretObject } from "../objects/turretObject";
 import {
   EventBus,
+  GAME_START,
+  GAME_STOP,
+  GAME_CLEANUP,
+  GAME_VICTORY,
+  ZOMBIE_KILLED,
+  LEVEL_CHANGE,
   GAME_TIME_REQUEST,
   GAME_TIME_RESPONSE,
   LEVEL_COMPLETED,
   LEVEL_NEXT,
+  REORGANIZE_TURRETS,
 } from "../EventBus";
 import { BulletObject } from "../objects/bulletObject";
 import { levels } from "../config/levels";
@@ -53,26 +60,26 @@ export class Game extends Phaser.Scene {
     this.levelCompleted = false;
 
     // Emitir evento de inicio de juego
-    EventBus.emit("game:start");
+    EventBus.emit(GAME_START);
 
     // Escuchar eventos de zombies eliminados para actualizar estadísticas
     this.zombieKilledHandler = () => {
       this.gameStats.zombiesKilled++;
       this.checkLevelCompletion();
     };
-    EventBus.on("zombie:killed", this.zombieKilledHandler);
+    EventBus.on(ZOMBIE_KILLED, this.zombieKilledHandler);
 
     // Escuchar evento de cleanup para limpiar cuando se sale del juego
     this.gameCleanupHandler = () => {
       console.log("Game scene: Recibido evento de cleanup");
       this.forceCleanup();
     };
-    EventBus.on("game:cleanup", this.gameCleanupHandler);
+    EventBus.on(GAME_CLEANUP, this.gameCleanupHandler);
 
     this.level = levels[this.currentLevelIndex];
 
     // Emitir evento de nivel inicial
-    EventBus.emit("level:change", this.currentLevelIndex + 1);
+    EventBus.emit(LEVEL_CHANGE, this.currentLevelIndex + 1);
 
     this.cameras.main.setBackgroundColor("#1c1f2b");
     this.physics.resume();
@@ -119,13 +126,13 @@ export class Game extends Phaser.Scene {
     this.effects.resetEmitters();
 
     // Limpiar cualquier listener previo y configurar el nuevo
-    EventBus.removeAllListeners("reorganize-turrets");
+    EventBus.removeAllListeners(REORGANIZE_TURRETS);
 
     // Escuchar evento para reorganizar torretas
     this.reorganizeTurretsHandler = (data) => {
       this.turret.reorganizeTurrets(data.justifyClass);
     };
-    EventBus.on("reorganize-turrets", this.reorganizeTurretsHandler);
+    EventBus.on(REORGANIZE_TURRETS, this.reorganizeTurretsHandler);
 
     this.bgMusic = this.sound.add("closeEncounter4", {
       loop: true,
@@ -326,7 +333,7 @@ export class Game extends Phaser.Scene {
       this.level = levels[this.currentLevelIndex];
 
       // Emitir evento de cambio de nivel
-      EventBus.emit("level:change", this.currentLevelIndex + 1);
+      EventBus.emit(LEVEL_CHANGE, this.currentLevelIndex + 1);
 
       // Emitir evento para reanudar el tiempo
       EventBus.emit(LEVEL_NEXT);
@@ -341,17 +348,17 @@ export class Game extends Phaser.Scene {
         this.gameStats.zombiesKilled++;
         this.checkLevelCompletion();
       };
-      EventBus.on("zombie:killed", this.zombieKilledHandler);
+      EventBus.on(ZOMBIE_KILLED, this.zombieKilledHandler);
 
       // Reconfigurar listener de reorganizar torretas para el nuevo nivel
       this.reorganizeTurretsHandler = (data) => {
         this.turret.reorganizeTurrets(data.justifyClass);
       };
-      EventBus.on("reorganize-turrets", this.reorganizeTurretsHandler);
+      EventBus.on(REORGANIZE_TURRETS, this.reorganizeTurretsHandler);
     } else {
       // Todos los niveles completados - victoria
       console.log("¡Todos los niveles completados! ¡Victoria!");
-      EventBus.emit("game:victory");
+      EventBus.emit(GAME_VICTORY);
       this.createVictoryUI();
     }
   }
@@ -391,7 +398,7 @@ export class Game extends Phaser.Scene {
     console.log("Game scene: Ejecutando shutdown...");
 
     // Emitir evento de parar el juego
-    EventBus.emit("game:stop");
+    EventBus.emit(GAME_STOP);
 
     // Ejecutar limpieza forzada
     this.forceCleanup();
@@ -402,7 +409,7 @@ export class Game extends Phaser.Scene {
     // Limpiar listener de reorganizar torretas
     if (this.reorganizeTurretsHandler) {
       EventBus.removeListener(
-        "reorganize-turrets",
+        REORGANIZE_TURRETS,
         this.reorganizeTurretsHandler
       );
       this.reorganizeTurretsHandler = null;
@@ -410,13 +417,13 @@ export class Game extends Phaser.Scene {
 
     // Limpiar listener de zombies eliminados
     if (this.zombieKilledHandler) {
-      EventBus.removeListener("zombie:killed", this.zombieKilledHandler);
+      EventBus.removeListener(ZOMBIE_KILLED, this.zombieKilledHandler);
       this.zombieKilledHandler = null;
     }
 
     // Limpiar listener de cleanup
     if (this.gameCleanupHandler) {
-      EventBus.removeListener("game:cleanup", this.gameCleanupHandler);
+      EventBus.removeListener(GAME_CLEANUP, this.gameCleanupHandler);
       this.gameCleanupHandler = null;
     }
   }
@@ -607,7 +614,7 @@ export class Game extends Phaser.Scene {
 
   // Crear UI de victoria (todos los niveles completados)
   createVictoryUI() {
-    EventBus.emit("game:stop");
+    EventBus.emit(GAME_STOP);
     const centerX = this.sys.game.config.width / 2;
     const centerY = this.sys.game.config.height / 2;
 

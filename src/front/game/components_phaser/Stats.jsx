@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
     EventBus,
+    GAME_START,
+    GAME_STOP,
+    ZOMBIE_KILLED,
+    LEVEL_CHANGE,
     GAME_TIME_REQUEST,
     GAME_TIME_RESPONSE,
     LEVEL_COMPLETED,
@@ -81,10 +85,10 @@ const Stats = () => {
         };
 
         // Registrar event listeners
-        EventBus.on('game:start', handleGameStart);
-        EventBus.on('game:stop', handleGameStop);
-        EventBus.on('zombie:killed', handleZombieKilled);
-        EventBus.on('level:change', handleLevelChange);
+        EventBus.on(GAME_START, handleGameStart);
+        EventBus.on(GAME_STOP, handleGameStop);
+        EventBus.on(ZOMBIE_KILLED, handleZombieKilled);
+        EventBus.on(LEVEL_CHANGE, handleLevelChange);
         EventBus.on(LEVEL_COMPLETED, handleLevelCompleted);
         EventBus.on(LEVEL_NEXT, handleLevelNext);
         EventBus.on(GAME_TIME_REQUEST, handleTimeRequest);
@@ -103,10 +107,10 @@ const Stats = () => {
             if (intervalId) {
                 clearInterval(intervalId);
             }
-            EventBus.removeListener('game:start', handleGameStart);
-            EventBus.removeListener('game:stop', handleGameStop);
-            EventBus.removeListener('zombie:killed', handleZombieKilled);
-            EventBus.removeListener('level:change', handleLevelChange);
+            EventBus.removeListener(GAME_START, handleGameStart);
+            EventBus.removeListener(GAME_STOP, handleGameStop);
+            EventBus.removeListener(ZOMBIE_KILLED, handleZombieKilled);
+            EventBus.removeListener(LEVEL_CHANGE, handleLevelChange);
             EventBus.removeListener(LEVEL_COMPLETED, handleLevelCompleted);
             EventBus.removeListener(LEVEL_NEXT, handleLevelNext);
             EventBus.removeListener(GAME_TIME_REQUEST, handleTimeRequest);
