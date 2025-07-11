@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { EventBus } from '../EventBus';
+import { EventBus, GAME_TIME_REQUEST, GAME_TIME_RESPONSE } from '../EventBus';
 import './Stats.css';
 
 const Stats = () => {
@@ -8,6 +8,7 @@ const Stats = () => {
     const [nivel, setNivel] = useState(1);
     const [gameStartTime, setGameStartTime] = useState(null);
     const [gameActive, setGameActive] = useState(false);
+    const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
     // Formatear tiempo en formato mm:ss
     const formatTime = (seconds) => {
@@ -25,6 +26,7 @@ const Stats = () => {
             setGameActive(true);
             setZombiesMuertos(0);
             setTiempoDeJuego('00:00');
+            setElapsedSeconds(0);
         };
 
         const handleGameStop = () => {
@@ -42,16 +44,27 @@ const Stats = () => {
             setNivel(newLevel);
         };
 
+        // Handler para responder a solicitudes de tiempo
+        const handleTimeRequest = () => {
+            // Enviar el tiempo actual de juego como respuesta
+            EventBus.emit(GAME_TIME_RESPONSE, {
+                formattedTime: tiempoDeJuego,
+                seconds: elapsedSeconds
+            });
+        };
+
         // Registrar event listeners
         EventBus.on('game:start', handleGameStart);
         EventBus.on('game:stop', handleGameStop);
         EventBus.on('zombie:killed', handleZombieKilled);
         EventBus.on('level:change', handleLevelChange);
+        EventBus.on(GAME_TIME_REQUEST, handleTimeRequest);
 
         // Actualizar timer cada segundo cuando el juego está activo
         if (gameActive && gameStartTime) {
             intervalId = setInterval(() => {
                 const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+                setElapsedSeconds(elapsed);
                 setTiempoDeJuego(formatTime(elapsed));
             }, 1000);
         }
@@ -65,8 +78,9 @@ const Stats = () => {
             EventBus.removeListener('game:stop', handleGameStop);
             EventBus.removeListener('zombie:killed', handleZombieKilled);
             EventBus.removeListener('level:change', handleLevelChange);
+            EventBus.removeListener(GAME_TIME_REQUEST, handleTimeRequest);
         };
-    }, [gameActive, gameStartTime]);
+    }, [gameActive, gameStartTime, tiempoDeJuego, elapsedSeconds]);
 
     return (
         <div className="stats-pixelart d-flex row container m-0">

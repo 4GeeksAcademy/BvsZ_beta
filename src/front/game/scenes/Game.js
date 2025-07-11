@@ -4,7 +4,7 @@ import { ServerObject } from "../objects/serverObject";
 import { ZombieObject } from "../objects/zombieObject";
 import { EffectsObjects } from "../objects/effectsObject";
 import { TurretObject } from "../objects/turretObject";
-import { EventBus } from "../EventBus";
+import { EventBus, GAME_TIME_REQUEST, GAME_TIME_RESPONSE } from "../EventBus";
 import { BulletObject } from "../objects/bulletObject";
 import { levels } from "../config/levels";
 // Importar constante para el nombre de la fuente
@@ -467,96 +467,112 @@ export class Game extends Phaser.Scene {
     const centerX = this.sys.game.config.width / 2;
     const centerY = this.sys.game.config.height / 2;
 
-    // Crear fondo semitransparente
-    this.levelCompletedBackground = this.add.rectangle(
-      centerX,
-      centerY,
-      this.sys.game.config.width,
-      this.sys.game.config.height,
-      0x000000,
-      0.7
-    );
+    // Solicitar el tiempo de juego actual al componente Stats
+    EventBus.once(GAME_TIME_RESPONSE, (timeData) => {
+      // Crear fondo semitransparente
+      this.levelCompletedBackground = this.add.rectangle(
+        centerX,
+        centerY,
+        this.sys.game.config.width,
+        this.sys.game.config.height,
+        0x000000,
+        0.7
+      );
 
-    // Crear contenedor para la UI
-    this.levelCompletedUI = this.add.container(centerX, centerY);
+      // Crear contenedor para la UI
+      this.levelCompletedUI = this.add.container(centerX, centerY);
 
-    // Crear panel de fondo
-    const panel = this.add.rectangle(0, 0, 400, 250, 0x2a2a2a, 0.9);
-    panel.setStrokeStyle(3, 0x00ff00);
+      // Crear panel de fondo
+      const panel = this.add.rectangle(0, 0, 400, 300, 0x2a2a2a, 0.9);
+      panel.setStrokeStyle(3, 0x00ff00);
 
-    // Crear texto de nivel superado
-    this.levelCompletedText = this.add.text(
-      0,
-      -50,
-      `¡Level ${this.currentLevelIndex + 1} complete!`,
-      {
-        fontSize: "36px",
-        fill: "#00ff00",
-        fontFamily: VT323_GENERIC,
-        fontStyle: "bold",
-        align: "center",
-      }
-    );
-    this.levelCompletedText.setOrigin(0.5);
+      // Crear texto de nivel superado
+      this.levelCompletedText = this.add.text(
+        0,
+        -80,
+        `¡Level ${this.currentLevelIndex + 1} complete!`,
+        {
+          fontSize: "36px",
+          fill: "#00ff00",
+          fontFamily: VT323_GENERIC,
+          fontStyle: "bold",
+          align: "center",
+        }
+      );
+      this.levelCompletedText.setOrigin(0.5);
 
-    // Crear texto de estadísticas
-    const statsText = this.add.text(
-      0,
-      -10,
-      `Zombies killed: ${this.gameStats.zombiesKilled}`,
-      {
+      // Crear texto de estadísticas
+      const statsText = this.add.text(
+        0,
+        -30,
+        `Zombies killed: ${this.gameStats.zombiesKilled}`,
+        {
+          fontSize: "26px",
+          fill: "#ffffff",
+          fontFamily: VT323_GENERIC,
+          align: "center",
+        }
+      );
+      statsText.setOrigin(0.5);
+
+      // Agregar texto de tiempo de juego
+      const timeText = this.add.text(0, 10, `Time: ${timeData.formattedTime}`, {
         fontSize: "26px",
         fill: "#ffffff",
         fontFamily: VT323_GENERIC,
         align: "center",
-      }
-    );
-    statsText.setOrigin(0.5);
+      });
+      timeText.setOrigin(0.5);
 
-    // Crear botón "Next Level"
-    this.nextLevelButton = this.add.rectangle(0, 60, 200, 50, 0x00aa00);
-    this.nextLevelButton.setStrokeStyle(2, 0x00ff00);
-    this.nextLevelButton.setInteractive({ useHandCursor: true });
+      // Crear botón "Next Level"
+      this.nextLevelButton = this.add.rectangle(0, 80, 200, 50, 0x00aa00);
+      this.nextLevelButton.setStrokeStyle(2, 0x00ff00);
+      this.nextLevelButton.setInteractive({ useHandCursor: true });
 
-    const buttonText = this.add.text(0, 60, "Next Level", {
-      fontSize: "26px",
-      fill: "#ffffff",
-      fontFamily: VT323_GENERIC,
+      const buttonText = this.add.text(0, 80, "Next Level", {
+        fontSize: "26px",
+        fill: "#ffffff",
+        fontFamily: VT323_GENERIC,
+      });
+      buttonText.setOrigin(0.5);
+
+      // Agregar elementos al contenedor
+      this.levelCompletedUI.add([
+        panel,
+        this.levelCompletedText,
+        statsText,
+        timeText,
+        this.nextLevelButton,
+        buttonText,
+      ]);
+
+      // Configurar evento del botón
+      this.nextLevelButton.on("pointerdown", () => {
+        this.hideLevelCompletedUI();
+        this.nextLevel();
+      });
+
+      // Efectos de hover para el botón
+      this.nextLevelButton.on("pointerover", () => {
+        this.nextLevelButton.setFillStyle(0x00cc00);
+      });
+
+      this.nextLevelButton.on("pointerout", () => {
+        this.nextLevelButton.setFillStyle(0x00aa00);
+      });
+
+      // Hacer visible la UI
+      this.levelCompletedUI.setVisible(true);
+      this.levelCompletedBackground.setVisible(true);
+      this.bgMusic.stop();
+      //this.sound.play("popupOpen");
+
+      // Pausar el juego
+      this.physics.pause();
     });
-    buttonText.setOrigin(0.5);
 
-    // Agregar elementos al contenedor
-    this.levelCompletedUI.add([
-      panel,
-      this.levelCompletedText,
-      statsText,
-      this.nextLevelButton,
-      buttonText,
-    ]);
-
-    // Configurar evento del botón
-    this.nextLevelButton.on("pointerdown", () => {
-      this.hideLevelCompletedUI();
-      this.nextLevel();
-    });
-
-    // Efectos de hover para el botón
-    this.nextLevelButton.on("pointerover", () => {
-      this.nextLevelButton.setFillStyle(0x00cc00);
-    });
-
-    this.nextLevelButton.on("pointerout", () => {
-      this.nextLevelButton.setFillStyle(0x00aa00);
-    });
-
-    // Hacer visible la UI
-    this.levelCompletedUI.setVisible(true);
-    this.levelCompletedBackground.setVisible(true);
-    this.bgMusic.stop();
-    //this.sound.play("popupOpen");
-
-    // Pausar el juego
-    this.physics.pause();
+    // Emitir evento para solicitar el tiempo de juego
+    EventBus.emit(GAME_TIME_REQUEST);
   }
 
   // Ocultar UI de nivel superado
@@ -579,7 +595,6 @@ export class Game extends Phaser.Scene {
 
   // Crear UI de victoria (todos los niveles completados)
   createVictoryUI() {
-    
     EventBus.emit("game:stop");
     const centerX = this.sys.game.config.width / 2;
     const centerY = this.sys.game.config.height / 2;
