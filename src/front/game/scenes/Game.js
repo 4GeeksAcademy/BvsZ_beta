@@ -4,7 +4,13 @@ import { ServerObject } from "../objects/serverObject";
 import { ZombieObject } from "../objects/zombieObject";
 import { EffectsObjects } from "../objects/effectsObject";
 import { TurretObject } from "../objects/turretObject";
-import { EventBus, GAME_TIME_REQUEST, GAME_TIME_RESPONSE } from "../EventBus";
+import {
+  EventBus,
+  GAME_TIME_REQUEST,
+  GAME_TIME_RESPONSE,
+  LEVEL_COMPLETED,
+  LEVEL_NEXT,
+} from "../EventBus";
 import { BulletObject } from "../objects/bulletObject";
 import { levels } from "../config/levels";
 // Importar constante para el nombre de la fuente
@@ -322,6 +328,9 @@ export class Game extends Phaser.Scene {
       // Emitir evento de cambio de nivel
       EventBus.emit("level:change", this.currentLevelIndex + 1);
 
+      // Emitir evento para reanudar el tiempo
+      EventBus.emit(LEVEL_NEXT);
+
       console.log(`Iniciando nivel ${this.currentLevelIndex + 1}`);
 
       // Recrear elementos del juego con nuevos parámetros
@@ -466,6 +475,9 @@ export class Game extends Phaser.Scene {
   createLevelCompletedUI() {
     const centerX = this.sys.game.config.width / 2;
     const centerY = this.sys.game.config.height / 2;
+
+    // Emitir evento de nivel completado para pausar el tiempo
+    EventBus.emit(LEVEL_COMPLETED);
 
     // Solicitar el tiempo de juego actual al componente Stats
     EventBus.once(GAME_TIME_RESPONSE, (timeData) => {

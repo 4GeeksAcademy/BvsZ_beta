@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { EventBus, GAME_TIME_REQUEST, GAME_TIME_RESPONSE } from '../EventBus';
+import {
+    EventBus,
+    GAME_TIME_REQUEST,
+    GAME_TIME_RESPONSE,
+    LEVEL_COMPLETED,
+    LEVEL_NEXT
+} from '../EventBus';
 import './Stats.css';
 
 const Stats = () => {
@@ -9,6 +15,8 @@ const Stats = () => {
     const [gameStartTime, setGameStartTime] = useState(null);
     const [gameActive, setGameActive] = useState(false);
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
+    const [pausedTime, setPausedTime] = useState(null);
 
     // Formatear tiempo en formato mm:ss
     const formatTime = (seconds) => {
@@ -27,6 +35,8 @@ const Stats = () => {
             setZombiesMuertos(0);
             setTiempoDeJuego('00:00');
             setElapsedSeconds(0);
+            setIsPaused(false);
+            setPausedTime(null);
         };
 
         const handleGameStop = () => {
@@ -44,6 +54,23 @@ const Stats = () => {
             setNivel(newLevel);
         };
 
+        // Handler para pausar el tiempo al completar un nivel
+        const handleLevelCompleted = () => {
+            setIsPaused(true);
+            setPausedTime(Date.now());
+        };
+
+        // Handler para reanudar el tiempo al iniciar el siguiente nivel
+        const handleLevelNext = () => {
+            if (isPaused && pausedTime) {
+                // Ajustar el tiempo de inicio para compensar el tiempo pausado
+                const pausedDuration = Date.now() - pausedTime;
+                setGameStartTime(prev => prev + pausedDuration);
+                setIsPaused(false);
+                setPausedTime(null);
+            }
+        };
+
         // Handler para responder a solicitudes de tiempo
         const handleTimeRequest = () => {
             // Enviar el tiempo actual de juego como respuesta
@@ -58,10 +85,12 @@ const Stats = () => {
         EventBus.on('game:stop', handleGameStop);
         EventBus.on('zombie:killed', handleZombieKilled);
         EventBus.on('level:change', handleLevelChange);
+        EventBus.on(LEVEL_COMPLETED, handleLevelCompleted);
+        EventBus.on(LEVEL_NEXT, handleLevelNext);
         EventBus.on(GAME_TIME_REQUEST, handleTimeRequest);
 
         // Actualizar timer cada segundo cuando el juego está activo
-        if (gameActive && gameStartTime) {
+        if (gameActive && gameStartTime && !isPaused) {
             intervalId = setInterval(() => {
                 const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
                 setElapsedSeconds(elapsed);
@@ -78,9 +107,11 @@ const Stats = () => {
             EventBus.removeListener('game:stop', handleGameStop);
             EventBus.removeListener('zombie:killed', handleZombieKilled);
             EventBus.removeListener('level:change', handleLevelChange);
+            EventBus.removeListener(LEVEL_COMPLETED, handleLevelCompleted);
+            EventBus.removeListener(LEVEL_NEXT, handleLevelNext);
             EventBus.removeListener(GAME_TIME_REQUEST, handleTimeRequest);
         };
-    }, [gameActive, gameStartTime, tiempoDeJuego, elapsedSeconds]);
+    }, [gameActive, gameStartTime, tiempoDeJuego, elapsedSeconds, isPaused, pausedTime]);
 
     return (
         <div className="stats-pixelart d-flex row container m-0">

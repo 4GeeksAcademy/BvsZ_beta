@@ -9,3 +9,7 @@ export const USER_EVENT = "user:login";
 // Game time events
 export const GAME_TIME_REQUEST = "game:time:request";
 export const GAME_TIME_RESPONSE = "game:time:response";
+
+// Level events
+export const LEVEL_COMPLETED = "level:completed";
+export const LEVEL_NEXT = "level:next";
