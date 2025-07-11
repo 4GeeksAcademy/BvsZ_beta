@@ -36,6 +36,9 @@ export class Game extends Phaser.Scene {
     this.zombiesSpawned = 0;
     this.levelCompleted = false;
 
+    // Array para almacenar los datos de tiempo de cada nivel completado
+    this.levelData = [];
+
     // Variables para UI de nivel superado
     this.levelCompletedUI = null;
     this.levelCompletedBackground = null;
@@ -53,6 +56,9 @@ export class Game extends Phaser.Scene {
     // Inicializar estadísticas del juego
     this.gameStats.zombiesKilled = 0;
     this.gameStats.gameStartTime = Date.now();
+
+    // Inicializar array de datos de tiempo de niveles
+    this.levelData = [];
 
     // Inicializar variables de nivel
     this.currentLevelIndex = 0;
@@ -488,6 +494,27 @@ export class Game extends Phaser.Scene {
 
     // Solicitar el tiempo de juego actual al componente Stats
     EventBus.once(GAME_TIME_RESPONSE, (timeData) => {
+      // Calcular el tiempo del nivel actual restando el tiempo de los niveles anteriores
+      const previousLevelsTime = this.levelData.reduce(
+        (total, level) => total + (level.timeInSeconds || 0),
+        0
+      );
+      const currentLevelTime = timeData.seconds - previousLevelsTime;
+
+      // Agregar timeData al array con información del nivel
+      this.levelData.push({
+        level: this.currentLevelIndex + 1,
+        timeInSeconds: currentLevelTime,
+        zombiesKilled: this.gameStats.zombiesKilled,
+        totalTime: timeData.seconds,
+      });
+
+      console.log(
+        "Nivel completado - Datos agregados:",
+        this.levelData[this.levelData.length - 1]
+      );
+      console.log("Array completo de niveles:", this.levelData);
+
       // Crear fondo semitransparente
       this.levelCompletedBackground = this.add.rectangle(
         centerX,
@@ -534,8 +561,8 @@ export class Game extends Phaser.Scene {
       );
       statsText.setOrigin(0.5);
 
-      // Agregar texto de tiempo de juego
-      const timeText = this.add.text(0, 10, `Time: ${timeData.formattedTime}`, {
+      // Agregar texto de tiempo de juego (tiempo del nivel actual)
+      const timeText = this.add.text(0, 10, `Time: ${currentLevelTime}s`, {
         fontSize: "26px",
         fill: "#ffffff",
         fontFamily: VT323_GENERIC,
@@ -631,12 +658,12 @@ export class Game extends Phaser.Scene {
     // Crear contenedor para la UI
     this.levelCompletedUI = this.add.container(centerX, centerY);
 
-    // Crear panel de fondo
-    const panel = this.add.rectangle(0, 0, 500, 300, 0x1a1a1a, 0.95);
+    // Crear panel de fondo (aumentar altura para acomodar todo el contenido)
+    const panel = this.add.rectangle(0, 0, 600, 400, 0x1a1a1a, 0.95);
     panel.setStrokeStyle(4, 0xffd700);
 
     // Crear texto de victoria
-    const victoryText = this.add.text(0, -80, "¡VICTORIA!", {
+    const victoryText = this.add.text(0, -120, "Victory!", {
       fontSize: "48px",
       fill: "#ffd700",
       fontFamily: VT323_GENERIC,
@@ -648,8 +675,8 @@ export class Game extends Phaser.Scene {
     // Crear texto de felicitaciones
     const congratsText = this.add.text(
       0,
-      -30,
-      "Todos los niveles completados",
+      -70,
+      "All levels completed",
       {
         fontSize: "24px",
         fill: "#ffffff",
@@ -659,16 +686,28 @@ export class Game extends Phaser.Scene {
     );
     congratsText.setOrigin(0.5);
 
-    // Crear texto de estadísticas finales
-    const gameTime = Math.floor(
-      (Date.now() - this.gameStats.gameStartTime) / 1000
-    );
+    // Calcular estadísticas finales desde levelData
+    let totalZombiesKilled = 0;
+    let totalGameTime = 0;
+
+    if (this.levelData.length > 0) {
+      // Sumatoria de todos los zombies killed
+      totalZombiesKilled = this.levelData.reduce(
+        (total, level) => total + (level.zombiesKilled || 0),
+        0
+      );
+
+      // Tiempo total del último nivel completado
+      const lastLevel = this.levelData[this.levelData.length - 1];
+      totalGameTime = lastLevel.totalTime || 0;
+    }
+
     const statsText = this.add.text(
       0,
-      20,
-      `Zombies eliminados: ${this.gameStats.zombiesKilled}\nTiempo total: ${gameTime}s`,
+      -10,
+      `Total zombies killed: ${totalZombiesKilled}\nTotal time: ${totalGameTime}s`,
       {
-        fontSize: "18px",
+        fontSize: "22px",
         fill: "#ffffff",
         fontFamily: VT323_GENERIC,
         align: "center",
@@ -677,11 +716,11 @@ export class Game extends Phaser.Scene {
     statsText.setOrigin(0.5);
 
     // Crear botón "Jugar de nuevo"
-    const playAgainButton = this.add.rectangle(0, 90, 200, 50, 0x004400);
+    const playAgainButton = this.add.rectangle(0, 140, 200, 50, 0x004400);
     playAgainButton.setStrokeStyle(2, 0x00ff00);
     playAgainButton.setInteractive({ useHandCursor: true });
 
-    const buttonText = this.add.text(0, 90, "Jugar de nuevo", {
+    const buttonText = this.add.text(0, 140, "Jugar de nuevo", {
       fontSize: "18px",
       fill: "#ffffff",
       fontFamily: VT323_GENERIC,
@@ -715,7 +754,9 @@ export class Game extends Phaser.Scene {
 
     // Hacer visible la UI
     this.levelCompletedUI.setVisible(true);
-    this.levelCompletedBackground.setVisible(true);
+    this.levelCompletedBackground.setVisible(true);    
+    this.levelCompletedUI.setDepth(101);   
+    this.levelCompletedbackground.setDepth(100);
 
     // Pausar el juego
     this.physics.pause();
