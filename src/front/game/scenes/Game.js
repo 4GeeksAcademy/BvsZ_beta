@@ -374,6 +374,19 @@ export class Game extends Phaser.Scene {
     // Limpiar zombies existentes
     this.zombies.clear(true, true);
 
+    // Limpiar todas las balas existentes
+    if (this.bulletManager && this.bulletManager.bullets) {
+      this.bulletManager.bullets.children.iterate((bullet) => {
+        if (bullet && bullet.active) {
+          // Destruir emisor de efectos si existe
+          const emitter = bullet.getData("rocketEmitter");
+          if (emitter) emitter.destroy();
+          bullet.destroy();
+        }
+      });
+      this.bulletManager.bullets.clear(true, true);
+    }
+
     // Recrear servidores con nueva salud
     this.server.servers.forEach((server) => {
       server.setData("health", this.level.serverHealth);
@@ -674,17 +687,12 @@ export class Game extends Phaser.Scene {
     victoryText.setOrigin(0.5);
 
     // Crear texto de felicitaciones
-    const congratsText = this.add.text(
-      0,
-      -70,
-      "All levels completed",
-      {
-        fontSize: "24px",
-        fill: "#ffffff",
-        fontFamily: VT323_GENERIC,
-        align: "center",
-      }
-    );
+    const congratsText = this.add.text(0, -70, "All levels completed", {
+      fontSize: "24px",
+      fill: "#ffffff",
+      fontFamily: VT323_GENERIC,
+      align: "center",
+    });
     congratsText.setOrigin(0.5);
 
     // Calcular estadísticas finales desde levelData
@@ -755,8 +763,8 @@ export class Game extends Phaser.Scene {
 
     // Hacer visible la UI
     this.levelCompletedUI.setVisible(true);
-    this.levelCompletedBackground.setVisible(true);    
-    this.levelCompletedUI.setDepth(101);   
+    this.levelCompletedBackground.setVisible(true);
+    this.levelCompletedUI.setDepth(101);
     this.levelCompletedbackground.setDepth(100);
 
     // Pausar el juego
