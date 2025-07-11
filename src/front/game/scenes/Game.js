@@ -128,11 +128,15 @@ export class Game extends Phaser.Scene {
       this.level.zombieDamage
     );
     // Crear el primer zombie con los parámetros correctos
-    this.zombieManager.createZombie(
+    const firstZombie = this.zombieManager.createZombie(
       this.level.zombieVelocityY,
       this.level.zombieHealth,
       this.level.zombieDamage
     );
+    // Incrementar contador si se creó exitosamente
+    if (firstZombie) {
+      this.zombiesSpawned++;
+    }
 
     this.turret = new TurretObject(
       this,
@@ -244,7 +248,7 @@ export class Game extends Phaser.Scene {
         if (
           this.zombies.getChildren().length < this.level.maxZombiesOnScreen &&
           this.server.servers.length > 0 &&
-          this.zombiesSpawned < this.level.zombiesPerLevel - 1 &&
+          this.zombiesSpawned < this.level.zombiesPerLevel &&
           !this.levelCompleted
         ) {
           const newZombie = this.zombieManager.createZombie(
@@ -328,7 +332,7 @@ export class Game extends Phaser.Scene {
 
     // Verificar si todos los zombies han sido spawneados y eliminados
     if (
-      this.zombiesSpawned === this.level.zombiesPerLevel - 1 &&
+      this.zombiesSpawned === this.level.zombiesPerLevel &&
       this.zombies.getChildren().length === 0 &&
       !this.levelCompleted
     ) {
@@ -399,17 +403,33 @@ export class Game extends Phaser.Scene {
     // Limpiar zombies existentes
     this.zombies.clear(true, true);
 
-    // Limpiar todas las balas existentes
+    // Limpiar todas las balas existentes y sus efectos
     if (this.bulletManager && this.bulletManager.bullets) {
       this.bulletManager.bullets.children.iterate((bullet) => {
         if (bullet && bullet.active) {
           // Destruir emisor de efectos si existe
           const emitter = bullet.getData("rocketEmitter");
-          if (emitter) emitter.destroy();
+          if (emitter && emitter.destroy) {
+            emitter.destroy();
+          }
           bullet.destroy();
         }
       });
       this.bulletManager.bullets.clear(true, true);
+    }
+
+    // Limpiar todos los efectos visuales y sus emisores
+    if (this.effects) {
+      this.effects.resetEmitters();
+    }
+
+    // Limpiar todas las partículas restantes en la escena
+    if (this.children) {
+      this.children.list.forEach((child) => {
+        if (child && child.type === "ParticleEmitter") {
+          child.destroy();
+        }
+      });
     }
 
     // Recrear servidores con nueva salud
@@ -493,14 +513,32 @@ export class Game extends Phaser.Scene {
       this.zombies.clear(true, true);
     }
 
-    // Limpiar balas
+    // Limpiar balas y sus efectos
     if (this.bulletManager && this.bulletManager.bullets) {
+      this.bulletManager.bullets.children.iterate((bullet) => {
+        if (bullet && bullet.active) {
+          // Destruir emisor de efectos si existe
+          const emitter = bullet.getData("rocketEmitter");
+          if (emitter && emitter.destroy) {
+            emitter.destroy();
+          }
+        }
+      });
       this.bulletManager.bullets.clear(true, true);
     }
 
     // Limpiar efectos
     if (this.effects) {
       this.effects.resetEmitters();
+    }
+
+    // Limpiar todas las partículas restantes en la escena
+    if (this.children) {
+      this.children.list.forEach((child) => {
+        if (child && child.type === "ParticleEmitter") {
+          child.destroy();
+        }
+      });
     }
 
     // Detener todos los timers
