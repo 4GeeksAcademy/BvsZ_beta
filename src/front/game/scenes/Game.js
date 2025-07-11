@@ -51,6 +51,11 @@ export class Game extends Phaser.Scene {
     this.levelCompletedBackground = null;
     this.levelCompletedText = null;
     this.nextLevelButton = null;
+
+    // Variables para el conteo regresivo
+    this.countdownOverlay = null;
+    this.countdownText = null;
+    this.isCountingDown = false;
   }
 
   create() {
@@ -103,6 +108,27 @@ export class Game extends Phaser.Scene {
     EventBus.emit(LEVEL_CHANGE, this.currentLevelIndex + 1);
 
     this.cameras.main.setBackgroundColor("#1c1f2b");
+
+    // Inicialización del juego sin crear zombies iniciales
+    this.initializeGameElements(true); // true = omitir creación del primer zombie
+
+    // Mostrar conteo regresivo antes de iniciar el nivel
+    this.showCountdown(() => {
+      // Crear el primer zombie después de que termina el conteo
+      const firstZombie = this.zombieManager.createZombie(
+        this.level.zombieVelocityY,
+        this.level.zombieHealth,
+        this.level.zombieDamage
+      );
+      // Incrementar contador si se creó exitosamente
+      if (firstZombie) {
+        this.zombiesSpawned++;
+      }
+    });
+  }
+
+  // Inicializar elementos del juego
+  initializeGameElements(skipFirstZombie = false) {
     this.physics.resume();
 
     this.grid = new GridObject(this, this.level.gridCols);
@@ -127,15 +153,19 @@ export class Game extends Phaser.Scene {
       this.level.zombieHealth,
       this.level.zombieDamage
     );
-    // Crear el primer zombie con los parámetros correctos
-    const firstZombie = this.zombieManager.createZombie(
-      this.level.zombieVelocityY,
-      this.level.zombieHealth,
-      this.level.zombieDamage
-    );
-    // Incrementar contador si se creó exitosamente
-    if (firstZombie) {
-      this.zombiesSpawned++;
+
+    // Crear el primer zombie solo si no se indica omitirlo
+    if (!skipFirstZombie) {
+      // Crear el primer zombie con los parámetros correctos
+      const firstZombie = this.zombieManager.createZombie(
+        this.level.zombieVelocityY,
+        this.level.zombieHealth,
+        this.level.zombieDamage
+      );
+      // Incrementar contador si se creó exitosamente
+      if (firstZombie) {
+        this.zombiesSpawned++;
+      }
     }
 
     this.turret = new TurretObject(
@@ -208,6 +238,11 @@ export class Game extends Phaser.Scene {
     this.time.addEvent({
       delay: 1000,
       callback: () => {
+        // No disparar torretas durante el conteo regresivo
+        if (this.isCountingDown) {
+          return;
+        }
+
         this.turret.turrets.forEach((turret) => {
           const turretCol = turret.getData("col");
           const zombiesInCol = this.zombies
@@ -245,25 +280,29 @@ export class Game extends Phaser.Scene {
     this.time.addEvent({
       delay: 500,
       callback: () => {
+        // No generar zombies durante el conteo regresivo
         if (
-          this.zombies.getChildren().length < this.level.maxZombiesOnScreen &&
-          this.server.servers.length > 0 &&
-          this.zombiesSpawned < this.level.zombiesPerLevel &&
-          !this.levelCompleted
+          this.isCountingDown || // Verificar si estamos en conteo regresivo
+          this.zombies.getChildren().length >= this.level.maxZombiesOnScreen ||
+          this.server.servers.length <= 0 ||
+          this.zombiesSpawned >= this.level.zombiesPerLevel ||
+          this.levelCompleted
         ) {
-          const newZombie = this.zombieManager.createZombie(
-            this.level.zombieVelocityY,
-            this.level.zombieHealth,
-            this.level.zombieDamage
+          return; // No crear zombies si estamos en conteo regresivo o se cumplen otras condiciones
+        }
+
+        const newZombie = this.zombieManager.createZombie(
+          this.level.zombieVelocityY,
+          this.level.zombieHealth,
+          this.level.zombieDamage
+        );
+        // Si se pudo crear el zombie, incrementar contador
+        if (newZombie) {
+          this.zombiesSpawned++;
+        } else {
+          console.log(
+            "No se puede crear zombie: no hay servidores disponibles"
           );
-          // Si se pudo crear el zombie, incrementar contador
-          if (newZombie) {
-            this.zombiesSpawned++;
-          } else {
-            console.log(
-              "No se puede crear zombie: no hay servidores disponibles"
-            );
-          }
         }
       },
       loop: true,
@@ -390,6 +429,9 @@ export class Game extends Phaser.Scene {
         this.turret.reorganizeTurrets(data.justifyClass);
       };
       EventBus.on(REORGANIZE_TURRETS, this.reorganizeTurretsHandler);
+
+      // Mostrar conteo regresivo antes de iniciar el nuevo nivel
+      this.showCountdown();
     } else {
       // Todos los niveles completados - victoria
       console.log("¡Todos los niveles completados! ¡Victoria!");
@@ -548,6 +590,16 @@ export class Game extends Phaser.Scene {
 
     // Limpiar UIs
     this.hideLevelCompletedUI();
+
+    // Limpiar UI de countdown si existe
+    if (this.countdownText) {
+      this.countdownText.destroy();
+      this.countdownText = null;
+    }
+    if (this.countdownOverlay) {
+      this.countdownOverlay.destroy();
+      this.countdownOverlay = null;
+    }
 
     // Limpiar listeners
     this.cleanupEventListeners();
@@ -729,6 +781,111 @@ export class Game extends Phaser.Scene {
     this.physics.resume();
   }
 
+  // Mostrar conteo regresivo antes de iniciar el nivel
+  showCountdown(callback) {
+    // Marcar que estamos en conteo regresivo
+    this.isCountingDown = true;
+
+    // Pausar el juego durante el conteo
+    this.physics.pause();
+
+    // Asegurarse de que cualquier zombie existente esté congelado
+    if (this.zombies) {
+      this.zombies.children.iterate((zombie) => {
+        if (zombie && zombie.active) {
+          zombie.setVelocity(0, 0);
+        }
+      });
+    }
+
+    const centerX = this.sys.game.config.width / 2;
+    const centerY = this.sys.game.config.height / 2;
+
+    // Crear fondo semitransparente
+    this.countdownOverlay = this.add.rectangle(
+      centerX,
+      centerY,
+      this.sys.game.config.width,
+      this.sys.game.config.height,
+      0x000000,
+      0.5
+    );
+
+    // Crear texto del conteo
+    this.countdownText = this.add.text(centerX, centerY, "3", {
+      fontSize: "120px",
+      fill: "#00ff00",
+      fontFamily: VT323_GENERIC,
+      fontStyle: "bold",
+      align: "center",
+    });
+    this.countdownText.setOrigin(0.5);
+    this.countdownText.setDepth(100);
+    this.countdownOverlay.setDepth(99);
+
+    // Animación de escala para el texto
+    this.tweens.add({
+      targets: this.countdownText,
+      scale: { from: 0.5, to: 1.5 },
+      duration: 800,
+      ease: "Power2",
+    });
+
+    // Secuencia de conteo: 3, 2, 1, Deploy!
+    this.time.delayedCall(1000, () => {
+      this.countdownText.setText("2");
+      this.tweens.add({
+        targets: this.countdownText,
+        scale: { from: 0.5, to: 1.5 },
+        duration: 800,
+        ease: "Power2",
+      });
+
+      this.time.delayedCall(1000, () => {
+        this.countdownText.setText("1");
+        this.tweens.add({
+          targets: this.countdownText,
+          scale: { from: 0.5, to: 1.5 },
+          duration: 800,
+          ease: "Power2",
+        });
+
+        this.time.delayedCall(1000, () => {
+          this.countdownText.setText("Deploy!");
+          this.countdownText.setFill("#ffff00");
+          this.tweens.add({
+            targets: this.countdownText,
+            scale: { from: 0.5, to: 2 },
+            duration: 800,
+            ease: "Power2",
+            onComplete: () => {
+              // Limpiar elementos de la UI del conteo
+              if (this.countdownText) {
+                this.countdownText.destroy();
+                this.countdownText = null;
+              }
+              if (this.countdownOverlay) {
+                this.countdownOverlay.destroy();
+                this.countdownOverlay = null;
+              }
+
+              // Marcar que finalizó el conteo
+              this.isCountingDown = false;
+
+              // Reanudar el juego
+              this.physics.resume();
+
+              // Ejecutar callback si se proporcionó
+              if (callback && typeof callback === "function") {
+                callback();
+              }
+            },
+          });
+        });
+      });
+    });
+  }
+
   // Crear UI de victoria (todos los niveles completados)
   createVictoryUI() {
     EventBus.emit(GAME_STOP);
@@ -848,7 +1005,7 @@ export class Game extends Phaser.Scene {
     this.levelCompletedUI.setVisible(true);
     this.levelCompletedBackground.setVisible(true);
     this.levelCompletedUI.setDepth(101);
-    this.levelCompletedbackground.setDepth(100);
+    this.levelCompletedBackground.setDepth(100);
 
     // Pausar el juego
     this.physics.pause();
