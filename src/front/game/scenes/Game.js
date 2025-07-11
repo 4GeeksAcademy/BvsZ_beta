@@ -514,11 +514,20 @@ export class Game extends Phaser.Scene {
       );
       const currentLevelTime = timeData.seconds - previousLevelsTime;
 
+      // Calcular los zombies killed del nivel actual restando los zombies de los niveles anteriores
+      const previousLevelsZombies = this.levelData.reduce(
+        (total, level) => total + (level.zombiesKilled || 0),
+        0
+      );
+      const currentLevelZombies =
+        this.gameStats.zombiesKilled - previousLevelsZombies;
+
       // Agregar timeData al array con información del nivel
       this.levelData.push({
         level: this.currentLevelIndex + 1,
         timeInSeconds: currentLevelTime,
-        zombiesKilled: this.gameStats.zombiesKilled,
+        zombiesKilled: currentLevelZombies,
+        totalZombiesKilled: this.gameStats.zombiesKilled,
         totalTime: timeData.seconds,
       });
 
@@ -564,7 +573,7 @@ export class Game extends Phaser.Scene {
       const statsText = this.add.text(
         0,
         -30,
-        `Zombies killed: ${this.gameStats.zombiesKilled}`,
+        `Zombies killed: ${currentLevelZombies}`,
         {
           fontSize: "26px",
           fill: "#ffffff",
@@ -729,8 +738,8 @@ export class Game extends Phaser.Scene {
     playAgainButton.setStrokeStyle(2, 0x00ff00);
     playAgainButton.setInteractive({ useHandCursor: true });
 
-    const buttonText = this.add.text(0, 140, "Jugar de nuevo", {
-      fontSize: "18px",
+    const buttonText = this.add.text(0, 140, "Play again", {
+      fontSize: "22px",
       fill: "#ffffff",
       fontFamily: VT323_GENERIC,
       fontStyle: "bold",
