@@ -38,7 +38,7 @@ export class MainMenu extends Scene {
       .setInteractive()
       .on("pointerdown", () => this.changeScene())
       .on("pointerover", () => {
-        battleButton.setTint(0x6600cc);
+        battleButton.setTint(0xA1D84A);
         this.input.setDefaultCursor("pointer");
       })
       .on("pointerout", () => {
