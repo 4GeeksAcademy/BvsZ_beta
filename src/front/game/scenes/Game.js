@@ -610,7 +610,7 @@ export class Game extends Phaser.Scene {
       // Hacer visible la UI
       this.levelCompletedUI.setVisible(true);
       this.levelCompletedBackground.setVisible(true);
-      this.bgMusic.stop();
+      this.bgMusic.pause();
       //this.sound.play("popupOpen");
 
       // Pausar el juego
@@ -636,6 +636,7 @@ export class Game extends Phaser.Scene {
 
     // Reanudar el juego
     //this.sound.play("popupClose");
+    this.bgMusic.resume();
     this.physics.resume();
   }
 
