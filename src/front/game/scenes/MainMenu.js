@@ -1,4 +1,9 @@
-import { EventBus, GAME_STOP, REORGANIZE_TURRETS, SCENE_READY } from "../EventBus";
+import {
+  EventBus,
+  GAME_STOP,
+  REORGANIZE_TURRETS,
+  SCENE_READY,
+} from "../EventBus";
 import { Scene } from "phaser";
 import { FONT_VT323 } from "../config/fonts";
 
@@ -38,7 +43,7 @@ export class MainMenu extends Scene {
       .setInteractive()
       .on("pointerdown", () => this.changeScene())
       .on("pointerover", () => {
-        battleButton.setTint(0xA1D84A);
+        battleButton.setTint(0xa1d84a);
         this.input.setDefaultCursor("pointer");
       })
       .on("pointerout", () => {
