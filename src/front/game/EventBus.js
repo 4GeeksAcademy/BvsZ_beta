@@ -26,3 +26,6 @@ export const GAME_TIME_RESPONSE = "game:time:response";
 
 // Turret events
 export const REORGANIZE_TURRETS = "reorganize-turrets";
+
+// Scene events
+export const SCENE_READY = "current-scene-ready";

@@ -1,4 +1,4 @@
-import { EventBus } from "../EventBus";
+import { EventBus, GAME_STOP, REORGANIZE_TURRETS, SCENE_READY } from "../EventBus";
 import { Scene } from "phaser";
 import { FONT_VT323 } from "../config/fonts";
 
@@ -14,7 +14,7 @@ export class MainMenu extends Scene {
     this.input.setDefaultCursor("crosshair");
 
     // Emitir evento de parar el juego cuando regresamos al menú
-    EventBus.emit("game:stop");
+    EventBus.emit(GAME_STOP);
 
     const bg = this.add.image(0, 0, "background").setOrigin(0);
     bg.displayWidth = this.sys.game.config.width;
@@ -48,16 +48,16 @@ export class MainMenu extends Scene {
       });
 
     const battleButton = this.add
-      .text(384, 80, "Battle!", FONT_VT323)
+      .text(384, 80, "Deploy!", FONT_VT323)
       .setDepth(100)
       .setOrigin(0.5);
 
-    EventBus.emit("current-scene-ready", this);
+    EventBus.emit(SCENE_READY, this);
   }
 
   changeScene() {
     // Limpiar todos los listeners de reorganize-turrets antes de iniciar el juego
-    EventBus.removeAllListeners("reorganize-turrets");
+    EventBus.removeAllListeners(REORGANIZE_TURRETS);
     this.scene.start("Game");
   }
 }
