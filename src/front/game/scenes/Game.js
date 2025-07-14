@@ -20,6 +20,10 @@ import {
 } from "../EventBus";
 import { BulletObject } from "../objects/bulletObject";
 import { levels } from "../config/levels";
+import forceCleanup from "../utils/ForceCleanup";
+
+
+
 // Importar constante para el nombre de la fuente
 const VT323_GENERIC = "VT323";
 
@@ -98,7 +102,7 @@ export class Game extends Phaser.Scene {
     // Escuchar evento de cleanup para limpiar cuando se sale del juego
     this.gameCleanupHandler = () => {
       console.log("Game scene: Recibido evento de cleanup");
-      this.forceCleanup();
+      forceCleanup(this);
     };
     EventBus.on(GAME_CLEANUP, this.gameCleanupHandler);
 
@@ -507,7 +511,7 @@ export class Game extends Phaser.Scene {
     EventBus.emit(GAME_STOP);
 
     // Ejecutar limpieza forzada
-    this.forceCleanup();
+    forceCleanup(this);
   }
 
   // Método para limpiar listeners de eventos
@@ -532,84 +536,6 @@ export class Game extends Phaser.Scene {
       EventBus.removeListener(GAME_CLEANUP, this.gameCleanupHandler);
       this.gameCleanupHandler = null;
     }
-  }
-
-  // Método para forzar limpieza completa cuando se sale del juego
-  forceCleanup() {
-    console.log("Game scene: Iniciando limpieza forzada...");
-
-    // Detener música de fondo inmediatamente
-    if (this.bgMusic && this.bgMusic.isPlaying) {
-      this.bgMusic.stop();
-      this.bgMusic.destroy();
-      this.bgMusic = null;
-    }
-
-    // Detener todos los sonidos
-    if (this.sound) {
-      this.sound.stopAll();
-    }
-
-    // Limpiar todos los grupos de physics
-    if (this.zombies) {
-      this.zombies.clear(true, true);
-    }
-
-    // Limpiar balas y sus efectos
-    if (this.bulletManager && this.bulletManager.bullets) {
-      this.bulletManager.bullets.children.iterate((bullet) => {
-        if (bullet && bullet.active) {
-          // Destruir emisor de efectos si existe
-          const emitter = bullet.getData("rocketEmitter");
-          if (emitter && emitter.destroy) {
-            emitter.destroy();
-          }
-        }
-      });
-      this.bulletManager.bullets.clear(true, true);
-    }
-
-    // Limpiar efectos
-    if (this.effects) {
-      this.effects.resetEmitters();
-    }
-
-    // Limpiar todas las partículas restantes en la escena
-    if (this.children) {
-      this.children.list.forEach((child) => {
-        if (child && child.type === "ParticleEmitter") {
-          child.destroy();
-        }
-      });
-    }
-
-    // Detener todos los timers
-    if (this.time) {
-      this.time.removeAllEvents();
-    }
-
-    // Limpiar UIs
-    this.hideLevelCompletedUI();
-
-    // Limpiar UI de countdown si existe
-    if (this.countdownText) {
-      this.countdownText.destroy();
-      this.countdownText = null;
-    }
-    if (this.countdownOverlay) {
-      this.countdownOverlay.destroy();
-      this.countdownOverlay = null;
-    }
-
-    // Limpiar listeners
-    this.cleanupEventListeners();
-
-    // Pausar physics para evitar errores
-    if (this.physics) {
-      this.physics.pause();
-    }
-
-    console.log("Game scene: Limpieza forzada completada");
   }
 
   // Crear UI de nivel superado
