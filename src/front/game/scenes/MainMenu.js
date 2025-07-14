@@ -61,8 +61,6 @@ export class MainMenu extends Scene {
   }
 
   changeScene() {
-    // Limpiar todos los listeners de reorganize-turrets antes de iniciar el juego
-    EventBus.removeAllListeners(REORGANIZE_TURRETS);
     this.scene.start("Game");
   }
 }

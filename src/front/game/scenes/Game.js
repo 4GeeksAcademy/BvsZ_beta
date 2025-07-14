@@ -12,21 +12,13 @@ import {
   GAME_VICTORY,
   ZOMBIE_KILLED,
   LEVEL_CHANGE,
-  GAME_TIME_REQUEST,
-  GAME_TIME_RESPONSE,
-  LEVEL_COMPLETED,
-  LEVEL_NEXT,
   REORGANIZE_TURRETS,
 } from "../EventBus";
 import { BulletObject } from "../objects/bulletObject";
 import { levels } from "../config/levels";
 import forceCleanup from "../utils/ForceCleanup";
 import registerLevelCompletedUI from "../utils/LevelCompletedUI";
-
-
-
-// Importar constante para el nombre de la fuente
-const VT323_GENERIC = "VT323";
+import { registerCountdownUI } from "../utils/CountdownUI";
 
 export class Game extends Phaser.Scene {
   constructor() {
@@ -64,8 +56,8 @@ export class Game extends Phaser.Scene {
   }
 
   create() {
-
     registerLevelCompletedUI(this);
+    registerCountdownUI(this);
 
     // Personalizar el cursor para toda la escena de juego
     this.input.setDefaultCursor("crosshair");
@@ -91,9 +83,6 @@ export class Game extends Phaser.Scene {
     this.currentLevelIndex = 0;
     this.zombiesSpawned = 0;
     this.levelCompleted = false;
-
-    // Emitir evento de inicio de juego
-    EventBus.emit(GAME_START);
 
     // Escuchar eventos de zombies eliminados para actualizar estadísticas
     this.zombieKilledHandler = () => {
@@ -131,6 +120,8 @@ export class Game extends Phaser.Scene {
       // Incrementar contador si se creó exitosamente
       if (firstZombie) {
         this.zombiesSpawned++;
+        // Emitir evento de inicio de juego
+        EventBus.emit(GAME_START);
       }
     });
   }
@@ -416,9 +407,6 @@ export class Game extends Phaser.Scene {
       // Emitir evento de cambio de nivel
       EventBus.emit(LEVEL_CHANGE, this.currentLevelIndex + 1);
 
-      // Emitir evento para reanudar el tiempo
-      EventBus.emit(LEVEL_NEXT);
-
       console.log(`Iniciando nivel ${this.currentLevelIndex + 1}`);
 
       // Recrear elementos del juego con nuevos parámetros
@@ -541,112 +529,4 @@ export class Game extends Phaser.Scene {
       this.gameCleanupHandler = null;
     }
   }
-
-
-
-  // Mostrar conteo regresivo antes de iniciar el nivel
-  showCountdown(callback) {
-    // Marcar que estamos en conteo regresivo
-    this.isCountingDown = true;
-
-    // Pausar el juego durante el conteo
-    this.physics.pause();
-
-    // Asegurarse de que cualquier zombie existente esté congelado
-    if (this.zombies) {
-      this.zombies.children.iterate((zombie) => {
-        if (zombie && zombie.active) {
-          zombie.setVelocity(0, 0);
-        }
-      });
-    }
-
-    const centerX = this.sys.game.config.width / 2;
-    const centerY = this.sys.game.config.height / 2;
-
-    // Crear fondo semitransparente
-    this.countdownOverlay = this.add.rectangle(
-      centerX,
-      centerY,
-      this.sys.game.config.width,
-      this.sys.game.config.height,
-      0x000000,
-      0.5
-    );
-
-    // Crear texto del conteo
-    this.countdownText = this.add.text(centerX, centerY, "3", {
-      fontSize: "120px",
-      fill: "#00ff00",
-      fontFamily: VT323_GENERIC,
-      fontStyle: "bold",
-      align: "center",
-    });
-    this.countdownText.setOrigin(0.5);
-    this.countdownText.setDepth(100);
-    this.countdownOverlay.setDepth(99);
-
-    // Animación de escala para el texto
-    this.tweens.add({
-      targets: this.countdownText,
-      scale: { from: 0.5, to: 1.5 },
-      duration: 800,
-      ease: "Power2",
-    });
-
-    // Secuencia de conteo: 3, 2, 1, Deploy!
-    this.time.delayedCall(1000, () => {
-      this.countdownText.setText("2");
-      this.tweens.add({
-        targets: this.countdownText,
-        scale: { from: 0.5, to: 1.5 },
-        duration: 800,
-        ease: "Power2",
-      });
-
-      this.time.delayedCall(1000, () => {
-        this.countdownText.setText("1");
-        this.tweens.add({
-          targets: this.countdownText,
-          scale: { from: 0.5, to: 1.5 },
-          duration: 800,
-          ease: "Power2",
-        });
-
-        this.time.delayedCall(1000, () => {
-          this.countdownText.setText("Deploy!");
-          this.countdownText.setFill("#ffff00");
-          this.tweens.add({
-            targets: this.countdownText,
-            scale: { from: 0.5, to: 2 },
-            duration: 800,
-            ease: "Power2",
-            onComplete: () => {
-              // Limpiar elementos de la UI del conteo
-              if (this.countdownText) {
-                this.countdownText.destroy();
-                this.countdownText = null;
-              }
-              if (this.countdownOverlay) {
-                this.countdownOverlay.destroy();
-                this.countdownOverlay = null;
-              }
-
-              // Marcar que finalizó el conteo
-              this.isCountingDown = false;
-
-              // Reanudar el juego
-              this.physics.resume();
-
-              // Ejecutar callback si se proporcionó
-              if (callback && typeof callback === "function") {
-                callback();
-              }
-            },
-          });
-        });
-      });
-    });
-  }
-
 }
