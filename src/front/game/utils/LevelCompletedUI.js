@@ -6,7 +6,14 @@ import {
   GAME_STOP,
 } from "../EventBus";
 
-const VT323_GENERIC = "VT323";
+import {
+  FONT_VT323_TITLE,
+  FONT_VT323_STATS,
+  FONT_VT323_TIME,
+  FONT_VT323_BUTTON,
+  FONT_VT323_TITLE_VICTORY,
+  FONT_VT323_TEXT_VICTORY,
+} from "../config/fonts.js";
 
 export default function registerLevelCompletedUI(scene) {
   scene.createLevelCompletedUI = function () {
@@ -62,13 +69,7 @@ export default function registerLevelCompletedUI(scene) {
         0,
         -80,
         `¡Level ${this.currentLevelIndex + 1} complete!`,
-        {
-          fontSize: "36px",
-          fill: "#00ff00",
-          fontFamily: VT323_GENERIC,
-          fontStyle: "bold",
-          align: "center",
-        }
+        FONT_VT323_TITLE
       );
       this.levelCompletedText.setOrigin(0.5);
 
@@ -76,32 +77,23 @@ export default function registerLevelCompletedUI(scene) {
         0,
         -30,
         `Zombies killed by player: ${this.currentLevelZombieDeaths.byPlayer}\nZombies killed by collision: ${this.currentLevelZombieDeaths.byCollision}`,
-        {
-          fontSize: "20px",
-          fill: "#ffffff",
-          fontFamily: VT323_GENERIC,
-          align: "center",
-        }
+        FONT_VT323_STATS
       );
       statsText.setOrigin(0.5);
 
-      const timeText = this.add.text(0, 10, `Time: ${currentLevelTime}s`, {
-        fontSize: "26px",
-        fill: "#ffffff",
-        fontFamily: VT323_GENERIC,
-        align: "center",
-      });
+      const timeText = this.add.text(
+        0,
+        10,
+        `Time: ${currentLevelTime}s`,
+        FONT_VT323_TIME
+      );
       timeText.setOrigin(0.5);
 
       this.nextLevelButton = this.add.rectangle(0, 80, 200, 50, 0x00aa00);
       this.nextLevelButton.setStrokeStyle(2, 0x00ff00);
       this.nextLevelButton.setInteractive({ useHandCursor: true });
 
-      const buttonText = this.add.text(0, 80, "Next Level", {
-        fontSize: "26px",
-        fill: "#ffffff",
-        fontFamily: VT323_GENERIC,
-      });
+      const buttonText = this.add.text(0, 80, "Next Level", FONT_VT323_BUTTON);
       buttonText.setOrigin(0.5);
 
       this.levelCompletedUI.add([
@@ -176,22 +168,21 @@ export default function registerLevelCompletedUI(scene) {
     panel.setStrokeStyle(4, 0xffd700);
 
     // Crear texto de victoria
-    const victoryText = this.add.text(0, -120, "Victory!", {
-      fontSize: "48px",
-      fill: "#ffd700",
-      fontFamily: VT323_GENERIC,
-      fontStyle: "bold",
-      align: "center",
-    });
+    const victoryText = this.add.text(
+      0,
+      -120,
+      "Victory!",
+      FONT_VT323_TITLE_VICTORY
+    );
     victoryText.setOrigin(0.5);
 
     // Crear texto de felicitaciones
-    const congratsText = this.add.text(0, -70, "All levels completed", {
-      fontSize: "24px",
-      fill: "#ffffff",
-      fontFamily: VT323_GENERIC,
-      align: "center",
-    });
+    const congratsText = this.add.text(
+      0,
+      -70,
+      "All levels completed",
+      FONT_VT323_TEXT_VICTORY
+    );
     congratsText.setOrigin(0.5);
 
     // Calcular estadísticas finales desde levelData
@@ -221,12 +212,7 @@ export default function registerLevelCompletedUI(scene) {
       0,
       -10,
       `Zombies killed by player: ${totalZombiesKilledByPlayer}\nZombies killed by collision: ${totalZombiesKilledByCollision}\nTotal time: ${totalGameTime}s`,
-      {
-        fontSize: "22px",
-        fill: "#ffffff",
-        fontFamily: VT323_GENERIC,
-        align: "center",
-      }
+      FONT_VT323_STATS
     );
     statsText.setOrigin(0.5);
 
@@ -235,12 +221,7 @@ export default function registerLevelCompletedUI(scene) {
     playAgainButton.setStrokeStyle(2, 0x00ff00);
     playAgainButton.setInteractive({ useHandCursor: true });
 
-    const buttonText = this.add.text(0, 140, "Main Menu", {
-      fontSize: "22px",
-      fill: "#ffffff",
-      fontFamily: VT323_GENERIC,
-      fontStyle: "bold",
-    });
+    const buttonText = this.add.text(0, 140, "Main Menu", FONT_VT323_BUTTON);
     buttonText.setOrigin(0.5);
 
     // Agregar elementos al contenedor
@@ -254,8 +235,8 @@ export default function registerLevelCompletedUI(scene) {
     ]);
 
     // Configurar evento del botón
-    playAgainButton.on("pointerdown", () => {      
-    this.scene.start("MainMenu");
+    playAgainButton.on("pointerdown", () => {
+      this.scene.start("MainMenu");
     });
 
     // Efectos de hover para el botón

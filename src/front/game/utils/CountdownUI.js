@@ -1,6 +1,6 @@
 import { EventBus, LEVEL_NEXT } from "../EventBus";
 
-const VT323_GENERIC = "VT323";
+import { FONT_VT323_COUNTDOWN } from "../config/fonts.js";
 
 export function registerCountdownUI(scene) {
   scene.showCountdown = function (callback) {
@@ -33,13 +33,12 @@ export function registerCountdownUI(scene) {
     );
 
     // Crear texto del conteo
-    scene.countdownText = scene.add.text(centerX, centerY, "3", {
-      fontSize: "120px",
-      fill: "#00ff00",
-      fontFamily: VT323_GENERIC,
-      fontStyle: "bold",
-      align: "center",
-    });
+    scene.countdownText = scene.add.text(
+      centerX,
+      centerY,
+      "3",
+      FONT_VT323_COUNTDOWN
+    );
     scene.countdownText.setOrigin(0.5);
     scene.countdownText.setDepth(100);
     scene.countdownOverlay.setDepth(99);

@@ -1,7 +1,6 @@
 import {
   EventBus,
   GAME_STOP,
-  REORGANIZE_TURRETS,
   SCENE_READY,
 } from "../EventBus";
 import { Scene } from "phaser";
