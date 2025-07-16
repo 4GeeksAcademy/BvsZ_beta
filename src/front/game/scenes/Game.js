@@ -4,6 +4,7 @@ import { ServerObject } from "../objects/serverObject";
 import { ZombieObject } from "../objects/zombieObject";
 import { EffectsObjects } from "../objects/effectsObject";
 import { TurretObject } from "../objects/turretObject";
+import { BulletObject } from "../objects/bulletObject";
 import {
   EventBus,
   GAME_START,
@@ -14,11 +15,11 @@ import {
   LEVEL_CHANGE,
   REORGANIZE_TURRETS,
 } from "../EventBus";
-import { BulletObject } from "../objects/bulletObject";
 import { levels } from "../config/levels";
 import forceCleanup from "../utils/ForceCleanup";
 import registerLevelCompletedUI from "../utils/LevelCompletedUI";
 import { registerCountdownUI } from "../utils/CountdownUI";
+import { initializeGameElements } from "../utils/initializeGameElements";
 
 export class Game extends Phaser.Scene {
   constructor() {
@@ -107,7 +108,7 @@ export class Game extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#1c1f2b");
 
     // Inicialización del juego sin crear zombies iniciales
-    this.initializeGameElements(true); // true = omitir creación del primer zombie
+    initializeGameElements(this, true); // true = omitir creación del primer zombie
 
     // Mostrar conteo regresivo antes de iniciar el nivel
     this.showCountdown(() => {
@@ -123,188 +124,6 @@ export class Game extends Phaser.Scene {
         // Emitir evento de inicio de juego
         EventBus.emit(GAME_START);
       }
-    });
-  }
-
-  // Inicializar elementos del juego
-  initializeGameElements(skipFirstZombie = false) {
-    this.physics.resume();
-
-    this.grid = new GridObject(this, this.level.gridCols);
-    this.grid.createGrid();
-
-    this.server = new ServerObject(
-      this,
-      this.level.serverHealth,
-      this.level.gridCols,
-      this.level.serverCols
-    );
-    this.server.createServers();
-
-    this.zombies = this.physics.add.group();
-
-    // Limpiar cualquier zombie previo (por si quedan de sesiones anteriores)
-    this.zombies.clear(true, true);
-
-    this.zombieManager = new ZombieObject(
-      this,
-      this.level.zombieVelocityY,
-      this.level.zombieHealth,
-      this.level.zombieDamage
-    );
-
-    // Crear el primer zombie solo si no se indica omitirlo
-    if (!skipFirstZombie) {
-      // Crear el primer zombie con los parámetros correctos
-      const firstZombie = this.zombieManager.createZombie(
-        this.level.zombieVelocityY,
-        this.level.zombieHealth,
-        this.level.zombieDamage
-      );
-      // Incrementar contador si se creó exitosamente
-      if (firstZombie) {
-        this.zombiesSpawned++;
-      }
-    }
-
-    this.turret = new TurretObject(
-      this,
-      this.level.turretHealth,
-      this.level.turretsCount,
-      this.level.turretsCols
-    );
-    this.turret.createTurrets();
-
-    this.bulletManager = new BulletObject(this);
-    this.effects = new EffectsObjects(this);
-    this.effects.resetEmitters();
-
-    // Limpiar cualquier listener previo y configurar el nuevo
-    EventBus.removeAllListeners(REORGANIZE_TURRETS);
-
-    // Escuchar evento para reorganizar torretas
-    this.reorganizeTurretsHandler = (data) => {
-      this.turret.reorganizeTurrets(data.justifyClass);
-    };
-    EventBus.on(REORGANIZE_TURRETS, this.reorganizeTurretsHandler);
-
-    this.bgMusic = this.sound.add("closeEncounter4", {
-      loop: true,
-      volume: 0.8, // Ajusta el volumen entre 0 y 1
-    });
-    this.bgMusic.play();
-
-    // --- COLISIÓN ZOMBIE-SERVER ---
-    this.physics.add.collider(
-      this.zombies,
-      this.server.servers,
-      (server, zombie) => {
-        this.effects.bloodEmitter(zombie);
-        this.effects.sparkEmitter(server);
-        this.server.receiveDamage(
-          this,
-          server,
-          Number(zombie.getData("damage"))
-        );
-        this.currentLevelZombieDeaths.byCollision++;
-        this.zombieManager.destroyZombie(zombie, false); // No contar como kill
-        this.sound.play("zombieDead2");
-      },
-      null,
-      this
-    );
-    // --- COLISIÓN ZOMBIE-TURRET ---
-    this.physics.add.collider(
-      this.zombies,
-      this.turret.turrets,
-      (turret, zombie) => {
-        this.effects.bloodEmitter(zombie, 0, -15);
-        this.effects.explosionFireEmitter(turret);
-        this.turret.receiveDamage(
-          this,
-          turret,
-          Number(zombie.getData("damage"))
-        );
-        this.currentLevelZombieDeaths.byCollision++;
-        this.zombieManager.destroyZombie(zombie, false); // No contar como kill
-        this.sound.play("zombieDead2");
-      },
-      null,
-      this
-    );
-
-    // --- DISPARO AUTOMÁTICO DE TORRETAS ---
-    this.time.addEvent({
-      delay: 1000,
-      callback: () => {
-        // No disparar torretas durante el conteo regresivo
-        if (this.isCountingDown) {
-          return;
-        }
-
-        this.turret.turrets.forEach((turret) => {
-          const turretCol = turret.getData("col");
-          const zombiesInCol = this.zombies
-            .getChildren()
-            .filter((zombie) => zombie.getData("col") === turretCol);
-          if (zombiesInCol.length > 0) {
-            this.bulletManager.fireBullet(
-              this,
-              turret,
-              this.level.bulletDamage,
-              this.level.bulletVelocityY
-            );
-          }
-        });
-      },
-      loop: true,
-    });
-
-    // --- COLISIÓN BALA-ZOMBIE ---
-    this.physics.add.overlap(
-      this.bulletManager.bullets,
-      this.zombies,
-      (bullet, zombie) => {
-        const damage = bullet.getData("damage");
-        this.zombieManager.receiveDamage(this, zombie, damage);
-        const emitter = bullet.getData("rocketEmitter");
-        if (emitter) emitter.destroy();
-        bullet.destroy();
-      },
-      null,
-      this
-    );
-
-    // --- GENERACIÓN AUTOMÁTICA DE ZOMBIES ---
-    this.time.addEvent({
-      delay: 500,
-      callback: () => {
-        // No generar zombies durante el conteo regresivo
-        if (
-          this.isCountingDown || // Verificar si estamos en conteo regresivo
-          this.zombies.getChildren().length >= this.level.maxZombiesOnScreen ||
-          this.server.servers.length <= 0 ||
-          this.zombiesSpawned >= this.level.zombiesPerLevel ||
-          this.levelCompleted
-        ) {
-          return; // No crear zombies si estamos en conteo regresivo o se cumplen otras condiciones
-        }
-
-        const newZombie = this.zombieManager.createZombie(
-          this.level.zombieVelocityY,
-          this.level.zombieHealth,
-          this.level.zombieDamage
-        );
-        // Si se pudo crear el zombie, incrementar contador
-        if (newZombie) {
-          this.zombiesSpawned++;
-        } else {
-          console.log(
-            "No se puede crear zombie: no hay servidores disponibles"
-          );
-        }
-      },
-      loop: true,
     });
   }
 
