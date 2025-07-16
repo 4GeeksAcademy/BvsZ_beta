@@ -7,7 +7,7 @@ export const inputClasses = [
     "justify-content-start",
     "justify-content-center",
     "justify-content-end",
-    // Puedes agregar más clases aquí para el nivel 1
+    "justify-content-between",
   ],
   // Nivel 2
   [
@@ -16,7 +16,6 @@ export const inputClasses = [
     "justify-content-end",
     "justify-content-between",
     "justify-content-around",
-    // Puedes agregar más clases aquí para el nivel 2
   ],
   // Nivel 3
   [
@@ -26,6 +25,5 @@ export const inputClasses = [
     "justify-content-between",
     "justify-content-around",
     "justify-content-evenly",
-    // Puedes agregar más clases aquí para el nivel 3
   ],
 ];

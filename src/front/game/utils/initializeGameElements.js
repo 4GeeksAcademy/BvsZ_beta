@@ -1,7 +1,11 @@
-// src/front/game/utils/initializaGameElements.js
-// Extraído de Game.js: función para inicializar elementos del juego
 
-export function initializaGameElements(scene, skipFirstZombie = false) {
+import { GridObject } from "../objects/gridObject";
+import { ServerObject } from "../objects/serverObject";
+import { ZombieObject } from "../objects/zombieObject";
+import { EffectsObjects } from "../objects/effectsObject";
+import { TurretObject } from "../objects/turretObject";
+
+export function initializeGameElements(scene, skipFirstZombie = false) {
   scene.physics.resume();
 
   scene.grid = new scene.GridObject(scene, scene.level.gridCols);
