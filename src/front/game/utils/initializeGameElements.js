@@ -1,7 +1,4 @@
-import {
-  EventBus,
-  REORGANIZE_TURRETS,
-} from "../EventBus";
+import { EventBus, REORGANIZE_TURRETS } from "../EventBus";
 
 import { GridObject } from "../objects/gridObject";
 import { ServerObject } from "../objects/serverObject";
@@ -33,7 +30,8 @@ export function initializeGameElements(scene, skipFirstZombie) {
     scene,
     scene.level.zombieVelocityY,
     scene.level.zombieHealth,
-    scene.level.zombieDamage
+    scene.level.zombieDamage,
+    scene.level.zombieCols
   );
 
   // Crear el primer zombie solo si no se indica omitirlo
@@ -84,7 +82,11 @@ export function initializeGameElements(scene, skipFirstZombie) {
     (server, zombie) => {
       scene.effects.bloodEmitter(zombie);
       scene.effects.sparkEmitter(server);
-      scene.server.receiveDamage(scene, server, Number(zombie.getData("damage")));
+      scene.server.receiveDamage(
+        scene,
+        server,
+        Number(zombie.getData("damage"))
+      );
       scene.currentLevelZombieDeaths.byCollision++;
       scene.zombieManager.destroyZombie(zombie, false); // No contar como kill
       scene.sound.play("zombieDead2");
@@ -99,7 +101,11 @@ export function initializeGameElements(scene, skipFirstZombie) {
     (turret, zombie) => {
       scene.effects.bloodEmitter(zombie, 0, -15);
       scene.effects.explosionFireEmitter(turret);
-      scene.turret.receiveDamage(scene, turret, Number(zombie.getData("damage")));
+      scene.turret.receiveDamage(
+        scene,
+        turret,
+        Number(zombie.getData("damage"))
+      );
       scene.currentLevelZombieDeaths.byCollision++;
       scene.zombieManager.destroyZombie(zombie, false); // No contar como kill
       scene.sound.play("zombieDead2");

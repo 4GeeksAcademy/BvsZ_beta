@@ -318,6 +318,7 @@ export class Game extends Phaser.Scene {
     this.zombieManager.zombieVelocityY = this.level.zombieVelocityY;
     this.zombieManager.zombieHealth = this.level.zombieHealth;
     this.zombieManager.zombieDamage = this.level.zombieDamage;
+    this.zombieManager.zombieCols = this.level.zombieCols;
   }
 
   shutdown() {
