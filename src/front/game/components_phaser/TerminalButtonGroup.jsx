@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import TerminalButton from './TerminalButton';
 import { EventBus, GAME_START, GAME_STOP, LEVEL_CHANGE, REORGANIZE_TURRETS } from '../EventBus';
-import { levels } from '../config/levels';
+// levels se recibirá por props
 import './TerminalButtonGroup.css';
 
 
-const TerminalButtonGroup = () => {
+const TerminalButtonGroup = ({ levels }) => {
   const [selectedJustify, setSelectedJustify] = useState('justify-content-center');
   const [gameActive, setGameActive] = useState(false);
   const [levelIndex, setLevelIndex] = useState(0);
-  const [classList, setClassList] = useState(levels[0]?.inputClasses || []);
+  const [classList, setClassList] = useState(levels && levels[0]?.inputClasses ? levels[0].inputClasses : []);
 
   useEffect(() => {
     const handleGameStart = () => {
@@ -22,7 +22,7 @@ const TerminalButtonGroup = () => {
       // newLevel es 1-indexed
       const idx = Math.max(0, Number(newLevel) - 1);
       setLevelIndex(idx);
-      setClassList(levels[idx]?.inputClasses || []);
+      setClassList(levels && levels[idx]?.inputClasses ? levels[idx].inputClasses : []);
       setSelectedJustify('justify-content-center');
     };
 

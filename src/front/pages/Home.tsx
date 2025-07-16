@@ -3,34 +3,6 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Navigation from "../components/Navigation";
 
-/**
- * Home Page Component
- *
- * The landing page for Bootstrap vs Zombies that introduces the educational game concept.
- * Demonstrates Bootstrap layout components and marketing page structure.
- *
- * Educational Value:
- * - Showcases Bootstrap's responsive grid system
- * - Demonstrates proper use of containers, rows, and columns
- * - Shows Bootstrap card components for content organization
- * - Uses Bootstrap typography and spacing utilities
- * - Integrates navigation and routing concepts
- *
- * Bootstrap Concepts Demonstrated:
- * - Container for responsive layout boundaries
- * - Row and Col for flexible grid layouts
- * - Card components with headers, bodies, and consistent styling
- * - Button variants and sizing
- * - Typography utilities (display, lead, text-center)
- * - Spacing utilities (mb-5, p-3, etc.)
- * - Color utilities for semantic meaning
- *
- * Design Patterns:
- * - Hero section with centered content
- * - Feature cards with consistent layout
- * - Call-to-action buttons with clear hierarchy
- * - Instructional content with organized sections
- */
 const Home: React.FC = () => {
   return (
     <>

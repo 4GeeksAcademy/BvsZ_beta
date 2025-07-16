@@ -15,7 +15,8 @@ import {
   LEVEL_CHANGE,
   REORGANIZE_TURRETS,
 } from "../EventBus";
-import { levels } from "../config/levels";
+import { levels as levelsMouse } from "../config/levels-mouse";
+import { levels as levelsKeyboard } from "../config/levels-keyboard";
 import forceCleanup from "../utils/ForceCleanup";
 import registerLevelCompletedUI from "../utils/LevelCompletedUI";
 import { registerCountdownUI } from "../utils/CountdownUI";
@@ -100,7 +101,11 @@ export class Game extends Phaser.Scene {
     };
     EventBus.on(GAME_CLEANUP, this.gameCleanupHandler);
 
-    this.level = levels[this.currentLevelIndex];
+    // Determinar el método de input seleccionado desde el menú
+    const inputMethod = this.registry.get("inputMethod") || "mouse";
+    this.levels = inputMethod === "keyboard" ? levelsKeyboard : levelsMouse;
+
+    this.level = this.levels[this.currentLevelIndex];
 
     // Emitir evento de nivel inicial
     EventBus.emit(LEVEL_CHANGE, this.currentLevelIndex + 1);
@@ -208,7 +213,7 @@ export class Game extends Phaser.Scene {
     // Limpiar listeners del nivel anterior
     this.cleanupEventListeners();
 
-    if (this.currentLevelIndex < levels.length - 1) {
+    if (this.currentLevelIndex < this.levels.length - 1) {
       this.currentLevelIndex++;
       this.zombiesSpawned = 0;
       this.levelCompleted = false;
@@ -221,7 +226,7 @@ export class Game extends Phaser.Scene {
       };
 
       // Actualizar configuración del nivel
-      this.level = levels[this.currentLevelIndex];
+      this.level = this.levels[this.currentLevelIndex];
 
       // Emitir evento de cambio de nivel
       EventBus.emit(LEVEL_CHANGE, this.currentLevelIndex + 1);

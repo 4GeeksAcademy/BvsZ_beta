@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { EventBus, LEVEL_CHANGE, REORGANIZE_TURRETS } from '../EventBus';
-import { levels } from '../config/levels';
+// levels se recibirá por props
 import '../components_phaser/InputClasses.css';
 
 /**
@@ -9,29 +9,30 @@ import '../components_phaser/InputClasses.css';
  * @param {number} level - El nivel actual del juego (0-indexed).
  */
 
-const InputClasses = ({ level }) => {
+const InputClasses = ({ level, levels }) => {
   const [inputValue, setInputValue] = useState('');
+  const [lastSelected, setLastSelected] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(0);
   const inputRef = useRef(null);
   const [currentLevel, setCurrentLevel] = useState(level || 0);
-  const [classList, setClassList] = useState(levels[level || 0]?.inputClasses || []);
+  const [classList, setClassList] = useState(levels && levels[level || 0]?.inputClasses ? levels[level || 0].inputClasses : []);
 
   useEffect(() => {
     setInputValue('');
     setSuggestions([]);
     setShowSuggestions(false);
     setActiveSuggestion(0);
-    setClassList(levels[currentLevel]?.inputClasses || []);
-  }, [currentLevel]);
+    setClassList(levels && levels[currentLevel]?.inputClasses ? levels[currentLevel].inputClasses : []);
+  }, [currentLevel, levels]);
 
   useEffect(() => {
     const handleLevelChange = (newLevel) => {
       // newLevel es 1-indexed
       const idx = Math.max(0, Number(newLevel) - 1);
       setCurrentLevel(idx);
-      setClassList(levels[idx]?.inputClasses || []);
+      setClassList(levels && levels[idx]?.inputClasses ? levels[idx].inputClasses : []);
       setInputValue('');
       setSuggestions([]);
       setShowSuggestions(false);
@@ -46,7 +47,7 @@ const InputClasses = ({ level }) => {
   const handleChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
-    if (value.length > 0) {
+    if (value.length >= 4) {
       const filtered = classList.filter((cls) =>
         cls.toLowerCase().startsWith(value.toLowerCase())
       );
@@ -80,7 +81,8 @@ const InputClasses = ({ level }) => {
   };
 
   const selectSuggestion = (suggestion) => {
-    setInputValue(suggestion);
+    setLastSelected(suggestion);
+    setInputValue('');
     setSuggestions([]);
     setShowSuggestions(false);
     setActiveSuggestion(0);
@@ -90,11 +92,17 @@ const InputClasses = ({ level }) => {
 
   return (
     <div className="input-classes-autocomplete">
+      {lastSelected && (
+        <div className="last-selected-class">
+          Last:
+          <span className="text-bootstrap"><strong>{lastSelected}</strong></span>
+        </div>
+      )}
       <input
         ref={inputRef}
         type="text"
         className="form-control"
-        placeholder="Escribe una clase..."
+        placeholder="Type a class..."
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
@@ -120,6 +128,7 @@ const InputClasses = ({ level }) => {
 
 InputClasses.propTypes = {
   level: PropTypes.number,
+  levels: PropTypes.array.isRequired,
 };
 
 export default InputClasses;

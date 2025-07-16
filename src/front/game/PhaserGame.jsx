@@ -4,6 +4,8 @@ import { EventBus, INPUT_METHOD_CHANGE } from './EventBus';
 import Stats from './components_phaser/Stats';
 import TerminalButtonGroup from './components_phaser/TerminalButtonGroup';
 import InputClasses from './components_phaser/InputClasses';
+import { levels as levelsMouse } from './config/levels-mouse';
+import { levels as levelsKeyboard } from './config/levels-keyboard';
 import './game-container.css';
 
 const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
@@ -97,9 +99,9 @@ const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
                     <Stats />
                     {/* Renderizar el componente según el método de entrada seleccionado */}
                     {inputMethod === 'mouse' ? (
-                        <TerminalButtonGroup />
+                        <TerminalButtonGroup levels={levelsMouse} />
                     ) : (
-                        <InputClasses />
+                        <InputClasses levels={levelsKeyboard} />
                     )}
                 </div>
             </div>
