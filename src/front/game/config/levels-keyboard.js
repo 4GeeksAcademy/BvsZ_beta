@@ -1,5 +1,4 @@
-// Archivo de configuración de niveles para el juego
-// Puedes agregar más niveles modificando este array
+// Archivo de configuración de niveles para el juego por medio de teclado
 import { inputClasses } from "./input-classes";
 
 export const levels = [
