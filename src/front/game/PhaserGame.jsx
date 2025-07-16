@@ -3,6 +3,7 @@ import StartGame from './main';
 import { EventBus } from './EventBus';
 import Stats from './components_phaser/Stats';
 import TerminalButtonGroup from './components_phaser/TerminalButtonGroup';
+import InputClasses from './components_phaser/InputClasses';
 import './game-container.css';
 
 const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
@@ -85,6 +86,7 @@ const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
                 <div className='col-3'>
                     <Stats />
                     <TerminalButtonGroup />
+                    <InputClasses />
                 </div>
             </div>
         </div>

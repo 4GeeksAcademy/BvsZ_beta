@@ -1,26 +1,47 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { EventBus } from '../EventBus';
+import { levels } from '../config/levels';
 import '../components_phaser/InputClasses.css';
 
 /**
  * Componente de input con autocompletado de clases por nivel.
  * @param {number} level - El nivel actual del juego (0-indexed).
- * @param {string[]} classList - Lista de clases permitidas para autocompletar.
  */
-const InputClasses = ({ level, classList }) => {
+
+const InputClasses = ({ level }) => {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(0);
   const inputRef = useRef(null);
+  const [currentLevel, setCurrentLevel] = useState(level || 0);
+  const [classList, setClassList] = useState(levels[level || 0]?.inputClasses || []);
 
   useEffect(() => {
     setInputValue('');
     setSuggestions([]);
     setShowSuggestions(false);
     setActiveSuggestion(0);
-  }, [level, classList]);
+    setClassList(levels[currentLevel]?.inputClasses || []);
+  }, [currentLevel]);
+
+  useEffect(() => {
+    const handleLevelChange = (newLevel) => {
+      // newLevel es 1-indexed
+      const idx = Math.max(0, Number(newLevel) - 1);
+      setCurrentLevel(idx);
+      setClassList(levels[idx]?.inputClasses || []);
+      setInputValue('');
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setActiveSuggestion(0);
+    };
+    EventBus.on('level:change', handleLevelChange);
+    return () => {
+      EventBus.removeListener('level:change', handleLevelChange);
+    };
+  }, []);
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -98,8 +119,7 @@ const InputClasses = ({ level, classList }) => {
 };
 
 InputClasses.propTypes = {
-  level: PropTypes.number.isRequired,
-  classList: PropTypes.arrayOf(PropTypes.string).isRequired,
+  level: PropTypes.number,
 };
 
 export default InputClasses;
