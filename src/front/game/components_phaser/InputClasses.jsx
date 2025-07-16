@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { EventBus } from '../EventBus';
+import { EventBus, LEVEL_CHANGE, REORGANIZE_TURRETS } from '../EventBus';
 import { levels } from '../config/levels';
 import '../components_phaser/InputClasses.css';
 
@@ -37,9 +37,9 @@ const InputClasses = ({ level }) => {
       setShowSuggestions(false);
       setActiveSuggestion(0);
     };
-    EventBus.on('level:change', handleLevelChange);
+    EventBus.on(LEVEL_CHANGE, handleLevelChange);
     return () => {
-      EventBus.removeListener('level:change', handleLevelChange);
+      EventBus.removeListener(LEVEL_CHANGE, handleLevelChange);
     };
   }, []);
 
@@ -85,7 +85,7 @@ const InputClasses = ({ level }) => {
     setShowSuggestions(false);
     setActiveSuggestion(0);
     // Emitir evento para reorganizar torretas
-    EventBus.emit('reorganize-turrets', { justifyClass: suggestion });
+    EventBus.emit(REORGANIZE_TURRETS, { justifyClass: suggestion });
   };
 
   return (
