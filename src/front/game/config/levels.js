@@ -1,5 +1,6 @@
 // Archivo de configuración de niveles para el juego
 // Puedes agregar más niveles modificando este array
+import { inputClasses } from "./input-classes";
 
 export const levels = [
   {
@@ -15,7 +16,8 @@ export const levels = [
     bulletVelocityY: 100,
     bulletDamage: 10,
     zombiesPerLevel: 1,
-    maxZombiesOnScreen: 5
+    maxZombiesOnScreen: 5,
+    inputClasses: inputClasses[0],
   },
   {
     turretHealth: 50,
@@ -30,7 +32,8 @@ export const levels = [
     bulletVelocityY: 110,
     bulletDamage: 10,
     zombiesPerLevel: 1,
-    maxZombiesOnScreen: 10
+    maxZombiesOnScreen: 10,
+    inputClasses: inputClasses[1],
   },
   {
     turretHealth: 50,
@@ -45,6 +48,7 @@ export const levels = [
     bulletVelocityY: 110,
     bulletDamage: 10,
     zombiesPerLevel: 1,
-    maxZombiesOnScreen: 10
+    maxZombiesOnScreen: 10,
+    inputClasses: inputClasses[2],
   },
 ];
