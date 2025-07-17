@@ -1,6 +1,7 @@
 export const imageAssets = [
     { key: 'turret_vsc', path: 'images/turret_vsc.png' },
     { key: 'zombie', path: 'images/zombie.png' },
+    { key: 'zombie_muerto', path: 'images/zombie_muerto.png' },
     { key: 'bullet', path: 'images/bullet.png' },
     { key: 'server', path: 'images/server.png' },
     { key: 'logo', path: 'images/logo.png' },

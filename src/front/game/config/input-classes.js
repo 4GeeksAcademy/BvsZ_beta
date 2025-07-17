@@ -1,5 +1,5 @@
 // Archivo de configuración de clases de input por nivel para el juego
-// Cada nivel tiene su propio array de clases permitidas para autocompletado en el input
+// Cada nivel tiene su propio array de clases permitidas
 
 export const inputClasses = [
   // Nivel 1
