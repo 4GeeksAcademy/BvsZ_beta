@@ -8,7 +8,6 @@ export const levels = [
     turretsCols: [5, 6, 7, 8],
     gridCols: 12,
     serverCols: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    zombieCols: [1, 2, 3, 4], // Columnas donde pueden aparecer zombies
     serverHealth: 50,
     zombieVelocityY: -40, //Negativo
     zombieHealth: 10,
@@ -25,10 +24,9 @@ export const levels = [
     turretsCols: [5, 6, 7, 8],
     gridCols: 12,
     serverCols: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    zombieCols: [5, 6, 7, 8], // Columnas donde pueden aparecer zombies
     serverHealth: 50,
-    zombieVelocityY: -40, //Negativo
-    zombieHealth: 10,
+    zombieVelocityY: -80, //Negativo
+    zombieHealth: 30,
     zombieDamage: 10,
     bulletVelocityY: 110,
     bulletDamage: 10,
@@ -42,14 +40,13 @@ export const levels = [
     turretsCols: [5, 6, 7, 8],
     gridCols: 12,
     serverCols: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    zombieCols: [9, 10, 11, 12], // Columnas donde pueden aparecer zombies
     serverHealth: 50,
     zombieVelocityY: -80, //Negativo
     zombieHealth: 30,
     zombieDamage: 10,
     bulletVelocityY: 110,
     bulletDamage: 10,
-    zombiesPerLevel: 5,
+    zombiesPerLevel: 1,
     maxZombiesOnScreen: 10,
     inputClasses: inputClasses[2],
   },

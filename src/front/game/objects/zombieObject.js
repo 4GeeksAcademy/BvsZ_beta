@@ -1,12 +1,11 @@
 import { EventBus } from "../EventBus";
 
 export class ZombieObject {
-  constructor(scene, velocityY, health, damage, zombieCols = null) {
+  constructor(scene, velocityY, health, damage) {
     this.scene = scene;
     this.velocityY = velocityY;
     this.health = health;
     this.damage = damage;
-    this.zombieCols = zombieCols; // Array de índices de columna donde pueden aparecer zombies
     this.zombies = scene.zombies;
   }
 
@@ -18,28 +17,19 @@ export class ZombieObject {
     const cols = this.scene.gridCells.length;
     const colWidth = this.scene.sys.game.config.width / cols;
 
-    // Determinar las columnas disponibles para zombies
-    let availableZombieCols = [];
-    if (Array.isArray(this.zombieCols) && this.zombieCols.length > 0) {
-      // Usar las columnas especificadas en zombieCols (convertir a índices base 0)
-      availableZombieCols = this.zombieCols.map((col) => col - 1);
-    } else {
-      // Si no se especifican zombieCols, usar solo las columnas que tienen servidores
-      const serverCols = this.scene.servers.map((server) =>
-        server.getData("col")
-      );
-      availableZombieCols = serverCols;
-    }
+    // Obtener las columnas que tienen servidores
+    const serverCols = this.scene.servers.map((server) =>
+      server.getData("col")
+    );
 
-    if (availableZombieCols.length === 0) {
-      // Si no hay columnas disponibles, no crear zombies
-      console.warn("No hay columnas disponibles para crear zombies");
+    if (serverCols.length === 0) {
+      // Si no hay servidores, no crear zombies
       return null;
     }
 
-    // Obtener las columnas que tienen menos zombies para mejor distribución
+    // Obtener las columnas que tienen menos zombies para mejor distribución (solo en columnas con servidores)
     const columnCounts = {};
-    availableZombieCols.forEach((col) => {
+    serverCols.forEach((col) => {
       columnCounts[col] = 0;
     });
 
@@ -50,7 +40,7 @@ export class ZombieObject {
       }
     });
 
-    // Encontrar la columna con menos zombies
+    // Encontrar la columna con menos zombies (solo entre las que tienen servidores)
     const minCount = Math.min(...Object.values(columnCounts));
     const availableCols = Object.keys(columnCounts)
       .filter((col) => columnCounts[col] === minCount)
