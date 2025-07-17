@@ -123,7 +123,7 @@ export class ZombieObject {
     if (health <= 0) {
       this.destroyZombie(zombie, countAsKill);
       scene.sound.play("zombieDead1");
-      scene.effects.bloodEmitter(zombie, 0, -10, 100);
+      scene.effects.bloodEmitter(zombie, 0, 0, 100);
     }
   }
 
@@ -139,7 +139,25 @@ export class ZombieObject {
     if (this.zombies && this.zombies.contains(zombie)) {
       this.zombies.remove(zombie, true, true);
     }
-    // Destruir sprite
+
+    // Mostrar imagen de zombie muerto y desvanecerla
+    if (zombie && zombie.x !== undefined && zombie.y !== undefined) {
+      const deadZombie = this.scene.add
+        .image(zombie.x, zombie.y, "zombie_muerto")
+        .setDisplaySize(50, 50)
+        .setDepth(4)
+        .setAlpha(1);
+      this.scene.tweens.add({
+        targets: deadZombie,
+        alpha: 0,
+        duration: 1000,
+        onComplete: () => {
+          deadZombie.destroy();
+        },
+      });
+    }
+
+    // Destruir sprite original
     if (zombie && zombie.destroy) {
       zombie.destroy();
     }

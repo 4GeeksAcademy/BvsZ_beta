@@ -96,7 +96,7 @@ export class EffectsObjects {
         tint: 0xffff00,
         on: false,
       });
-      this.scene.bloodEmitter.setDepth(4);
+      this.scene.bloodEmitter.setDepth(5);
     }
     // Explota sangre en la posición de la colisión
     this.scene.bloodEmitter.explode(quantity, target.x + x, target.y + y);
