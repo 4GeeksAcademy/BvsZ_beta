@@ -8,7 +8,9 @@ import {
     GAME_TIME_REQUEST,
     GAME_TIME_RESPONSE,
     LEVEL_COMPLETED,
-    LEVEL_NEXT
+    LEVEL_NEXT,
+    GAME_PAUSE,
+    GAME_RESUME
 } from '../EventBus';
 import './Stats.css';
 
@@ -20,6 +22,16 @@ const Stats = () => {
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
     const [pausedTime, setPausedTime] = useState(null);
+    const [gamePaused, setGamePaused] = useState(false);
+
+    // Función para manejar el clic en el botón de pausa/reanudar
+    const handlePauseButtonClick = () => {
+        if (gamePaused) {
+            EventBus.emit(GAME_RESUME);
+        } else {
+            EventBus.emit(GAME_PAUSE);
+        }
+    };
 
     useEffect(() => {
         let intervalId = null;
@@ -74,6 +86,26 @@ const Stats = () => {
             });
         };
 
+        // Handlers para pausar y reanudar el juego
+        const handleGamePause = () => {
+            setIsPaused(true);
+            setPausedTime(Date.now());
+            setGamePaused(true);
+        };
+
+        const handleGameResume = () => {
+            if (isPaused && pausedTime) {
+                // Ajustar el tiempo de inicio para compensar el tiempo pausado
+                const pausedDuration = Date.now() - pausedTime;
+                setGameStartTime(prev => prev + pausedDuration);
+                setIsPaused(false);
+                setPausedTime(null);
+                setGamePaused(false);
+            }
+        };
+
+
+
         // Registrar event listeners
         EventBus.on(GAME_START, handleGameStart);
         EventBus.on(GAME_STOP, handleGameStop);
@@ -82,6 +114,8 @@ const Stats = () => {
         EventBus.on(LEVEL_COMPLETED, handleLevelCompleted);
         EventBus.on(LEVEL_NEXT, handleLevelNext);
         EventBus.on(GAME_TIME_REQUEST, handleTimeRequest);
+        EventBus.on(GAME_PAUSE, handleGamePause);
+        EventBus.on(GAME_RESUME, handleGameResume);
 
         // Actualizar timer cada segundo cuando el juego está activo
         if (gameActive && gameStartTime && !isPaused) {
@@ -103,14 +137,25 @@ const Stats = () => {
             EventBus.removeListener(LEVEL_COMPLETED, handleLevelCompleted);
             EventBus.removeListener(LEVEL_NEXT, handleLevelNext);
             EventBus.removeListener(GAME_TIME_REQUEST, handleTimeRequest);
+            EventBus.removeListener(GAME_PAUSE, handleGamePause);
+            EventBus.removeListener(GAME_RESUME, handleGameResume);
         };
-    }, [gameActive, gameStartTime, elapsedSeconds, isPaused, pausedTime]);
+    }, [gameActive, gameStartTime, elapsedSeconds, isPaused, pausedTime, gamePaused]);
 
     return (
         <div className="stats-pixelart d-flex row container m-0">
             <div className="stat-row col m-0 p-0">
                 <span className="stat-label">⏱️</span>
                 <span className="stat-value">{elapsedSeconds}s</span>
+
+                <button
+                    className="pause-button ml-2"
+                    onClick={handlePauseButtonClick}
+                    style={{ cursor: 'pointer', marginLeft: '8px', border: 'none', background: 'none' }}
+                >
+                    {gamePaused ? '▶️' : '⏸️'}
+                </button>
+
             </div>
             <div className="stat-row col m-0 p-0">
                 <span className="stat-label">🧟‍♂️</span>

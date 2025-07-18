@@ -30,5 +30,9 @@ export const REORGANIZE_TURRETS = "reorganize-turrets";
 // Input method events
 export const INPUT_METHOD_CHANGE = "input:method:change";
 
+// Pause events
+export const GAME_PAUSE = "game:pause";
+export const GAME_RESUME = "game:resume";
+
 // Scene events
 export const SCENE_READY = "current-scene-ready";

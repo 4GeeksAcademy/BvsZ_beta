@@ -14,6 +14,8 @@ import {
   ZOMBIE_KILLED,
   LEVEL_CHANGE,
   REORGANIZE_TURRETS,
+  GAME_PAUSE,
+  GAME_RESUME,
 } from "../EventBus";
 import { levels as levelsMouse } from "../config/levels-mouse";
 import { levels as levelsKeyboard } from "../config/levels-keyboard";
@@ -55,6 +57,9 @@ export class Game extends Phaser.Scene {
     this.countdownOverlay = null;
     this.countdownText = null;
     this.isCountingDown = false;
+
+    // Variable para controlar el estado de pausa del juego
+    this.isPaused = false;
   }
 
   create() {
@@ -100,6 +105,27 @@ export class Game extends Phaser.Scene {
       forceCleanup(this);
     };
     EventBus.on(GAME_CLEANUP, this.gameCleanupHandler);
+
+    // Escuchar eventos de pausa y reanudar
+    this.gamePauseHandler = () => {
+      console.log("Game scene: Pausando juego");
+      this.isPaused = true;
+      this.scene.pause();
+      // Detener las físicas y animaciones
+      this.physics.pause();
+      this.bgMusic.pause();
+    };
+    EventBus.on(GAME_PAUSE, this.gamePauseHandler);
+
+    this.gameResumeHandler = () => {
+      console.log("Game scene: Reanudando juego");
+      this.isPaused = false;
+      this.scene.resume();
+      // Reanudar las físicas y animaciones
+      this.physics.resume();
+      this.bgMusic.play();
+    };
+    EventBus.on(GAME_RESUME, this.gameResumeHandler);
 
     // Determinar el método de input seleccionado desde el menú
     const inputMethod = this.registry.get("inputMethod") || "mouse";
@@ -351,6 +377,17 @@ export class Game extends Phaser.Scene {
     if (this.gameCleanupHandler) {
       EventBus.removeListener(GAME_CLEANUP, this.gameCleanupHandler);
       this.gameCleanupHandler = null;
+    }
+
+    // Limpiar listeners de pausa y reanudar
+    if (this.gamePauseHandler) {
+      EventBus.removeListener(GAME_PAUSE, this.gamePauseHandler);
+      this.gamePauseHandler = null;
+    }
+
+    if (this.gameResumeHandler) {
+      EventBus.removeListener(GAME_RESUME, this.gameResumeHandler);
+      this.gameResumeHandler = null;
     }
   }
 }

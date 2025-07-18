@@ -34,3 +34,18 @@
   color: #ffe066;
   text-shadow: 1px 1px 0 #000, 2px 2px 0 #333;
 }
+
+.pause-button {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  padding: 0;
+  transition: transform 0.2s ease-in-out;
+  filter: drop-shadow(1px 1px 0 #000);
+}
+
+.pause-button:hover {
+  transform: scale(1.2);
+}
