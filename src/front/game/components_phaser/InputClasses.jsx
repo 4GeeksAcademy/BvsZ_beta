@@ -92,17 +92,11 @@ const InputClasses = ({ level, levels }) => {
 
   return (
     <div className="input-classes-autocomplete">
-      {lastSelected && (
-        <div className="last-selected-class">
-          Last:
-          <span className="text-bootstrap"><strong>{lastSelected}</strong></span>
-        </div>
-      )}
       <input
         ref={inputRef}
         type="text"
-        className="form-control"
-        placeholder="Type a class..."
+        className="form-control p-0 m-0"
+        placeholder={lastSelected}
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}

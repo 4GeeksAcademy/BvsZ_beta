@@ -7,6 +7,7 @@ import InputClasses from './components_phaser/InputClasses';
 import { levels as levelsMouse } from './config/levels-mouse';
 import { levels as levelsKeyboard } from './config/levels-keyboard';
 import './game-container.css';
+import CodeEditor from './components_phaser/CodeEditor';
 
 const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
     const game = useRef();
@@ -92,16 +93,16 @@ const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
     return (
         <div className='container'>
             <div className='row no-wrap'>
-                <div className='col-9'>
+                <div className='col-8'>
                     <div id="game-container"></div>
                 </div>
-                <div className='col-3'>
+                <div className='col-4'>
                     <Stats />
                     {/* Renderizar el componente según el método de entrada seleccionado */}
                     {inputMethod === 'mouse' ? (
                         <TerminalButtonGroup levels={levelsMouse} />
                     ) : (
-                        <InputClasses levels={levelsKeyboard} />
+                        <CodeEditor levels={levelsKeyboard} />
                     )}
                 </div>
             </div>

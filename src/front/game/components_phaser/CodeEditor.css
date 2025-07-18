@@ -1,0 +1,26 @@
+.code-block {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.code-input {
+  display: inline-block;
+  position: relative;
+  width: 200px;
+}
+
+.tag {
+  color: #569cd6;
+}
+.attr {
+  color: #9cdcfe;
+}
+.value {
+  color: #ce9178;
+}

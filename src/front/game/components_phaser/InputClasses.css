@@ -1,14 +1,10 @@
-.input-classes-autocomplete {
+.input-classes-autocomplete{
   position: relative;
-  width: 100%;
-  margin-top: 20px;
 }
 
 .input-classes-autocomplete input {
-  width: 100%;
-  padding: 10px;
   background-color: #1a1a1a;
-  color: #fff;
+  color: #ce9178;
   border: 1px solid #444;
   font-family: "Courier New", monospace;
   font-size: 14px;
@@ -21,11 +17,10 @@
 }
 
 .suggestions-list {
+  width: 100%;
   position: absolute;
   top: 100%;
   left: 0;
-  width: 100%;
-  max-height: 200px;
   overflow-y: auto;
   background-color: #222;
   border: 1px solid #444;
@@ -33,18 +28,19 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  z-index: 10;
+  font-size: inherit;
 }
 
 .suggestions-list li {
-  padding: 8px 10px;
   cursor: pointer;
   color: #ccc;
   font-family: "Courier New", monospace;
+  font-size: inherit;
 }
 
 .suggestions-list li.active,
 .suggestions-list li:hover {
   background-color: #333;
   color: #a1d84a;
+  font-size: inherit;
 }
