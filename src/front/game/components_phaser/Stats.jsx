@@ -145,8 +145,6 @@ const Stats = () => {
     return (
         <div className="stats-pixelart d-flex row container m-0">
             <div className="stat-row col m-0 p-0">
-                <span className="stat-label">⏱️</span>
-                <span className="stat-value">{elapsedSeconds}s</span>
 
                 <button
                     className="pause-button ml-2"
@@ -155,6 +153,9 @@ const Stats = () => {
                 >
                     {gamePaused ? '▶️' : '⏸️'}
                 </button>
+
+                <span className="stat-label">⏱️</span>
+                <span className="stat-value">{elapsedSeconds}s</span>
 
             </div>
             <div className="stat-row col m-0 p-0">
