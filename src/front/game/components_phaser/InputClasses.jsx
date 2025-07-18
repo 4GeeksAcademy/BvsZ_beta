@@ -95,7 +95,7 @@ const InputClasses = ({ level, levels }) => {
       <input
         ref={inputRef}
         type="text"
-        className="form-control p-0 m-0"
+        className="form-control"
         placeholder={lastSelected}
         value={inputValue}
         onChange={handleChange}
