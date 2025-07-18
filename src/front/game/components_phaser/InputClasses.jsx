@@ -47,7 +47,7 @@ const InputClasses = ({ level, levels }) => {
   const handleChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
-    if (value.length >= 4) {
+    if (value.length >= 3) {
       const filtered = classList.filter((cls) =>
         cls.toLowerCase().startsWith(value.toLowerCase())
       );
