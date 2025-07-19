@@ -18,7 +18,8 @@ export default function CodeEditor({ levels }) {
                 </span>
                 <span className="value">"&gt;</span><br />
                 &nbsp;&nbsp;&nbsp;&nbsp;<span className="tag">&lt;div</span> <span className="attr">class</span>=<span className="value">"col-2"&gt;</span><br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="/assets/images/turret_vsc.png" alt="Turret" className="turret-img turret-img--mr" />
+                <img src="/assets/images/turret_vsc.png" alt="Turret" className="turret-img" /><br />
                 &nbsp;&nbsp;&nbsp;&nbsp;<span className="tag">&lt;/div&gt;</span><br />
                 &nbsp;&nbsp;<span className="tag">&lt;/div&gt;</span><br />
                 <span className="tag">&lt;/div&gt;</span>

@@ -1,3 +1,12 @@
+.turret-img {
+  width: 30px;
+  height: 30px;
+  vertical-align: middle;
+}
+
+.turret-img--mr {
+  margin-right: 4px;
+}
 .code-block {
   background-color: #1e1e1e;
   color: #d4d4d4;
