@@ -5,7 +5,6 @@ export const inputClasses = [
   // Nivel 1
   [
     "justify-content-start",
-    "justify-content-center",
     "justify-content-end",
   ],
   // Nivel 2

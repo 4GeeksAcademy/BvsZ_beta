@@ -4,10 +4,10 @@ import { inputClasses } from "./input-classes";
 export const levels = [
   {
     turretHealth: 50,
-    turretsCount: 2,
-    turretsCols: [ 6, 7],
+    turretsCount: 6,
+    turretsCols: [ 1, 2, 3, 4, 5, 6],
     gridCols: 12,
-    serverCols: [1, 2, 6, 7, 11, 12],
+    serverCols: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     serverHealth: 50,
     zombieVelocityY: -40, //Negativo
     zombieHealth: 10,
@@ -36,8 +36,8 @@ export const levels = [
   },
   {
     turretHealth: 50,
-    turretsCount: 2,
-    turretsCols: [ 6, 7],
+    turretsCount: 3,
+    turretsCols: [ 6, 7, 8],
     gridCols: 12,
     serverCols: [1, 2, 6, 7, 11, 12],
     serverHealth: 50,
