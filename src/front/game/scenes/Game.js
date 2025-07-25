@@ -22,7 +22,9 @@ import { levels as levelsKeyboard } from "../config/levels-keyboard";
 import forceCleanup from "../utils/ForceCleanup";
 import registerLevelCompletedUI from "../utils/LevelCompletedUI";
 import { registerCountdownUI } from "../utils/CountdownUI";
-import { initializeGameElements } from "../utils/initializeGameElements";
+import { InitializeGameElements } from "../utils/InitializeGameElements";
+import { setupGameCollisions } from "../utils/GameCollisions";
+import { createGameObjects } from "../utils/GameObjects";
 
 export class Game extends Phaser.Scene {
   constructor() {
@@ -111,7 +113,6 @@ export class Game extends Phaser.Scene {
       console.log("Game scene: Pausando juego");
       this.isPaused = true;
       this.scene.pause();
-      // Detener las físicas y animaciones
       this.physics.pause();
       this.bgMusic.pause();
     };
@@ -121,7 +122,6 @@ export class Game extends Phaser.Scene {
       console.log("Game scene: Reanudando juego");
       this.isPaused = false;
       this.scene.resume();
-      // Reanudar las físicas y animaciones
       this.physics.resume();
       this.bgMusic.play();
     };
@@ -139,7 +139,7 @@ export class Game extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#1c1f2b");
 
     // Inicialización del juego sin crear zombies iniciales
-    initializeGameElements(this, true); // true = omitir creación del primer zombie
+    InitializeGameElements(this, true); // true = omitir creación del primer zombie
 
     // Mostrar conteo regresivo antes de iniciar el nivel
     this.showCountdown(() => {
@@ -288,6 +288,21 @@ export class Game extends Phaser.Scene {
 
   // Recrear elementos del juego para el nuevo nivel
   recreateGameElements() {
+    // Limpiar elementos existentes
+    this.cleanupGameElements();
+
+    // Recrear elementos con nueva configuración
+    this.createGameObjects();
+
+    // Actualizar managers con nuevos parámetros
+    this.updateGameParameters();
+
+    // Reconfigurar colisiones con los nuevos elementos
+    this.setupCollisions();
+  }
+
+  // Limpiar todos los elementos del juego
+  cleanupGameElements() {
     // Limpiar zombies existentes
     this.zombies.clear(true, true);
 
@@ -320,30 +335,67 @@ export class Game extends Phaser.Scene {
       });
     }
 
-    // Recrear servidores con nueva salud
-    this.server.servers.forEach((server) => {
-      server.setData("health", this.level.serverHealth);
-      server.setData("maxHealth", this.level.serverHealth);
-      // Actualizar visualmente la barra de vida si existe
-      if (server.healthBar) {
-        server.healthBar.setScale(1, 1);
-      }
-    });
+    // Destruir servidores existentes
+    if (this.server && this.server.servers) {
+      this.server.servers.forEach((server) => {
+        if (server.healthBar) {
+          server.healthBar.destroy();
+        }
+        server.destroy();
+      });
+      this.server.servers = [];
+    }
 
-    // Recrear torretas con nueva salud
-    this.turret.turrets.forEach((turret) => {
-      turret.setData("health", this.level.turretHealth);
-      turret.setData("maxHealth", this.level.turretHealth);
-      // Actualizar visualmente la barra de vida si existe
-      if (turret.healthBar) {
-        turret.healthBar.setScale(1, 1);
-      }
-    });
+    // Destruir torretas existentes
+    if (this.turret && this.turret.turrets) {
+      this.turret.turrets.forEach((turret) => {
+        if (turret.healthBar) {
+          turret.healthBar.destroy();
+        }
+        turret.destroy();
+      });
+      this.turret.turrets = [];
+    }
+  }
 
+  // Crear objetos del juego (servidores, torretas, etc.)
+  createGameObjects() {
+    // Solo recrear servidores y torretas (no el grid completo ni managers)
+    this.server = new ServerObject(
+      this,
+      this.level.serverHealth,
+      this.level.serverCols.length,
+      this.level.serverCols
+    );
+    this.server.createServers();
+
+    this.turret = new TurretObject(
+      this,
+      this.level.turretHealth,
+      this.level.turretsCount,
+      this.level.turretsCols
+    );
+    this.turret.createTurrets();
+  }
+
+  // Actualizar parámetros de los managers del juego
+  updateGameParameters() {
     // Actualizar el zombie manager con los nuevos parámetros
     this.zombieManager.zombieVelocityY = this.level.zombieVelocityY;
     this.zombieManager.zombieHealth = this.level.zombieHealth;
     this.zombieManager.zombieDamage = this.level.zombieDamage;
+    this.zombieManager.maxZombiesOnScreen = this.level.maxZombiesOnScreen;
+
+    // Actualizar el bullet manager con los nuevos parámetros
+    if (this.bulletManager) {
+      this.bulletManager.bulletVelocityY = this.level.bulletVelocityY;
+      this.bulletManager.bulletDamage = this.level.bulletDamage;
+    }
+  }
+
+  // Configurar colisiones entre zombies, torretas y servidores
+  setupCollisions() {
+    setupGameCollisions(this);
   }
 
   shutdown() {
@@ -377,17 +429,6 @@ export class Game extends Phaser.Scene {
     if (this.gameCleanupHandler) {
       EventBus.removeListener(GAME_CLEANUP, this.gameCleanupHandler);
       this.gameCleanupHandler = null;
-    }
-
-    // Limpiar listeners de pausa y reanudar
-    if (this.gamePauseHandler) {
-      EventBus.removeListener(GAME_PAUSE, this.gamePauseHandler);
-      this.gamePauseHandler = null;
-    }
-
-    if (this.gameResumeHandler) {
-      EventBus.removeListener(GAME_RESUME, this.gameResumeHandler);
-      this.gameResumeHandler = null;
     }
   }
 }
