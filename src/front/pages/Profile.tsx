@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import { getApiEndpoint } from "../utils/config";
+import { getUserStatsMouse, getUserStatsKeyboard } from "../utils/auth";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 interface Profile {
@@ -12,18 +13,22 @@ interface Profile {
 }
 
 interface GameStats {
-  total_games: number;
-  high_score: number;
-  total_score: number;
+  zombies_killed_by_player: number;
+  zombies_killed_by_environment: number;
+  total_play_time: number;
+  bullets_fired: number;
+  typing_accuracy: number;
   levels_completed: number;
-  zombies_defeated: number;
+  score: number;
+  input_method: string;
 }
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { store, dispatch } = useGlobalReducer();
   const profile = store.profile;
-  const [gameStats, setGameStats] = useState<GameStats | null>(null);
+  const [mouseStats, setMouseStats] = useState<GameStats | null>(null);
+  const [keyboardStats, setKeyboardStats] = useState<GameStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
     type: "success" | "error";
@@ -68,6 +73,7 @@ const Profile: React.FC = () => {
       return;
     }
     fetchProfile();
+    fetchGameStats();
   }, [token, navigate, fetchProfile]);
 
   useEffect(() => {
@@ -77,13 +83,28 @@ const Profile: React.FC = () => {
   }, [profile]);
 
   const fetchGameStats = async () => {
-    setGameStats({
-      total_games: 0,
-      high_score: 0,
-      total_score: 0,
-      levels_completed: 0,
-      zombies_defeated: 0,
-    });
+    try {
+      setIsLoading(true);
+      const [mouseData, keyboardData] = await Promise.all([
+        getUserStatsMouse(),
+        getUserStatsKeyboard(),
+      ]);
+      setMouseStats(mouseData);
+      setKeyboardStats(keyboardData);
+    } catch (error) {
+      console.error("Error fetching game stats:", error);
+      // Si es un error de JSON, probablemente el endpoint no existe
+      if (error instanceof SyntaxError && error.message.includes("JSON")) {
+        setMessage({
+          type: "error",
+          text: "Game statistics endpoints not available yet",
+        });
+      } else {
+        setMessage({ type: "error", text: "Failed to fetch game statistics" });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isLoading) {
@@ -151,52 +172,93 @@ const Profile: React.FC = () => {
                 <h3>🎮 Game Statistics</h3>
               </Card.Header>
               <Card.Body>
-                {gameStats ? (
-                  <Row>
-                    <Col md={6}>
-                      <div className="stat-item mb-3">
-                        <h6 className="text-primary">Total Games Played</h6>
-                        <h4>{gameStats.total_games}</h4>
-                      </div>
-                      <div className="stat-item mb-3">
-                        <h6 className="text-success">High Score</h6>
-                        <h4>{gameStats.high_score.toLocaleString()}</h4>
-                      </div>
-                      <div className="stat-item mb-3">
-                        <h6 className="text-info">Total Score</h6>
-                        <h4>{gameStats.total_score.toLocaleString()}</h4>
-                      </div>
-                    </Col>
-                    <Col md={6}>
-                      <div className="stat-item mb-3">
-                        <h6 className="text-warning">Levels Completed</h6>
-                        <h4>{gameStats.levels_completed}</h4>
-                      </div>
-                      <div className="stat-item mb-3">
-                        <h6 className="text-danger">
-                          <span className="text-zombies">Zombies</span> Defeated
-                        </h6>
-                        <h4>{gameStats.zombies_defeated.toLocaleString()}</h4>
-                      </div>
-                      <div className="stat-item mb-3">
-                        <h6 className="text-secondary">Average Score</h6>
-                        <h4>
-                          {gameStats.total_games > 0
-                            ? Math.round(
-                                gameStats.total_score / gameStats.total_games
-                              ).toLocaleString()
-                            : "0"}
-                        </h4>
-                      </div>
-                    </Col>
-                  </Row>
+                {mouseStats && keyboardStats ? (
+                  <div>
+                    {/* Mouse Stats */}
+                    <div className="mb-4">
+                      <h5 className="text-primary mb-3">🖱️ Mouse Stats</h5>
+                      <Row>
+                        <Col md={6}>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-primary">
+                              Zombies Killed by Player
+                            </h6>
+                            <h4>{mouseStats.zombies_killed_by_player}</h4>
+                          </div>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-success">Score</h6>
+                            <h4>{mouseStats.score.toLocaleString()}</h4>
+                          </div>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-info">Total Play Time</h6>
+                            <h4>{mouseStats.total_play_time}s</h4>
+                          </div>
+                        </Col>
+                        <Col md={6}>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-warning">Levels Completed</h6>
+                            <h4>{mouseStats.levels_completed}</h4>
+                          </div>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-danger">Bullets Fired</h6>
+                            <h4>{mouseStats.bullets_fired.toLocaleString()}</h4>
+                          </div>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-secondary">
+                              Environment Kills
+                            </h6>
+                            <h4>{mouseStats.zombies_killed_by_environment}</h4>
+                          </div>
+                        </Col>
+                      </Row>
+                    </div>
+
+                    <hr />
+
+                    {/* Keyboard Stats */}
+                    <div className="mb-4">
+                      <h5 className="text-success mb-3">⌨️ Keyboard Stats</h5>
+                      <Row>
+                        <Col md={6}>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-primary">
+                              Zombies Killed by Player
+                            </h6>
+                            <h4>{keyboardStats.zombies_killed_by_player}</h4>
+                          </div>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-success">Score</h6>
+                            <h4>{keyboardStats.score.toLocaleString()}</h4>
+                          </div>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-info">Typing Accuracy</h6>
+                            <h4>{keyboardStats.typing_accuracy.toFixed(1)}%</h4>
+                          </div>
+                        </Col>
+                        <Col md={6}>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-warning">Levels Completed</h6>
+                            <h4>{keyboardStats.levels_completed}</h4>
+                          </div>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-info">Total Play Time</h6>
+                            <h4>{keyboardStats.total_play_time}s</h4>
+                          </div>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-secondary">
+                              Environment Kills
+                            </h6>
+                            <h4>
+                              {keyboardStats.zombies_killed_by_environment}
+                            </h4>
+                          </div>
+                        </Col>
+                      </Row>
+                    </div>
+                  </div>
                 ) : (
                   <div className="text-center">
                     <p>No game statistics yet!</p>
-                    <p>
-                      Play some games or use the <strong>Backend Test</strong>{" "}
-                      page to add test scores.
-                    </p>
                   </div>
                 )}
               </Card.Body>
@@ -216,12 +278,6 @@ const Profile: React.FC = () => {
                     onClick={() => navigate("/leaderboard")}
                   >
                     View Leaderboard
-                  </Button>
-                  <Button
-                    variant="info"
-                    onClick={() => navigate("/backend-test")}
-                  >
-                    Backend Test
                   </Button>
                 </div>
               </Card.Body>

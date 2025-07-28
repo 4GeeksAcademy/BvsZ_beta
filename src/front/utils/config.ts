@@ -9,9 +9,8 @@ export const API_CONFIG = {
     FORGOT_PASSWORD: "/forgot-password",
     RESET_PASSWORD: "/reset-password",
     LEADERBOARD: "/leaderboard",
-    GAME_STATS: "/game-stats",
-    SCORES: "/scores",
-    STATS: "/stats",
+    STATS_MOUSE: "/stats/mouse",
+    STATS_KEYBOARD: "/stats/keyboard",
   },
 };
 
