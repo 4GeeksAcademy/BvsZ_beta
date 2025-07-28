@@ -11,6 +11,7 @@ export const API_CONFIG = {
     LEADERBOARD: "/leaderboard",
     GAME_STATS: "/game-stats",
     SCORES: "/scores",
+    STATS: "/stats",
   },
 };
 

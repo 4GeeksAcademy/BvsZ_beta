@@ -1,3 +1,25 @@
+// Obtiene estadísticas del usuario usando el método de entrada especificado
+export const getUserStatsMouse = async () => {
+  const response = await fetchWithAuth(getApiEndpoint("STATS"), {
+    method: "GET",
+    body: JSON.stringify({ input_method: "mouse" }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch user stats (mouse)");
+  }
+  return response.json();
+};
+
+export const getUserStatsKeyboard = async () => {
+  const response = await fetchWithAuth(getApiEndpoint("STATS"), {
+    method: "GET",
+    body: JSON.stringify({ input_method: "keyboard" }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch user stats (keyboard)");
+  }
+  return response.json();
+};
 import { API_CONFIG, getApiEndpoint } from "./config";
 
 export const getToken = (): string | null => {
