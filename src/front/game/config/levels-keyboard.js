@@ -11,10 +11,10 @@ export const levels = [
     serverHealth: 50,
     zombieVelocityY: -40, //Negativo
     zombieHealth: 100,
-    zombieDamage: 10,
+    zombieDamage: 100,
     bulletVelocityY: 100,
     bulletDamage: 10,
-    zombiesPerLevel: 5,
+    zombiesPerLevel: 500,
     maxZombiesOnScreen: 5,
     inputClasses: inputClasses[0],
   },

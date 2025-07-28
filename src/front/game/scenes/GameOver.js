@@ -1,5 +1,12 @@
 import { EventBus } from "../EventBus";
 import { Scene } from "phaser";
+import {
+  FONT_VT323,
+  FONT_VT323_TITLE,
+  FONT_VT323_STATS,
+  FONT_VT323_TEXT_VICTORY,
+  FONT_VT323_BUTTON,
+} from "../config/fonts";
 
 export class GameOver extends Scene {
   constructor() {
@@ -19,6 +26,37 @@ export class GameOver extends Scene {
       this.finalStats = data.stats;
     }
 
+    // Calcular estadísticas finales desde levelData si están disponibles
+    if (data && data.levelData && data.levelData.length > 0) {
+      // Sumatoria de todos los zombies killed by player
+      const totalZombiesKilledByPlayer = data.levelData.reduce(
+        (total, level) => total + (level.zombieDeathStats?.byPlayer || 0),
+        0
+      );
+
+      // Sumatoria de todos los zombies killed by collision
+      const totalZombiesKilledByCollision = data.levelData.reduce(
+        (total, level) => total + (level.zombieDeathStats?.byCollision || 0),
+        0
+      );
+
+      // Tiempo total del último nivel completado
+      const lastLevel = data.levelData[data.levelData.length - 1];
+      const totalGameTime = lastLevel.totalTime || 0;
+
+      // Actualizar finalStats con los datos calculados
+      this.finalStats = {
+        zombiesKilled:
+          totalZombiesKilledByPlayer + totalZombiesKilledByCollision,
+        zombiesKilledByPlayer: totalZombiesKilledByPlayer,
+        zombiesKilledByCollision: totalZombiesKilledByCollision,
+        gameTime: `${Math.floor(totalGameTime / 60)}:${(totalGameTime % 60)
+          .toString()
+          .padStart(2, "0")}`,
+        totalTimeSeconds: totalGameTime,
+      };
+    }
+
     // Obtener las dimensiones reales del juego
     const { width, height } = this.sys.game.config;
     const centerX = width / 2;
@@ -32,86 +70,98 @@ export class GameOver extends Scene {
     backgroundImage.setDisplaySize(width, height);
 
     this.add
-      .text(centerX, centerY - 120, "Game Over", {
-        fontFamily: "Arial Black",
-        fontSize: 64,
+      .text(centerX, centerY - 120, "GAME OVER", {
+        ...FONT_VT323_TITLE,
+        fontSize: "64px",
         color: "#ff0000",
         stroke: "#000000",
-        strokeThickness: 8,
-        align: "center",
+        strokeThickness: 4,
       })
       .setOrigin(0.5)
       .setDepth(100);
 
     this.add
-      .text(centerX, centerY - 40, "All servers was destroy", {
-        fontFamily: "Arial",
-        fontSize: 24,
+      .text(centerX, centerY - 40, "ALL SERVERS WERE DESTROYED", {
+        ...FONT_VT323,
+        fontSize: "24px",
         color: "#ffffff",
         stroke: "#000000",
-        strokeThickness: 4,
-        align: "center",
+        strokeThickness: 2,
       })
       .setOrigin(0.5)
       .setDepth(100);
 
     // Mostrar estadísticas finales
     this.add
-      .text(centerX, centerY + 10, "FINALS STATS", {
-        fontFamily: "Arial Black",
-        fontSize: 20,
+      .text(centerX, centerY + 10, "FINAL STATS", {
+        ...FONT_VT323_STATS,
+        fontSize: "20px",
         color: "#ffff00",
         stroke: "#000000",
-        strokeThickness: 3,
-        align: "center",
+        strokeThickness: 2,
       })
       .setOrigin(0.5)
       .setDepth(100);
 
     this.add
-      .text(
-        centerX,
-        centerY + 45,
-        `⏱️ Tiempo de juego: ${this.finalStats.gameTime}`,
-        {
-          fontFamily: "Arial",
-          fontSize: 18,
-          color: "#ffffff",
-          stroke: "#000000",
-          strokeThickness: 2,
-          align: "center",
-        }
-      )
+      .text(centerX, centerY + 45, `TIME PLAYED: ${this.finalStats.totalTimeSeconds}`, {
+        ...FONT_VT323_STATS,
+        fontSize: "18px",
+        color: "#ffffff",
+        stroke: "#000000",
+        strokeThickness: 1,
+      })
       .setOrigin(0.5)
       .setDepth(100);
 
+    // Mostrar estadística de zombies eliminados por el jugador
     this.add
       .text(
         centerX,
         centerY + 75,
-        `🧟‍♂️ Zombies destroy: ${this.finalStats.zombiesKilled}`,
+        `ZOMBIES KILLED BY PLAYER: ${
+          this.finalStats.zombiesKilledByPlayer || this.finalStats.zombiesKilled
+        }`,
         {
-          fontFamily: "Arial",
-          fontSize: 18,
+          ...FONT_VT323_STATS,
+          fontSize: "18px",
           color: "#ffffff",
           stroke: "#000000",
-          strokeThickness: 2,
-          align: "center",
+          strokeThickness: 1,
         }
       )
       .setOrigin(0.5)
       .setDepth(100);
 
+    // Mostrar estadística de zombies eliminados por colisión (solo si está disponible)
+    if (this.finalStats.zombiesKilledByCollision !== undefined) {
+      this.add
+        .text(
+          centerX,
+          centerY + 105,
+          `ZOMBIES KILLED BY COLLISION: ${this.finalStats.zombiesKilledByCollision}`,
+          {
+            ...FONT_VT323_STATS,
+            fontSize: "18px",
+            color: "#ffffff",
+            stroke: "#000000",
+            strokeThickness: 1,
+          }
+        )
+        .setOrigin(0.5)
+        .setDepth(100);
+    }
+
     this.add
       .text(
         centerX,
-        centerY + 115,
-        "Presiona cualquier tecla para volver al menú",
+        centerY +
+          (this.finalStats.zombiesKilledByCollision !== undefined ? 145 : 115),
+        "PRESS ANY KEY TO RETURN TO MENU",
         {
-          fontFamily: "Arial",
-          fontSize: 16,
+          ...FONT_VT323_BUTTON,
+          fontSize: "16px",
           color: "#cccccc",
-          align: "center",
         }
       )
       .setOrigin(0.5)
