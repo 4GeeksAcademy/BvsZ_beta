@@ -49,6 +49,9 @@ export class Game extends Phaser.Scene {
       byTrap: 0,
     };
 
+    // Variable para tracking de balas disparadas en el nivel actual
+    this.currentLevelBulletsFired = 0;
+
     // Variables para UI de nivel superado
     this.levelCompletedUI = null;
     this.levelCompletedBackground = null;
@@ -87,6 +90,9 @@ export class Game extends Phaser.Scene {
       byCollision: 0,
       byTrap: 0,
     };
+
+    // Inicializar contador de balas disparadas del nivel actual
+    this.currentLevelBulletsFired = 0;
 
     // Inicializar variables de nivel
     this.currentLevelIndex = 0;
@@ -250,6 +256,9 @@ export class Game extends Phaser.Scene {
         byCollision: 0,
         byTrap: 0,
       };
+
+      // Resetear contador de balas disparadas para el nuevo nivel
+      this.currentLevelBulletsFired = 0;
 
       // Actualizar configuración del nivel
       this.level = this.levels[this.currentLevelIndex];

@@ -96,7 +96,13 @@ export class ServerObject {
           gameTime: gameTime,
         };
 
-        this.scene.scene.start("GameOver", { stats: finalStats });
+        // Preparar datos completos incluyendo levelData
+        const gameOverData = {
+          stats: finalStats,
+          levelData: this.scene.levelData || [],
+        };
+
+        this.scene.scene.start("GameOver", gameOverData);
       });
     }
   }

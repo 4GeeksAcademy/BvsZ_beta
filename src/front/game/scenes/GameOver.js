@@ -21,6 +21,9 @@ export class GameOver extends Scene {
     // Emitir evento de parar el juego cuando llegamos a GameOver
     EventBus.emit("game:stop");
 
+    // Debug: verificar qué datos llegan
+    console.log("GameOver - Datos recibidos:", data);
+
     // Recibir datos de estadísticas finales si se proporcionan
     if (data && data.stats) {
       this.finalStats = data.stats;
@@ -28,6 +31,8 @@ export class GameOver extends Scene {
 
     // Calcular estadísticas finales desde levelData si están disponibles
     if (data && data.levelData && data.levelData.length > 0) {
+      console.log("GameOver - levelData encontrado:", data.levelData);
+
       // Sumatoria de todos los zombies killed by player
       const totalZombiesKilledByPlayer = data.levelData.reduce(
         (total, level) => total + (level.zombieDeathStats?.byPlayer || 0),
@@ -40,6 +45,14 @@ export class GameOver extends Scene {
         0
       );
 
+      // Sumatoria de todas las balas disparadas
+      const totalBulletsFired = data.levelData.reduce(
+        (total, level) => total + (level.bulletsFired || 0),
+        0
+      );
+
+      console.log("GameOver - Total balas disparadas:", totalBulletsFired);
+
       // Tiempo total del último nivel completado
       const lastLevel = data.levelData[data.levelData.length - 1];
       const totalGameTime = lastLevel.totalTime || 0;
@@ -50,11 +63,16 @@ export class GameOver extends Scene {
           totalZombiesKilledByPlayer + totalZombiesKilledByCollision,
         zombiesKilledByPlayer: totalZombiesKilledByPlayer,
         zombiesKilledByCollision: totalZombiesKilledByCollision,
+        bulletsFired: totalBulletsFired,
         gameTime: `${Math.floor(totalGameTime / 60)}:${(totalGameTime % 60)
           .toString()
           .padStart(2, "0")}`,
         totalTimeSeconds: totalGameTime,
       };
+
+      console.log("GameOver - finalStats actualizadas:", this.finalStats);
+    } else {
+      console.log("GameOver - No se encontró levelData o está vacío");
     }
 
     // Obtener las dimensiones reales del juego
@@ -104,13 +122,18 @@ export class GameOver extends Scene {
       .setDepth(100);
 
     this.add
-      .text(centerX, centerY + 45, `TIME PLAYED: ${this.finalStats.totalTimeSeconds}`, {
-        ...FONT_VT323_STATS,
-        fontSize: "18px",
-        color: "#ffffff",
-        stroke: "#000000",
-        strokeThickness: 1,
-      })
+      .text(
+        centerX,
+        centerY + 45,
+        `TIME PLAYED: ${this.finalStats.totalTimeSeconds}`,
+        {
+          ...FONT_VT323_STATS,
+          fontSize: "18px",
+          color: "#ffffff",
+          stroke: "#000000",
+          strokeThickness: 1,
+        }
+      )
       .setOrigin(0.5)
       .setDepth(100);
 
@@ -152,11 +175,37 @@ export class GameOver extends Scene {
         .setDepth(100);
     }
 
+    // Mostrar estadística de balas disparadas (solo si está disponible)
+    if (this.finalStats.bulletsFired !== undefined) {
+      this.add
+        .text(
+          centerX,
+          centerY +
+            (this.finalStats.zombiesKilledByCollision !== undefined
+              ? 135
+              : 105),
+          `BULLETS FIRED: ${this.finalStats.bulletsFired}`,
+          {
+            ...FONT_VT323_STATS,
+            fontSize: "18px",
+            color: "#ffffff",
+            stroke: "#000000",
+            strokeThickness: 1,
+          }
+        )
+        .setOrigin(0.5)
+        .setDepth(100);
+    }
+
     this.add
       .text(
         centerX,
         centerY +
-          (this.finalStats.zombiesKilledByCollision !== undefined ? 145 : 115),
+          (this.finalStats.bulletsFired !== undefined
+            ? 175
+            : this.finalStats.zombiesKilledByCollision !== undefined
+            ? 145
+            : 115),
         "PRESS ANY KEY TO RETURN TO MENU",
         {
           ...FONT_VT323_BUTTON,

@@ -44,10 +44,15 @@ export default function registerLevelCompletedUI(scene) {
           byCollision: this.currentLevelZombieDeaths.byCollision,
           byTrap: this.currentLevelZombieDeaths.byTrap,
         },
+        bulletsFired: this.currentLevelBulletsFired,
         totalZombiesKilled: this.gameStats.zombiesKilled,
         totalTime: timeData.seconds,
       });
 
+      console.log(
+        "Nivel completado - currentLevelBulletsFired:",
+        this.currentLevelBulletsFired
+      );
       console.log("Nivel completado - Datos agregados:", this.levelData.at(-1));
       console.log("Array completo de niveles:", this.levelData);
 
@@ -188,6 +193,7 @@ export default function registerLevelCompletedUI(scene) {
     // Calcular estadísticas finales desde levelData
     let totalZombiesKilledByPlayer = 0;
     let totalZombiesKilledByCollision = 0;
+    let totalBulletsFired = 0;
     let totalGameTime = 0;
 
     if (this.levelData.length > 0) {
@@ -203,6 +209,12 @@ export default function registerLevelCompletedUI(scene) {
         0
       );
 
+      // Sumatoria de todas las balas disparadas
+      totalBulletsFired = this.levelData.reduce(
+        (total, level) => total + (level.bulletsFired || 0),
+        0
+      );
+
       // Tiempo total del último nivel completado
       const lastLevel = this.levelData[this.levelData.length - 1];
       totalGameTime = lastLevel.totalTime || 0;
@@ -211,7 +223,7 @@ export default function registerLevelCompletedUI(scene) {
     const statsText = this.add.text(
       0,
       -10,
-      `Zombies killed by player: ${totalZombiesKilledByPlayer}\nZombies killed by collision: ${totalZombiesKilledByCollision}\nTotal time: ${totalGameTime}s`,
+      `Zombies killed by player: ${totalZombiesKilledByPlayer}\nZombies killed by collision: ${totalZombiesKilledByCollision}\nBullets fired: ${totalBulletsFired}\nTotal time: ${totalGameTime}s`,
       FONT_VT323_STATS
     );
     statsText.setOrigin(0.5);
