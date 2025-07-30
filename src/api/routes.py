@@ -1,6 +1,6 @@
 from flask_cors import CORS
 from api.utils import generate_sitemap, APIException
-from api.models import db, User
+from api.models import db, User, GameStats
 from flask import Flask, request, jsonify, url_for, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
@@ -187,3 +187,97 @@ def update_user_stats(current_user, user_id):
         'msg': 'Estadísticas actualizadas correctamente',
         'stats': data
     }), 200
+
+
+@api.route('/stats', methods=['GET'])
+@token_required
+def get_stats(current_user):
+    stats = current_user.game_stats
+    if not stats:
+        return jsonify({'msg': 'No hay estadísticas disponibles.'}), 404
+    return jsonify({'msg': 'Estadísticas obtenidas correctamente.', 'stats': stats.serialize()}), 200
+
+
+@api.route('/stats', methods=['POST'])
+@token_required
+def update_stats(current_user):
+    data = request.get_json()
+    stats = current_user.game_stats
+
+    if not stats:
+        stats = GameStats(user_id=current_user.id)
+        db.session.add(stats)
+
+    # Actualizar los datos del modelo GameStats
+    stats.zombies_killed_by_player = data.get(
+        'zombies_killed_by_player', stats.zombies_killed_by_player)
+    stats.zombies_killed_by_environment = data.get(
+        'zombies_killed_by_environment', stats.zombies_killed_by_environment)
+    stats.total_play_time = data.get('total_play_time', stats.total_play_time)
+    stats.bullets_fired = data.get('bullets_fired', stats.bullets_fired)
+    stats.typing_accuracy = data.get('typing_accuracy', stats.typing_accuracy)
+    stats.levels_completed = data.get(
+        'levels_completed', stats.levels_completed)
+
+    # Actualizar el método de entrada
+    input_method = data.get('input_method', 'mouse')
+    if input_method not in ['mouse', 'keyboard']:
+        return jsonify({'msg': 'Método de entrada inválido. Debe ser "mouse" o "keyboard".'}), 400
+    stats.input_method = input_method
+
+    # Calcular el puntaje
+    stats.calculate_score()
+
+    db.session.commit()
+
+    return jsonify({'msg': 'Estadísticas actualizadas correctamente.', 'stats': stats.serialize()}), 200
+
+
+@api.route('/profile/stats', methods=['GET'])
+@token_required
+def get_game_history(current_user):
+    stats = GameStats.query.filter_by(user_id=current_user.id).all()
+    return jsonify({
+        'msg': 'Historial de partidas obtenido correctamente.',
+        'history': [stat.serialize() for stat in stats]
+    }), 200
+
+
+@api.route('/leaderboard/<string:input_method>', methods=['GET'])
+def get_leaderboard(input_method):
+    if input_method not in ['mouse', 'keyboard']:
+        return jsonify({'msg': 'Método de entrada inválido. Debe ser "mouse" o "keyboard".'}), 400
+
+    leaderboard = db.session.query(
+        User.username, db.func.max(GameStats.score).label('highscore')
+    ).join(GameStats).filter(GameStats.input_method == input_method).group_by(User.username).order_by(
+        db.desc('highscore')).limit(10).all()
+
+    return jsonify({
+        'msg': f'Leaderboard para {input_method} obtenido correctamente.',
+        'leaderboard': [{'username': row.username, 'highscore': row.highscore} for row in leaderboard]
+    }), 200
+
+
+@api.route('/stats', methods=['POST'])
+@token_required
+def add_game_stat(current_user):
+    data = request.get_json()
+
+    # Crear una nueva entrada en GameStats
+    new_stat = GameStats(
+        user_id=current_user.id,
+        zombies_killed_by_player=data.get('zombies_killed_by_player', 0),
+        zombies_killed_by_environment=data.get(
+            'zombies_killed_by_environment', 0),
+        total_play_time=data.get('total_play_time', 0.0),
+        bullets_fired=data.get('bullets_fired', 0),
+        typing_accuracy=data.get('typing_accuracy', 0.0),
+        levels_completed=data.get('levels_completed', 0),
+        input_method=data.get('input_method', 'mouse')
+    )
+    new_stat.calculate_score()
+    db.session.add(new_stat)
+    db.session.commit()
+
+    return jsonify({'msg': 'Estadística de juego registrada correctamente.', 'stat': new_stat.serialize()}), 201
