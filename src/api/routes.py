@@ -1,6 +1,6 @@
 from flask_cors import CORS
 from api.utils import generate_sitemap, APIException
-from api.models import db, User
+from api.models import db, User, MouseGameStats, KeyboardGameStats
 from flask import Flask, request, jsonify, url_for, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
@@ -149,41 +149,81 @@ def get_game_access(current_user):
     }), 200
 
 
-@api.route('/stats/<int:user_id>', methods=['GET'])
+@api.route('/stats/<string:input_method>', methods=['GET'])
 @token_required
-def get_user_stats(current_user, user_id):
-    # Solo permitir ver las estadísticas propias o ser admin
-    if current_user.id != user_id and not current_user.is_admin:
-        return jsonify({'msg': 'No autorizado'}), 403
+def get_stats(current_user, input_method):
+    if input_method not in ['mouse', 'keyboard']:
+        return jsonify({'msg': 'Método de entrada inválido. Debe ser "mouse" o "keyboard".'}), 400
 
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({'msg': 'Usuario no encontrado'}), 404
+    if input_method == 'mouse':
+        stats = MouseGameStats.query.filter_by(user_id=current_user.id).all()
+    else:
+        stats = KeyboardGameStats.query.filter_by(
+            user_id=current_user.id).all()
 
-    # Por ahora retornamos estadísticas de ejemplo
+    if not stats:
+        return jsonify({'msg': 'No hay estadísticas disponibles.'}), 404
+
     return jsonify({
-        'msg': 'Estadísticas obtenidas correctamente',
-        'stats': {
-            'total_games': 0,
-            'high_score': 0,
-            'total_score': 0,
-            'levels_completed': 0,
-            'zombies_defeated': 0
-        }
+        'msg': 'Estadísticas obtenidas correctamente.',
+        'stats': [stat.serialize() for stat in stats]
     }), 200
 
 
-@api.route('/stats/<int:user_id>', methods=['POST'])
+@api.route('/stats/<string:input_method>', methods=['POST'])
 @token_required
-def update_user_stats(current_user, user_id):
-    # Solo permitir actualizar las estadísticas propias o ser admin
-    if current_user.id != user_id and not current_user.is_admin:
-        return jsonify({'msg': 'No autorizado'}), 403
+def add_game_stat(current_user, input_method):
+    if input_method not in ['mouse', 'keyboard']:
+        return jsonify({'msg': 'Método de entrada inválido. Debe ser "mouse" o "keyboard".'}), 400
 
     data = request.get_json()
-    # Aquí implementaremos la lógica para actualizar las estadísticas
-    # Por ahora solo retornamos éxito
+
+    # Crear una nueva entrada según el método de entrada
+    if input_method == 'mouse':
+        new_stat = MouseGameStats(
+            user_id=current_user.id,
+            zombies_killed_by_player=data.get('zombies_killed_by_player', 0),
+            zombies_killed_by_environment=data.get(
+                'zombies_killed_by_environment', 0),
+            total_play_time=data.get('total_play_time', 0.0),
+            bullets_fired=data.get('bullets_fired', 0),
+            levels_completed=data.get('levels_completed', 0)
+        )
+    else:
+        new_stat = KeyboardGameStats(
+            user_id=current_user.id,
+            zombies_killed_by_player=data.get('zombies_killed_by_player', 0),
+            zombies_killed_by_environment=data.get(
+                'zombies_killed_by_environment', 0),
+            total_play_time=data.get('total_play_time', 0.0),
+            bullets_fired=data.get('bullets_fired', 0),
+            levels_completed=data.get('levels_completed', 0),
+            typing_accuracy=data.get('typing_accuracy', 0.0)
+        )
+
+    new_stat.calculate_score()
+    db.session.add(new_stat)
+    db.session.commit()
+
+    return jsonify({'msg': 'Estadística de juego registrada correctamente.', 'stat': new_stat.serialize()}), 201
+
+
+@api.route('/leaderboard/<string:input_method>', methods=['GET'])
+def get_leaderboard(input_method):
+    if input_method not in ['mouse', 'keyboard']:
+        return jsonify({'msg': 'Método de entrada inválido. Debe ser "mouse" o "keyboard".'}), 400
+
+    if input_method == 'mouse':
+        StatsModel = MouseGameStats
+    else:
+        StatsModel = KeyboardGameStats
+
+    leaderboard = db.session.query(
+        User.username, db.func.max(StatsModel.score).label('highscore')
+    ).join(StatsModel).group_by(User.username).order_by(
+        db.desc('highscore')).limit(10).all()
+
     return jsonify({
-        'msg': 'Estadísticas actualizadas correctamente',
-        'stats': data
+        'msg': f'Leaderboard para {input_method} obtenido correctamente.',
+        'leaderboard': [{'username': row.username, 'highscore': row.highscore} for row in leaderboard]
     }), 200
