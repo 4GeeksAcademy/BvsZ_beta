@@ -32,6 +32,20 @@ export class BulletObject {
     });
     bullet.setData("rocketEmitter", rocketEmitter);
     this.scene.sound.play("shot");
+
+    // Incrementar contador de balas disparadas
+    if (this.scene.currentLevelBulletsFired !== undefined) {
+      this.scene.currentLevelBulletsFired++;
+      console.log(
+        "Bala disparada - Total en nivel actual:",
+        this.scene.currentLevelBulletsFired
+      );
+    } else {
+      console.log(
+        "WARNING: currentLevelBulletsFired no está definido en la escena"
+      );
+    }
+
     return bullet;
   }
 }
