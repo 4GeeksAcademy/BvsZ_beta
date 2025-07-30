@@ -46,7 +46,7 @@ export const levels = [
     zombieDamage: 10,
     bulletVelocityY: 100,
     bulletDamage: 10,
-    zombiesPerLevel: 50,
+    zombiesPerLevel: 60,
     maxZombiesOnScreen: 8,
     inputClasses: inputClasses[0],
   },
