@@ -13,14 +13,15 @@ interface Profile {
 }
 
 interface GameStats {
-  zombies_killed_by_player: number;
-  zombies_killed_by_environment: number;
-  total_play_time: number;
   bullets_fired: number;
-  typing_accuracy: number;
+  created_at: string;
+  input_method: string;
   levels_completed: number;
   score: number;
-  input_method: string;
+  total_play_time: number;
+  typing_accuracy: number;
+  zombies_killed_by_environment: number;
+  zombies_killed_by_player: number;
 }
 
 const Profile: React.FC = () => {
@@ -35,6 +36,27 @@ const Profile: React.FC = () => {
     text: string;
   } | null>(null);
   const token = localStorage.getItem("token");
+
+  // Función para formatear el tiempo de juego
+  const formatPlayTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${remainingSeconds}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${remainingSeconds}s`;
+    } else {
+      return `${remainingSeconds}s`;
+    }
+  };
+
+  // Función para formatear la fecha
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+  };
 
   const fetchProfile = useCallback(async () => {
     if (!token) return;
@@ -85,12 +107,14 @@ const Profile: React.FC = () => {
   const fetchGameStats = async () => {
     try {
       setIsLoading(true);
-      const [mouseData, keyboardData] = await Promise.all([
+      const [mouseResponse, keyboardResponse] = await Promise.all([
         getUserStatsMouse(),
         getUserStatsKeyboard(),
       ]);
-      setMouseStats(mouseData);
-      setKeyboardStats(keyboardData);
+
+      // Extraer los stats de la respuesta (ahora es un array)
+      setMouseStats(mouseResponse.stats[0] || null);
+      setKeyboardStats(keyboardResponse.stats[0] || null);
     } catch (error) {
       console.error("Error fetching game stats:", error);
       // Si es un error de JSON, probablemente el endpoint no existe
@@ -177,6 +201,12 @@ const Profile: React.FC = () => {
                     {/* Mouse Stats */}
                     <div className="mb-4">
                       <h5 className="text-primary mb-3">🖱️ Mouse Stats</h5>
+                      <div className="mb-2">
+                        <small className="text-muted">
+                          Last updated: {formatDate(mouseStats.created_at)} |
+                          Input Method: {mouseStats.input_method}
+                        </small>
+                      </div>
                       <Row>
                         <Col md={6}>
                           <div className="stat-item mb-3">
@@ -191,8 +221,16 @@ const Profile: React.FC = () => {
                           </div>
                           <div className="stat-item mb-3">
                             <h6 className="text-info">Total Play Time</h6>
-                            <h4>{mouseStats.total_play_time}s</h4>
+                            <h4>
+                              {formatPlayTime(mouseStats.total_play_time)}
+                            </h4>
                           </div>
+                          {mouseStats.typing_accuracy && (
+                            <div className="stat-item mb-3">
+                              <h6 className="text-info">Typing Accuracy</h6>
+                              <h4>{mouseStats.typing_accuracy.toFixed(1)}%</h4>
+                            </div>
+                          )}
                         </Col>
                         <Col md={6}>
                           <div className="stat-item mb-3">
@@ -218,6 +256,12 @@ const Profile: React.FC = () => {
                     {/* Keyboard Stats */}
                     <div className="mb-4">
                       <h5 className="text-success mb-3">⌨️ Keyboard Stats</h5>
+                      <div className="mb-2">
+                        <small className="text-muted">
+                          Last updated: {formatDate(keyboardStats.created_at)} |
+                          Input Method: {keyboardStats.input_method}
+                        </small>
+                      </div>
                       <Row>
                         <Col md={6}>
                           <div className="stat-item mb-3">
@@ -242,8 +286,20 @@ const Profile: React.FC = () => {
                           </div>
                           <div className="stat-item mb-3">
                             <h6 className="text-info">Total Play Time</h6>
-                            <h4>{keyboardStats.total_play_time}s</h4>
+                            <h4>
+                              {formatPlayTime(keyboardStats.total_play_time)}
+                            </h4>
                           </div>
+                          <div className="stat-item mb-3">
+                            <h6 className="text-danger">Bullets Fired</h6>
+                            <h4>
+                              {keyboardStats.bullets_fired.toLocaleString()}
+                            </h4>
+                          </div>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md={6}>
                           <div className="stat-item mb-3">
                             <h6 className="text-secondary">
                               Environment Kills
