@@ -12,8 +12,6 @@ export const inputClasses = [
     "justify-content-start",
     "justify-content-center",
     "justify-content-end",
-    "justify-content-between",
-    "justify-content-around",
   ],
   // Nivel 3
   [

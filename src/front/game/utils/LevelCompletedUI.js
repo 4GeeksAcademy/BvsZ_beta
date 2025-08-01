@@ -15,7 +15,111 @@ import {
   FONT_VT323_TEXT_VICTORY,
 } from "../config/fonts.js";
 
+// Importar las funciones para enviar estadísticas
+import { postUserStatsMouse, postUserStatsKeyboard } from "../../utils/auth";
+
 export default function registerLevelCompletedUI(scene) {
+  // Método de entrada actual, predeterminado: mouse
+  scene.currentInputMethod = "mouse";
+
+  // Precisión de escritura para el modo teclado, valor por defecto
+  scene.typingAccuracy = 99.7;
+
+  // Obtener método de entrada desde el registro de la escena al inicializar
+  scene.events.once("create", function () {
+    // Obtener el método de entrada desde el registro global de Phaser
+    const inputMethod = scene.registry.get("inputMethod");
+    if (inputMethod) {
+      console.log(
+        "Inicializando con método de entrada desde registry:",
+        inputMethod
+      );
+      scene.currentInputMethod = inputMethod;
+    }
+  });
+
+  // Función para que otros componentes puedan actualizar la precisión de escritura
+  scene.updateTypingAccuracy = function (accuracy) {
+    this.typingAccuracy = accuracy;
+    console.log("Typing accuracy updated:", accuracy);
+  };
+
+  // Función para depuración del método de entrada
+  scene.logInputMethod = function () {
+    const registryMethod = this.registry.get("inputMethod");
+    console.log("Current input method:", this.currentInputMethod);
+    console.log("Registry input method:", registryMethod);
+  };
+
+  // Función para enviar estadísticas al servidor
+  scene.sendGameStats = function () {
+    if (!this.levelData || this.levelData.length === 0) {
+      console.error("No hay datos de nivel para enviar");
+      return;
+    }
+
+    try {
+      // Extraer estadísticas finales del último nivel
+      const lastLevel = this.levelData[this.levelData.length - 1];
+
+      // Calcular totales
+      const totalZombiesKilledByPlayer = this.levelData.reduce(
+        (total, level) => total + (level.zombieDeathStats?.byPlayer || 0),
+        0
+      );
+
+      const totalZombiesKilledByEnvironment = this.levelData.reduce(
+        (total, level) =>
+          total +
+          (level.zombieDeathStats?.byCollision || 0) +
+          (level.zombieDeathStats?.byTrap || 0),
+        0
+      );
+
+      const totalBulletsFired = this.levelData.reduce(
+        (total, level) => total + (level.bulletsFired || 0),
+        0
+      );
+
+      const totalTime = lastLevel.totalTime || 0;
+      const levelsCompleted = this.levelData.length;
+
+      // Crear objeto de estadísticas
+      const statsData = {
+        zombies_killed_by_player: totalZombiesKilledByPlayer,
+        zombies_killed_by_environment: totalZombiesKilledByEnvironment,
+        total_play_time: totalTime,
+        bullets_fired: totalBulletsFired,
+        typing_accuracy: this.typingAccuracy || 99.7, // Valor predeterminado si no está disponible
+        levels_completed: levelsCompleted,
+      };
+
+      console.log("Enviando estadísticas al servidor:", statsData);
+      console.log("Método de entrada actual:", this.currentInputMethod);
+
+      // Enviar estadísticas según el método de entrada
+      if (this.currentInputMethod === "keyboard") {
+        postUserStatsKeyboard(statsData)
+          .then((response) =>
+            console.log("Estadísticas de teclado enviadas:", response)
+          )
+          .catch((error) =>
+            console.error("Error al enviar estadísticas de teclado:", error)
+          );
+      } else {
+        postUserStatsMouse(statsData)
+          .then((response) =>
+            console.log("Estadísticas de mouse enviadas:", response)
+          )
+          .catch((error) =>
+            console.error("Error al enviar estadísticas de mouse:", error)
+          );
+      }
+    } catch (error) {
+      console.error("Error al enviar estadísticas:", error);
+    }
+  };
+
   scene.createLevelCompletedUI = function () {
     const centerX = this.sys.game.config.width / 2;
     const centerY = this.sys.game.config.height / 2;
@@ -152,6 +256,10 @@ export default function registerLevelCompletedUI(scene) {
   // Crear UI de victoria (todos los niveles completados)
   scene.createVictoryUI = function () {
     EventBus.emit(GAME_STOP);
+
+    // Enviar estadísticas al servidor cuando el juego se completa
+    this.sendGameStats();
+
     const centerX = this.sys.game.config.width / 2;
     const centerY = this.sys.game.config.height / 2;
 
@@ -223,7 +331,7 @@ export default function registerLevelCompletedUI(scene) {
     const statsText = this.add.text(
       0,
       -10,
-      `Zombies killed by player: ${totalZombiesKilledByPlayer}\nZombies killed by collision: ${totalZombiesKilledByCollision}\nBullets fired: ${totalBulletsFired}\nTotal time: ${totalGameTime}s`,
+      `Zombies killed by player: ${totalZombiesKilledByPlayer}\nZombies killed by collision: ${totalZombiesKilledByCollision}\nBullets fired: ${totalBulletsFired}\nTotal time: ${totalGameTime}s\nInput method: ${this.currentInputMethod}`,
       FONT_VT323_STATS
     );
     statsText.setOrigin(0.5);
@@ -248,6 +356,7 @@ export default function registerLevelCompletedUI(scene) {
 
     // Configurar evento del botón
     playAgainButton.on("pointerdown", () => {
+      // Ya se enviaron las estadísticas, así que solo cambiamos de escena
       this.scene.start("MainMenu");
     });
 

@@ -113,3 +113,43 @@ export const getUserProfile = async () => {
   }
   return response.json();
 };
+
+export const postUserStatsMouse = async (stats: {
+  zombies_killed_by_player: number;
+  zombies_killed_by_environment: number;
+  total_play_time: number;
+  bullets_fired: number;
+  typing_accuracy: number;
+  levels_completed: number;
+}) => {
+  const response = await fetchWithAuth(getApiEndpoint("STATS_MOUSE"), {
+    method: "POST",
+    body: JSON.stringify(stats),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Mouse stats POST error:", response.status, errorText);
+    throw new Error(`Failed to post user stats (mouse): ${response.status}`);
+  }
+  return response.json();
+};
+
+export const postUserStatsKeyboard = async (stats: {
+  zombies_killed_by_player: number;
+  zombies_killed_by_environment: number;
+  total_play_time: number;
+  bullets_fired: number;
+  typing_accuracy: number;
+  levels_completed: number;
+}) => {
+  const response = await fetchWithAuth(getApiEndpoint("STATS_KEYBOARD"), {
+    method: "POST",
+    body: JSON.stringify(stats),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Keyboard stats POST error:", response.status, errorText);
+    throw new Error(`Failed to post user stats (keyboard): ${response.status}`);
+  }
+  return response.json();
+};
