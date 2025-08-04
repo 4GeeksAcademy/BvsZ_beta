@@ -16,6 +16,7 @@ import {
   REORGANIZE_TURRETS,
   GAME_PAUSE,
   GAME_RESUME,
+  TYPING_ACCURACY_UPDATE,
 } from "../EventBus";
 import { levels as levelsMouse } from "../config/levels-mouse";
 import { levels as levelsKeyboard } from "../config/levels-keyboard";
@@ -165,6 +166,10 @@ export class Game extends Phaser.Scene {
   }
 
   update() {
+    // Escuchar actualizaciones de la precisión de escritura
+    EventBus.on("TYPING_ACCURACY_UPDATE", (accuracy) => {
+      this.typingAccuracy = accuracy;
+    });
     // Actualizar barras de vida de zombies
     if (this.zombieUpdatables) {
       this.zombieUpdatables = this.zombieUpdatables.filter(

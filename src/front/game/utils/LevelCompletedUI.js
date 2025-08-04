@@ -23,7 +23,7 @@ export default function registerLevelCompletedUI(scene) {
   scene.currentInputMethod = "mouse";
 
   // Precisión de escritura para el modo teclado, valor por defecto
-  scene.typingAccuracy = 99.7;
+  //scene.typingAccuracy = 99.7;
 
   // Obtener método de entrada desde el registro de la escena al inicializar
   scene.events.once("create", function () {
@@ -38,11 +38,11 @@ export default function registerLevelCompletedUI(scene) {
     }
   });
 
-  // Función para que otros componentes puedan actualizar la precisión de escritura
+  /*// Función para que otros componentes puedan actualizar la precisión de escritura
   scene.updateTypingAccuracy = function (accuracy) {
     this.typingAccuracy = accuracy;
     console.log("Typing accuracy updated:", accuracy);
-  };
+  };*/
 
   // Función para depuración del método de entrada
   scene.logInputMethod = function () {
@@ -90,7 +90,7 @@ export default function registerLevelCompletedUI(scene) {
         zombies_killed_by_environment: totalZombiesKilledByEnvironment,
         total_play_time: totalTime,
         bullets_fired: totalBulletsFired,
-        typing_accuracy: this.typingAccuracy || 99.7, // Valor predeterminado si no está disponible
+        typing_accuracy: this.typingAccuracy, // Valor predeterminado si no está disponible
         levels_completed: levelsCompleted,
       };
 
