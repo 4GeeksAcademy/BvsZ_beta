@@ -1,41 +1,3 @@
-// Obtiene estadísticas del usuario usando el método de entrada especificado
-export const getUserStatsMouse = async () => {
-  const response = await fetchWithAuth(getApiEndpoint("STATS_MOUSE"));
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error("Mouse stats error:", response.status, errorText);
-    throw new Error(`Failed to fetch user stats (mouse): ${response.status}`);
-  }
-
-  const contentType = response.headers.get("content-type");
-  if (!contentType || !contentType.includes("application/json")) {
-    const text = await response.text();
-    console.error("Expected JSON but got:", text.substring(0, 200));
-    throw new Error("Server returned non-JSON response for mouse stats");
-  }
-
-  return response.json();
-};
-
-export const getUserStatsKeyboard = async () => {
-  const response = await fetchWithAuth(getApiEndpoint("STATS_KEYBOARD"));
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error("Keyboard stats error:", response.status, errorText);
-    throw new Error(
-      `Failed to fetch user stats (keyboard): ${response.status}`
-    );
-  }
-
-  const contentType = response.headers.get("content-type");
-  if (!contentType || !contentType.includes("application/json")) {
-    const text = await response.text();
-    console.error("Expected JSON but got:", text.substring(0, 200));
-    throw new Error("Server returned non-JSON response for keyboard stats");
-  }
-
-  return response.json();
-};
 import { API_CONFIG, getApiEndpoint } from "./config";
 
 export const getToken = (): string | null => {
@@ -114,6 +76,45 @@ export const getUserProfile = async () => {
   return response.json();
 };
 
+// Obtiene estadísticas del usuario usando el método de entrada especificado
+export const getUserStatsMouse = async () => {
+  const response = await fetchWithAuth(getApiEndpoint("STATS_MOUSE"));
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Mouse stats error:", response.status, errorText);
+    throw new Error(`Failed to fetch user stats (mouse): ${response.status}`);
+  }
+
+  const contentType = response.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await response.text();
+    console.error("Expected JSON but got:", text.substring(0, 200));
+    throw new Error("Server returned non-JSON response for mouse stats");
+  }
+
+  return response.json();
+};
+
+export const getUserStatsKeyboard = async () => {
+  const response = await fetchWithAuth(getApiEndpoint("STATS_KEYBOARD"));
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Keyboard stats error:", response.status, errorText);
+    throw new Error(
+      `Failed to fetch user stats (keyboard): ${response.status}`
+    );
+  }
+
+  const contentType = response.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await response.text();
+    console.error("Expected JSON but got:", text.substring(0, 200));
+    throw new Error("Server returned non-JSON response for keyboard stats");
+  }
+
+  return response.json();
+};
+
 export const postUserStatsMouse = async (stats: {
   zombies_killed_by_player: number;
   zombies_killed_by_environment: number;
@@ -152,4 +153,32 @@ export const postUserStatsKeyboard = async (stats: {
     throw new Error(`Failed to post user stats (keyboard): ${response.status}`);
   }
   return response.json();
+};
+
+// Obtiene el leaderboard para mouse
+export const getLeaderboardMouse = async () => {
+  try {
+    const response = await fetch(getApiEndpoint("LEADERBOARD_MOUSE"));
+    if (!response.ok) {
+      throw new Error(`Failed to fetch mouse leaderboard: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching mouse leaderboard:", error);
+    throw error;
+  }
+};
+
+// Obtiene el leaderboard para keyboard
+export const getLeaderboardKeyboard = async () => {
+  try {
+    const response = await fetch(getApiEndpoint("LEADERBOARD_KEYBOARD"));
+    if (!response.ok) {
+      throw new Error(`Failed to fetch keyboard leaderboard: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching keyboard leaderboard:", error);
+    throw error;
+  }
 };

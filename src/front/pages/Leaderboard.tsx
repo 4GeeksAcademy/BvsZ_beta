@@ -1,7 +1,7 @@
 // src/pages/Leaderboard.tsx
 
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import { Container, Row, Col, Card, ButtonGroup, Button } from "react-bootstrap";
 import {
   Table,
   TableHeader,
@@ -11,37 +11,47 @@ import {
   TableCell,
 } from "../components/ui/table";
 import Navigation from "../components/Navigation";
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+import { getLeaderboardMouse, getLeaderboardKeyboard } from "../utils/auth";
 
-interface LeaderboardRow {
-  display_name: string | null;
-  high_score: number;
-  total_games: number;
+interface LeaderboardEntry {
+  username: string;
+  score: number;
+  zombies_killed_by_player: number;
+  zombies_killed_by_environment: number;
+  total_play_time: number;
+  bullets_fired: number;
   levels_completed: number;
+  typing_accuracy?: number; // Solo para keyboard
 }
 
 const Leaderboard: React.FC = () => {
-  const [rows, setRows] = useState<LeaderboardRow[]>([]);
+  const [inputMethod, setInputMethod] = useState<'mouse' | 'keyboard'>('mouse');
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchLeaderboard() {
       setLoading(true);
+      setError(null);
       try {
-        const res = await fetch(`${API_BASE_URL}/leaderboard`);
-        if (!res.ok) throw new Error("request failed");
-        const data = await res.json();
-        setRows(data);
+        if (inputMethod === 'mouse') {
+          const data = await getLeaderboardMouse();
+          setLeaderboard(data.leaderboard);
+        } else {
+          const data = await getLeaderboardKeyboard();
+          setLeaderboard(data.leaderboard);
+        }
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching leaderboard:", err);
+        setError("No se pudo cargar la tabla de clasificación. Inténtalo de nuevo más tarde.");
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
     fetchLeaderboard();
-  }, []);
+  }, [inputMethod]);
 
   return (
     <>
@@ -50,49 +60,88 @@ const Leaderboard: React.FC = () => {
         <Row className="justify-content-center">
           <Col lg={10}>
             <Card bg="dark" text="light">
-              <Card.Header>
+              <Card.Header className="d-flex justify-content-between align-items-center">
                 <h3>
                   🏆 <span className="text-bootstrap">Bootstrap</span>{" "}
                   <span className="text-vs">vs</span>{" "}
                   <span className="text-zombies">Zombies</span>: Hall of Fame
                 </h3>
+                <ButtonGroup>
+                  <Button 
+                    variant={inputMethod === 'mouse' ? "primary" : "outline-primary"}
+                    onClick={() => setInputMethod('mouse')}
+                  >
+                    🖱️ Mouse
+                  </Button>
+                  <Button 
+                    variant={inputMethod === 'keyboard' ? "primary" : "outline-primary"}
+                    onClick={() => setInputMethod('keyboard')}
+                  >
+                    ⌨️ Keyboard
+                  </Button>
+                </ButtonGroup>
               </Card.Header>
               <Card.Body>
                 {loading ? (
-                  <div>Loading…</div>
+                  <div className="text-center py-4">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className="mt-2">Cargando tabla de clasificación...</p>
+                  </div>
+                ) : error ? (
+                  <div className="alert alert-danger">{error}</div>
+                ) : leaderboard.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p>No hay datos disponibles en la tabla de clasificación.</p>
+                  </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Rank</TableHead>
                         <TableHead>
-                          <span className="text-bootstrap">Bootstrap</span>{" "}
-                          Warrior
+                          <span className="text-bootstrap">Player</span>
                         </TableHead>
-                        <TableHead>High Score</TableHead>
-                        <TableHead>Games Played</TableHead>
+                        <TableHead>Score</TableHead>
+                        <TableHead>Zombies Killed</TableHead>
                         <TableHead>Levels Completed</TableHead>
+                        {inputMethod === 'keyboard' && (
+                          <TableHead>Typing Accuracy</TableHead>
+                        )}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {rows.map((r, i) => (
-                        <TableRow key={r.display_name + i}>
+                      {leaderboard.map((entry, index) => (
+                        <TableRow key={`${entry.username}-${index}`}>
                           <TableCell>
-                            <strong>#{i + 1}</strong>{" "}
-                            {i === 0
+                            <strong>#{index + 1}</strong>{" "}
+                            {index === 0
                               ? "👑"
-                              : i === 1
+                              : index === 1
                               ? "🥈"
-                              : i === 2
+                              : index === 2
                               ? "🥉"
                               : ""}
                           </TableCell>
-                          <TableCell>{r.display_name ?? "Unknown"}</TableCell>
+                          <TableCell>{entry.username}</TableCell>
                           <TableCell className="text-success">
-                            <strong>{r.high_score.toLocaleString()}</strong>
+                            <strong>{Math.round(entry.score).toLocaleString()}</strong>
                           </TableCell>
-                          <TableCell>{r.total_games}</TableCell>
-                          <TableCell>{r.levels_completed}</TableCell>
+                          <TableCell>
+                            {entry.zombies_killed_by_player.toLocaleString()}
+                            <small className="text-muted ms-1">
+                              (+{entry.zombies_killed_by_environment} env.)
+                            </small>
+                          </TableCell>
+                          <TableCell>{entry.levels_completed}</TableCell>
+                          {inputMethod === 'keyboard' && (
+                            <TableCell>
+                              {entry.typing_accuracy 
+                                ? `${(entry.typing_accuracy * 100).toFixed(1)}%` 
+                                : "N/A"}
+                            </TableCell>
+                          )}
                         </TableRow>
                       ))}
                     </TableBody>

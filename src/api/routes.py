@@ -156,17 +156,17 @@ def get_stats(current_user, input_method):
         return jsonify({'msg': 'Método de entrada inválido. Debe ser "mouse" o "keyboard".'}), 400
 
     if input_method == 'mouse':
-        stats = MouseGameStats.query.filter_by(user_id=current_user.id).all()
+        stat = MouseGameStats.query.filter_by(user_id=current_user.id).first()
     else:
-        stats = KeyboardGameStats.query.filter_by(
-            user_id=current_user.id).all()
+        stat = KeyboardGameStats.query.filter_by(
+            user_id=current_user.id).first()
 
-    if not stats:
+    if not stat:
         return jsonify({'msg': 'No hay estadísticas disponibles.'}), 404
 
     return jsonify({
         'msg': 'Estadísticas obtenidas correctamente.',
-        'stats': [stat.serialize() for stat in stats]
+        'stats': stat.serialize()
     }), 200
 
 
@@ -178,29 +178,88 @@ def add_game_stat(current_user, input_method):
 
     data = request.get_json()
 
-    # Crear una nueva entrada según el método de entrada
+    # Verificar si el usuario ya tiene estadísticas para este método de entrada
     if input_method == 'mouse':
-        new_stat = MouseGameStats(
-            user_id=current_user.id,
-            zombies_killed_by_player=data.get('zombies_killed_by_player', 0),
-            zombies_killed_by_environment=data.get(
-                'zombies_killed_by_environment', 0),
-            total_play_time=data.get('total_play_time', 0.0),
-            bullets_fired=data.get('bullets_fired', 0),
-            levels_completed=data.get('levels_completed', 0)
-        )
-    else:
-        new_stat = KeyboardGameStats(
-            user_id=current_user.id,
-            zombies_killed_by_player=data.get('zombies_killed_by_player', 0),
-            zombies_killed_by_environment=data.get(
-                'zombies_killed_by_environment', 0),
-            total_play_time=data.get('total_play_time', 0.0),
-            bullets_fired=data.get('bullets_fired', 0),
-            levels_completed=data.get('levels_completed', 0),
-            typing_accuracy=data.get('typing_accuracy', 0.0)
-        )
+        existing_stat = MouseGameStats.query.filter_by(
+            user_id=current_user.id).first()
 
+        if existing_stat:
+            # Actualizar las estadísticas existentes sumando los nuevos valores
+            existing_stat.zombies_killed_by_player += data.get(
+                'zombies_killed_by_player', 0)
+            existing_stat.zombies_killed_by_environment += data.get(
+                'zombies_killed_by_environment', 0)
+            existing_stat.total_play_time += data.get('total_play_time', 0.0)
+            existing_stat.bullets_fired += data.get('bullets_fired', 0)
+            existing_stat.levels_completed += data.get('levels_completed', 0)
+
+            # Calcular el nuevo puntaje
+            existing_stat.calculate_score()
+            db.session.commit()
+
+            return jsonify({'msg': 'Estadística de juego actualizada correctamente.', 'stat': existing_stat.serialize()}), 200
+        else:
+            # Crear una nueva entrada si no existe
+            new_stat = MouseGameStats(
+                user_id=current_user.id,
+                zombies_killed_by_player=data.get(
+                    'zombies_killed_by_player', 0),
+                zombies_killed_by_environment=data.get(
+                    'zombies_killed_by_environment', 0),
+                total_play_time=data.get('total_play_time', 0.0),
+                bullets_fired=data.get('bullets_fired', 0),
+                levels_completed=data.get('levels_completed', 0)
+            )
+    else:
+        existing_stat = KeyboardGameStats.query.filter_by(
+            user_id=current_user.id).first()
+
+        if existing_stat:
+            # Para el typing_accuracy, calculamos el promedio ponderado basado en las sesiones anteriores
+            new_accuracy = data.get('typing_accuracy', 0.0)
+
+            if new_accuracy > 0:
+                # Si hay un nuevo valor de precisión, calculamos el promedio
+                # Considerando el tiempo de juego como peso para el promedio
+                prev_weight = existing_stat.total_play_time
+                new_weight = data.get('total_play_time', 0.0)
+
+                if prev_weight + new_weight > 0:
+                    # Calculamos el promedio ponderado
+                    existing_stat.typing_accuracy = (
+                        (existing_stat.typing_accuracy * prev_weight) +
+                        (new_accuracy * new_weight)
+                    ) / (prev_weight + new_weight)
+
+            # Actualizar las estadísticas existentes sumando los nuevos valores
+            existing_stat.zombies_killed_by_player += data.get(
+                'zombies_killed_by_player', 0)
+            existing_stat.zombies_killed_by_environment += data.get(
+                'zombies_killed_by_environment', 0)
+            existing_stat.total_play_time += data.get('total_play_time', 0.0)
+            existing_stat.bullets_fired += data.get('bullets_fired', 0)
+            existing_stat.levels_completed += data.get('levels_completed', 0)
+
+            # Calcular el nuevo puntaje
+            existing_stat.calculate_score()
+            db.session.commit()
+
+            return jsonify({'msg': 'Estadística de juego actualizada correctamente.', 'stat': existing_stat.serialize()}), 200
+        else:
+            # Crear una nueva entrada si no existe
+            new_stat = KeyboardGameStats(
+                user_id=current_user.id,
+                zombies_killed_by_player=data.get(
+                    'zombies_killed_by_player', 0),
+                zombies_killed_by_environment=data.get(
+                    'zombies_killed_by_environment', 0),
+                total_play_time=data.get('total_play_time', 0.0),
+                bullets_fired=data.get('bullets_fired', 0),
+                levels_completed=data.get('levels_completed', 0),
+                typing_accuracy=data.get('typing_accuracy', 0.0)
+            )
+
+    # Si llegamos aquí, significa que estamos creando una nueva entrada
     new_stat.calculate_score()
     db.session.add(new_stat)
     db.session.commit()
@@ -215,15 +274,52 @@ def get_leaderboard(input_method):
 
     if input_method == 'mouse':
         StatsModel = MouseGameStats
+        # Consulta para obtener todas las estadísticas relevantes
+        stats_query = db.session.query(
+            User.username,
+            StatsModel.score,
+            StatsModel.zombies_killed_by_player,
+            StatsModel.zombies_killed_by_environment,
+            StatsModel.total_play_time,
+            StatsModel.bullets_fired,
+            StatsModel.levels_completed
+        ).join(User).order_by(StatsModel.score.desc()).all()
+        
+        leaderboard = [{
+            'username': row.username,
+            'score': row.score,
+            'zombies_killed_by_player': row.zombies_killed_by_player,
+            'zombies_killed_by_environment': row.zombies_killed_by_environment,
+            'total_play_time': row.total_play_time,
+            'bullets_fired': row.bullets_fired,
+            'levels_completed': row.levels_completed
+        } for row in stats_query]
     else:
         StatsModel = KeyboardGameStats
-
-    leaderboard = db.session.query(
-        User.username, db.func.max(StatsModel.score).label('highscore')
-    ).join(StatsModel).group_by(User.username).order_by(
-        db.desc('highscore')).limit(10).all()
+        # Consulta para obtener todas las estadísticas relevantes, incluyendo typing_accuracy
+        stats_query = db.session.query(
+            User.username,
+            StatsModel.score,
+            StatsModel.zombies_killed_by_player,
+            StatsModel.zombies_killed_by_environment,
+            StatsModel.total_play_time,
+            StatsModel.bullets_fired,
+            StatsModel.levels_completed,
+            StatsModel.typing_accuracy
+        ).join(User).order_by(StatsModel.score.desc()).all()
+        
+        leaderboard = [{
+            'username': row.username,
+            'score': row.score,
+            'zombies_killed_by_player': row.zombies_killed_by_player,
+            'zombies_killed_by_environment': row.zombies_killed_by_environment,
+            'total_play_time': row.total_play_time,
+            'bullets_fired': row.bullets_fired,
+            'levels_completed': row.levels_completed,
+            'typing_accuracy': row.typing_accuracy
+        } for row in stats_query]
 
     return jsonify({
         'msg': f'Leaderboard para {input_method} obtenido correctamente.',
-        'leaderboard': [{'username': row.username, 'highscore': row.highscore} for row in leaderboard]
+        'leaderboard': leaderboard
     }), 200
