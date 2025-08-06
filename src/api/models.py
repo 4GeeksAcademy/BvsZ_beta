@@ -26,6 +26,8 @@ class User(db.Model):
     is_verified: Mapped[bool] = mapped_column(
         Boolean(), nullable=False, default=False)
     verification_token: Mapped[str] = mapped_column(String(128), nullable=True)
+    password_reset_code: Mapped[str] = mapped_column(String(4), nullable=True)
+    verification_code: Mapped[str] = mapped_column(String(4), nullable=True)
 
     # Relaciones con los modelos de estadísticas
     mouse_stats = relationship("MouseGameStats", back_populates="user")

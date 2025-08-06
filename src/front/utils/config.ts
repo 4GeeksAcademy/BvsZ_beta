@@ -1,13 +1,13 @@
 // Configuración centralizada de la aplicación
 export const API_CONFIG = {
-  BASE_URL: "https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api",
+  BASE_URL: "https://glowing-cod-x9wj5v9vwqg269jv-3001.app.github.dev/api",
   ENDPOINTS: {
     LOGIN: "/login",
     REGISTER: "/register",
     PROFILE: "/profile",
     GAME: "/game",
     FORGOT_PASSWORD: "/forgot-password",
-    RESET_PASSWORD: "/reset-password",
+    RESET_PASSWORD: "/password/reset",
     LEADERBOARD_MOUSE: "/leaderboard/mouse",
     LEADERBOARD_KEYBOARD: "/leaderboard/keyboard",
     STATS_MOUSE: "/stats/mouse",

@@ -12,6 +12,8 @@ import BackendTest from "./pages/BackendTest";
 import NotFound from "./pages/NotFound";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { useRef, useState, useEffect } from 'react';
+import ResetPasswordWithCode from "./pages/ResetPasswordWithCode";
+
 
 const queryClient = new QueryClient();   
 
@@ -24,6 +26,7 @@ const App = () => (
           <Route path="/game" element={<Game />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password-code" element={<ResetPasswordWithCode />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/profile" element={<Profile />} />

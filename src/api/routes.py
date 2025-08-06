@@ -323,3 +323,108 @@ def get_leaderboard(input_method):
         'msg': f'Leaderboard para {input_method} obtenido correctamente.',
         'leaderboard': leaderboard
     }), 200
+
+@api.route('/verify/send-code', methods=['POST'])
+def send_verification_code():
+    from api.utils import send_email_via_brevo
+    import random
+
+    data = request.get_json()
+    email = data.get("email")
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'msg': 'Usuario no encontrado'}), 404
+
+    code = str(random.randint(1000, 9999))
+    user.verification_code = code
+    db.session.commit()
+
+    html = f"<p>Tu código de verificación es: <strong>{code}</strong></p>"
+    send_email_via_brevo(email, "Código de verificación", html)
+
+    return jsonify({'msg': 'Código enviado al correo.'}), 200
+
+@api.route('/password/send-reset-code', methods=['POST'])
+def send_password_reset_code():
+    from api.utils import send_email_via_brevo
+    import random
+
+    data = request.get_json()
+    email = data.get("email")
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'msg': 'Usuario no encontrado'}), 404
+
+    code = str(random.randint(1000, 9999))
+    user.password_reset_code = code
+    db.session.commit()
+
+    html = f"<p>Tu código para restaurar contraseña es: <strong>{code}</strong></p>"
+    send_email_via_brevo(email, "Restaurar contraseña", html)
+
+    return jsonify({'msg': 'Código de restauración enviado al correo.'}), 200
+
+@api.route('/password/verify-reset-code', methods=['POST'])
+def verify_password_reset_code():
+    data = request.get_json()
+    email = data.get("email")
+    code = data.get("code")
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'msg': 'Usuario no encontrado'}), 404
+
+    if user.password_reset_code != code:
+        return jsonify({'msg': 'Código incorrecto'}), 400
+
+    return jsonify({'msg': 'Código válido. Procede al cambio de contraseña.'}), 200
+
+@api.route('/password/reset', methods=['PUT'])
+def reset_password():
+    data = request.get_json()
+    email = data.get("email")
+    code = data.get("code")
+    new_password = data.get("new_password")
+    confirm_password = data.get("confirm_password")
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'msg': 'Usuario no encontrado'}), 404
+
+    if user.password_reset_code != code:
+        return jsonify({'msg': 'Código incorrecto'}), 400
+
+    if not new_password or len(new_password) < 8:
+        return jsonify({'msg': 'La nueva contraseña debe tener al menos 8 caracteres.'}), 400
+
+    if new_password != confirm_password:
+        return jsonify({'msg': 'Las contraseñas no coinciden.'}), 400
+
+    user.password = generate_password_hash(new_password)
+    user.password_reset_code = None  # Limpia el código
+    db.session.commit()
+
+    return jsonify({'msg': 'Contraseña restablecida correctamente.'}), 200
+
+
+
+@api.route('/verify/code', methods=['POST'])
+def verify_user_code():
+    data = request.get_json()
+    email = data.get("email")
+    code = data.get("code")
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'msg': 'Usuario no encontrado'}), 404
+
+    if user.verification_code != code:
+        return jsonify({'msg': 'Código incorrecto'}), 400
+
+    user.is_verified = True
+    user.verification_code = None
+    db.session.commit()
+
+    return jsonify({'msg': 'Cuenta verificada correctamente.'}), 200

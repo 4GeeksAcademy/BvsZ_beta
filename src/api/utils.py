@@ -39,3 +39,30 @@ def generate_sitemap(app):
         <p>Start working on your project by following the <a href="https://start.4geeksacademy.com/starters/full-stack" target="_blank">Quick Start</a></p>
         <p>Remember to specify a real endpoint path like: </p>
         <ul style="text-align: left;">"""+links_html+"</ul></div>"
+
+import requests
+
+def send_email_via_brevo(to_email, subject, html_content):
+    url = "https://api.brevo.com/v3/smtp/email"
+    api_key = "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"  # Reemplaza esto con tu API key real de Brevo
+
+    payload = {
+        "sender": {"name": "BvsZ Game", "email": "sebasmiramontes@gmail.com"},
+        "to": [{"email": to_email}],
+        "subject": subject,
+        "htmlContent": html_content
+    }
+
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "api-key": api_key
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    # Puedes hacer debugging con esto:
+    if response.status_code != 201:
+        print("❌ Error al enviar correo:", response.text)
+
+    return response.status_code
