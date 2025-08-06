@@ -44,7 +44,7 @@ import requests
 
 def send_email_via_brevo(to_email, subject, html_content):
     url = "https://api.brevo.com/v3/smtp/email"
-    api_key = "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"  # Reemplaza esto con tu API key real de Brevo
+    api_key = "la api key de brevo"  # Reemplaza esto con tu API key real de Brevo
 
     payload = {
         "sender": {"name": "BvsZ Game", "email": "sebasmiramontes@gmail.com"},
