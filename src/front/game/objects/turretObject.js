@@ -87,12 +87,14 @@ export class TurretObject {
     const turretCount = this.turrets.length;
 
     let newPositions = [];
-    
+
     // Convertir string a array si es necesario
-    const classes = Array.isArray(cssClasses) ? cssClasses : cssClasses.split(' ');
-    
+    const classes = Array.isArray(cssClasses)
+      ? cssClasses
+      : cssClasses.split(" ");
+
     // Buscar clases de offset
-    const offsetClass = classes.find(cls => cls.startsWith('offset-'));
+    const offsetClass = classes.find((cls) => cls.startsWith("offset-"));
     let offsetCols = 0;
     if (offsetClass) {
       const offsetMatch = offsetClass.match(/offset-(\d+)/);
@@ -104,8 +106,10 @@ export class TurretObject {
     }
 
     // Buscar clases de justify-content
-    const justifyClass = classes.find(cls => cls.startsWith('justify-content-'));
-    
+    const justifyClass = classes.find((cls) =>
+      cls.startsWith("justify-content-")
+    );
+
     // Calcular posiciones considerando el offset
     let startCol = offsetCols;
 
@@ -122,7 +126,8 @@ export class TurretObject {
       case "justify-content-center":
         // Centrar torretas en el espacio disponible después del offset
         const availableSpace = cols - offsetCols;
-        const centerStart = offsetCols + Math.floor((availableSpace - turretCount) / 2);
+        const centerStart =
+          offsetCols + Math.floor((availableSpace - turretCount) / 2);
         for (let i = 0; i < turretCount; i++) {
           const colIndex = centerStart + i;
           const x = colIndex * colWidth + colWidth / 2;

@@ -3,16 +3,9 @@
 
 export const inputClasses = [
   // Nivel 1 - Solo justify básico
-  [
-    "justify-content-start",
-    "justify-content-end",
-  ],
+  ["justify-content-start", "justify-content-end"],
   // Nivel 2 - Añade center
-  [
-    "justify-content-start",
-    "justify-content-center",
-    "justify-content-end",
-  ],
+  ["justify-content-start", "justify-content-center", "justify-content-end"],
   // Nivel 3 - Añade offset
   [
     "justify-content-start",

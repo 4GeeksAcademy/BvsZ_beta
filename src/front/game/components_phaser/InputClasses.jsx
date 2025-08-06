@@ -102,7 +102,7 @@ const InputClasses = ({ level, levels }) => {
     // Obtener la palabra actual que se está escribiendo
     const words = value.split(' ');
     const currentWord = words[words.length - 1];
-    
+
     // Si está escribiendo una clase correcta, consideramos las teclas como correctas
     const isCorrectTyping = classList.some(cls =>
       cls.toLowerCase().startsWith(currentWord.toLowerCase())
@@ -119,8 +119,8 @@ const InputClasses = ({ level, levels }) => {
       const filtered = classList.filter((cls) => {
         // No sugerir clases ya utilizadas
         const existingClasses = words.slice(0, -1);
-        return cls.toLowerCase().startsWith(currentWord.toLowerCase()) && 
-               !existingClasses.includes(cls);
+        return cls.toLowerCase().startsWith(currentWord.toLowerCase()) &&
+          !existingClasses.includes(cls);
       });
       setSuggestions(filtered);
       setShowSuggestions(filtered.length > 0);
@@ -140,9 +140,9 @@ const InputClasses = ({ level, levels }) => {
       }
       return;
     }
-    
+
     if (!showSuggestions) return;
-    
+
     if (e.key === 'ArrowDown') {
       setActiveSuggestion((prev) =>
         prev < suggestions.length - 1 ? prev + 1 : prev
@@ -161,7 +161,7 @@ const InputClasses = ({ level, levels }) => {
     const words = inputValue.split(' ');
     const newWords = [...words.slice(0, -1), suggestion];
     const newValue = newWords.join(' ');
-    
+
     setInputValue(newValue + ' '); // Añadir espacio para la siguiente clase
     setSuggestions([]);
     setShowSuggestions(false);
@@ -211,7 +211,7 @@ const InputClasses = ({ level, levels }) => {
           ))}
         </ul>
       )}
-{/*       <div className="typing-accuracy">
+      {/*       <div className="typing-accuracy">
         Precisión: {accuracy}%
       </div> */}
     </div>
