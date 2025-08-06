@@ -97,7 +97,7 @@ const InputClasses = ({ level, levels }) => {
     EventBus.on(LEVEL_CHANGE, handleLevelChange);
     EventBus.on(GAME_PAUSE, handleGamePause);
     EventBus.on(GAME_RESUME, handleGameResume);
-    
+
     return () => {
       EventBus.removeListener(LEVEL_CHANGE, handleLevelChange);
       EventBus.removeListener(GAME_PAUSE, handleGamePause);
@@ -107,7 +107,7 @@ const InputClasses = ({ level, levels }) => {
 
   const handleChange = (e) => {
     if (isPaused) return; // No permitir cambios cuando está pausado
-    
+
     const value = e.target.value;
     const prevValue = inputValue;
     setInputValue(value);
@@ -150,7 +150,7 @@ const InputClasses = ({ level, levels }) => {
 
   const handleKeyDown = (e) => {
     if (isPaused) return; // No permitir teclas cuando está pausado
-    
+
     if (e.key === 'Enter') {
       if (showSuggestions && suggestions.length > 0) {
         selectSuggestion(suggestions[activeSuggestion]);
@@ -178,7 +178,7 @@ const InputClasses = ({ level, levels }) => {
 
   const selectSuggestion = (suggestion) => {
     if (isPaused) return; // No permitir selección cuando está pausado
-    
+
     const words = inputValue.split(' ');
     const newWords = [...words.slice(0, -1), suggestion];
     const newValue = newWords.join(' ');
@@ -198,7 +198,7 @@ const InputClasses = ({ level, levels }) => {
   // Método para aplicar las clases cuando el usuario presiona Enter o pierde el foco
   const applyClasses = () => {
     if (isPaused) return; // No permitir aplicar clases cuando está pausado
-    
+
     const trimmedValue = inputValue.trim();
     if (trimmedValue) {
       setLastSelected(trimmedValue);
