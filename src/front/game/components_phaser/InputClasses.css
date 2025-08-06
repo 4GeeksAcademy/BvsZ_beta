@@ -18,6 +18,19 @@
   box-shadow: 0 0 5px rgba(161, 216, 74, 0.5);
 }
 
+/* Estilos para cuando el input está deshabilitado */
+.input-classes-autocomplete input:disabled {
+  background-color: #0f0f0f;
+  color: #666;
+  border-color: #333;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.input-classes-autocomplete input:disabled::placeholder {
+  color: #555 !important;
+}
+
 /* Color para el placeholder */
 .input-classes-autocomplete input::placeholder {
   color: #ce9178 !important;

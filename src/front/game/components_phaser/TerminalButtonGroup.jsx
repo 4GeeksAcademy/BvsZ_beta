@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TerminalButton from './TerminalButton';
-import { EventBus, GAME_START, GAME_STOP, LEVEL_CHANGE, REORGANIZE_TURRETS } from '../EventBus';
+import { EventBus, GAME_START, GAME_STOP, LEVEL_CHANGE, REORGANIZE_TURRETS, GAME_PAUSE, GAME_RESUME } from '../EventBus';
 // levels se recibirá por props
 import './TerminalButtonGroup.css';
 
@@ -10,6 +10,7 @@ const TerminalButtonGroup = ({ levels }) => {
   const [gameActive, setGameActive] = useState(false);
   const [levelIndex, setLevelIndex] = useState(0);
   const [classList, setClassList] = useState(levels && levels[0]?.inputClasses ? levels[0].inputClasses : []);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const handleGameStart = () => {
@@ -25,20 +26,30 @@ const TerminalButtonGroup = ({ levels }) => {
       setClassList(levels && levels[idx]?.inputClasses ? levels[idx].inputClasses : []);
       setSelectedClasses(['justify-content-center']); // Reset a clase por defecto
     };
+    const handleGamePause = () => {
+      setIsPaused(true);
+    };
+    const handleGameResume = () => {
+      setIsPaused(false);
+    };
 
     EventBus.on(GAME_START, handleGameStart);
     EventBus.on(GAME_STOP, handleGameStop);
     EventBus.on(LEVEL_CHANGE, handleLevelChange);
+    EventBus.on(GAME_PAUSE, handleGamePause);
+    EventBus.on(GAME_RESUME, handleGameResume);
 
     return () => {
       EventBus.removeListener(GAME_START, handleGameStart);
       EventBus.removeListener(GAME_STOP, handleGameStop);
       EventBus.removeListener(LEVEL_CHANGE, handleLevelChange);
+      EventBus.removeListener(GAME_PAUSE, handleGamePause);
+      EventBus.removeListener(GAME_RESUME, handleGameResume);
     };
   }, []);
 
   const handleClassClick = (clickedClass) => {
-    if (!gameActive) return;
+    if (!gameActive || isPaused) return; // No permitir clicks cuando está pausado
 
     // Determinar el tipo de clase
     const isJustifyClass = clickedClass.startsWith('justify-content-');
@@ -93,7 +104,7 @@ const TerminalButtonGroup = ({ levels }) => {
             label={cssClass}
             onClick={() => handleClassClick(cssClass)}
             isSelected={selectedClasses.includes(cssClass)}
-            disabled={!gameActive}
+            disabled={!gameActive || isPaused}
           />
         </div>
       ))}

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { EventBus, LEVEL_CHANGE, REORGANIZE_TURRETS, INPUT_METHOD_CHANGE } from '../EventBus';
+import { EventBus, LEVEL_CHANGE, REORGANIZE_TURRETS, INPUT_METHOD_CHANGE, GAME_PAUSE, GAME_RESUME } from '../EventBus';
 // levels se recibirá por props
 import '../components_phaser/InputClasses.css';
 
@@ -19,6 +19,7 @@ const InputClasses = ({ level, levels }) => {
   const inputRef = useRef(null);
   const [currentLevel, setCurrentLevel] = useState(level || 0);
   const [classList, setClassList] = useState(levels && levels[level || 0]?.inputClasses ? levels[level || 0].inputClasses : []);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Estadísticas de typing para calcular la precisión
   const [typingStats, setTypingStats] = useState({
@@ -81,16 +82,32 @@ const InputClasses = ({ level, levels }) => {
       });
     };
 
+    const handleGamePause = () => {
+      setIsPaused(true);
+      setShowSuggestions(false); // Ocultar sugerencias cuando se pausa
+    };
+
+    const handleGameResume = () => {
+      setIsPaused(false);
+    };
+
     // Asegurarse de que el método de entrada es teclado cuando se usa este componente
     EventBus.emit(INPUT_METHOD_CHANGE, { method: 'keyboard' });
 
     EventBus.on(LEVEL_CHANGE, handleLevelChange);
+    EventBus.on(GAME_PAUSE, handleGamePause);
+    EventBus.on(GAME_RESUME, handleGameResume);
+    
     return () => {
       EventBus.removeListener(LEVEL_CHANGE, handleLevelChange);
+      EventBus.removeListener(GAME_PAUSE, handleGamePause);
+      EventBus.removeListener(GAME_RESUME, handleGameResume);
     };
   }, [levels]);
 
   const handleChange = (e) => {
+    if (isPaused) return; // No permitir cambios cuando está pausado
+    
     const value = e.target.value;
     const prevValue = inputValue;
     setInputValue(value);
@@ -132,6 +149,8 @@ const InputClasses = ({ level, levels }) => {
   };
 
   const handleKeyDown = (e) => {
+    if (isPaused) return; // No permitir teclas cuando está pausado
+    
     if (e.key === 'Enter') {
       if (showSuggestions && suggestions.length > 0) {
         selectSuggestion(suggestions[activeSuggestion]);
@@ -158,6 +177,8 @@ const InputClasses = ({ level, levels }) => {
   };
 
   const selectSuggestion = (suggestion) => {
+    if (isPaused) return; // No permitir selección cuando está pausado
+    
     const words = inputValue.split(' ');
     const newWords = [...words.slice(0, -1), suggestion];
     const newValue = newWords.join(' ');
@@ -176,6 +197,8 @@ const InputClasses = ({ level, levels }) => {
 
   // Método para aplicar las clases cuando el usuario presiona Enter o pierde el foco
   const applyClasses = () => {
+    if (isPaused) return; // No permitir aplicar clases cuando está pausado
+    
     const trimmedValue = inputValue.trim();
     if (trimmedValue) {
       setLastSelected(trimmedValue);
@@ -196,9 +219,9 @@ const InputClasses = ({ level, levels }) => {
         onKeyDown={handleKeyDown}
         onBlur={applyClasses}
         autoComplete="off"
-        disabled={classList.length === 0}
+        disabled={classList.length === 0 || isPaused}
       />
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && suggestions.length > 0 && !isPaused && (
         <ul className="suggestions-list">
           {suggestions.map((suggestion, idx) => (
             <li
