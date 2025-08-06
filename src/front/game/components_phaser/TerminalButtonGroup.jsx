@@ -91,13 +91,17 @@ const TerminalButtonGroup = ({ levels }) => {
   };
 
   return (
-    <div className='container d-inline mt-4'>
-      {/* Mostrar las clases seleccionadas actualmente */}
-      {selectedClasses.length > 0 && (
-        <div className="mt-2 text-muted medium">
-          Clases activas: {selectedClasses.join(' ')}
-        </div>
-      )}
+    <div className='container d-inline m-0'>
+      {/* Mostrar las clases seleccionadas actualmente o mensaje instructivo */}
+      <div className="active-classes-container mb-1 pt-1 pb-1">
+        Active classes: <br />
+        <span className="active-classes m-0">
+          {selectedClasses.length > 0
+            ? selectedClasses.join(' ')
+            : 'Click on a class below to activate it'
+          }
+        </span>
+      </div>
       {classList.map((cssClass) => (
         <div className="col-auto" key={cssClass}>
           <TerminalButton
