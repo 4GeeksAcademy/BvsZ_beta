@@ -1,7 +1,14 @@
 // src/pages/Leaderboard.tsx
 
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, ButtonGroup, Button } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  ButtonGroup,
+  Button,
+} from "react-bootstrap";
 import {
   Table,
   TableHeader,
@@ -25,7 +32,7 @@ interface LeaderboardEntry {
 }
 
 const Leaderboard: React.FC = () => {
-  const [inputMethod, setInputMethod] = useState<'mouse' | 'keyboard'>('mouse');
+  const [inputMethod, setInputMethod] = useState<"mouse" | "keyboard">("mouse");
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +42,7 @@ const Leaderboard: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        if (inputMethod === 'mouse') {
+        if (inputMethod === "mouse") {
           const data = await getLeaderboardMouse();
           setLeaderboard(data.leaderboard);
         } else {
@@ -44,7 +51,9 @@ const Leaderboard: React.FC = () => {
         }
       } catch (err) {
         console.error("Error fetching leaderboard:", err);
-        setError("No se pudo cargar la tabla de clasificación. Inténtalo de nuevo más tarde.");
+        setError(
+          "No se pudo cargar la tabla de clasificación. Inténtalo de nuevo más tarde."
+        );
       } finally {
         setLoading(false);
       }
@@ -67,15 +76,19 @@ const Leaderboard: React.FC = () => {
                   <span className="text-zombies">Zombies</span>: Hall of Fame
                 </h3>
                 <ButtonGroup>
-                  <Button 
-                    variant={inputMethod === 'mouse' ? "primary" : "outline-primary"}
-                    onClick={() => setInputMethod('mouse')}
+                  <Button
+                    variant={inputMethod === "mouse" ? "primary" : "secondary"}
+                    onClick={() => setInputMethod("mouse")}
+                    className={inputMethod !== "mouse" ? "text-white" : ""}
                   >
                     🖱️ Mouse
                   </Button>
-                  <Button 
-                    variant={inputMethod === 'keyboard' ? "primary" : "outline-primary"}
-                    onClick={() => setInputMethod('keyboard')}
+                  <Button
+                    variant={
+                      inputMethod === "keyboard" ? "primary" : "secondary"
+                    }
+                    onClick={() => setInputMethod("keyboard")}
+                    className={inputMethod !== "keyboard" ? "text-white" : ""}
                   >
                     ⌨️ Keyboard
                   </Button>
@@ -103,10 +116,10 @@ const Leaderboard: React.FC = () => {
                         <TableHead>
                           <span className="text-bootstrap">Player</span>
                         </TableHead>
-                        <TableHead>Score</TableHead>
+                        <TableHead>Max. Score</TableHead>
                         <TableHead>Zombies Killed</TableHead>
                         <TableHead>Levels Completed</TableHead>
-                        {inputMethod === 'keyboard' && (
+                        {inputMethod === "keyboard" && (
                           <TableHead>Typing Accuracy</TableHead>
                         )}
                       </TableRow>
@@ -115,7 +128,7 @@ const Leaderboard: React.FC = () => {
                       {leaderboard.map((entry, index) => (
                         <TableRow key={`${entry.username}-${index}`}>
                           <TableCell>
-                            <strong>#{index + 1}</strong>{" "}
+                            <span>#{index + 1}</span>{" "}
                             {index === 0
                               ? "👑"
                               : index === 1
@@ -126,7 +139,9 @@ const Leaderboard: React.FC = () => {
                           </TableCell>
                           <TableCell>{entry.username}</TableCell>
                           <TableCell className="text-success">
-                            <strong>{Math.round(entry.score).toLocaleString()}</strong>
+                            <strong>
+                              {Math.round(entry.score).toLocaleString()}
+                            </strong>
                           </TableCell>
                           <TableCell>
                             {entry.zombies_killed_by_player.toLocaleString()}
@@ -135,10 +150,10 @@ const Leaderboard: React.FC = () => {
                             </small>
                           </TableCell>
                           <TableCell>{entry.levels_completed}</TableCell>
-                          {inputMethod === 'keyboard' && (
+                          {inputMethod === "keyboard" && (
                             <TableCell>
-                              {entry.typing_accuracy 
-                                ? `${(entry.typing_accuracy * 100).toFixed(1)}%` 
+                              {entry.typing_accuracy
+                                ? `${(entry.typing_accuracy * 100).toFixed(1)}%`
                                 : "N/A"}
                             </TableCell>
                           )}

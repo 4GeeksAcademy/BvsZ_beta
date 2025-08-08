@@ -16,7 +16,7 @@
 }
 
 .active-classes {
-  color: var(--pixel-purple);
+  color: var(--pixel-primary);
   font-size: 1.2rem;
   font-family: "Courier New", monospace;
 }
