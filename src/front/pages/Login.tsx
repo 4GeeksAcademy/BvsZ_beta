@@ -137,7 +137,7 @@ const Login: React.FC = () => {
         }
 
         localStorage.setItem("token", data.token);
-        console.log(data.token)
+        console.log(data.token);
         setSuccess("¡Login successfull! Redirecting...");
         console.log(data.token);
         setTimeout(() => navigate("/profile"), 1500);
@@ -365,7 +365,7 @@ const Login: React.FC = () => {
                     </InputGroup>
                     {isRegister && (
                       <Form.Text className="text-muted">
-                        La contraseña debe tener al menos 8 caracteres.
+                        The password must be at least 8 characters.
                       </Form.Text>
                     )}
                   </Form.Group>
@@ -435,8 +435,8 @@ const Login: React.FC = () => {
                   <div className="mt-3">
                     <small className="text-muted">
                       <strong>Note:</strong> You'll receive a confirmation email
-                      after registration. Click the link in the email to
-                      activate your account.
+                      after registration. Extract the verification number from
+                      the email to activate your account.
                     </small>
                   </div>
                 )}

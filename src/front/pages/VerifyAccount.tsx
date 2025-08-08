@@ -38,10 +38,10 @@ const VerifyAccount: React.FC = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.msg || "Verification failed");
 
-      setSuccess("Cuenta verificada con éxito. Redirigiendo al login...");
+      setSuccess("Account successfully verified. Redirecting to login...");
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setError(err.message || "Error inesperado");
+      setError(err.message || "Unexpected error");
     } finally {
       setLoading(false);
     }
@@ -55,24 +55,25 @@ const VerifyAccount: React.FC = () => {
           <Col md={6} lg={5}>
             <Card>
               <Card.Header>
-                <h4 className="mb-0 text-center">Verifica tu cuenta</h4>
+                <h4 className="mb-0 text-center">Verify your account</h4>
               </Card.Header>
               <Card.Body>
                 {success && <Alert variant="success">{success}</Alert>}
                 {error && <Alert variant="danger">{error}</Alert>}
                 <Form onSubmit={handleVerify}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Correo electrónico</Form.Label>
+                    <Form.Label>E-mail</Form.Label>
                     <Form.Control
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={loading || !!initialEmail}
                       required
+                      style={{ color: "black" }}
                     />
                   </Form.Group>
                   <Form.Group className="mb-3">
-                    <Form.Label>Código de verificación</Form.Label>
+                    <Form.Label>Verification code</Form.Label>
                     <Form.Control
                       type="text"
                       value={code}
@@ -81,8 +82,13 @@ const VerifyAccount: React.FC = () => {
                       disabled={loading}
                     />
                   </Form.Group>
-                  <Button type="submit" variant="primary" className="w-100" disabled={loading}>
-                    {loading ? "Verificando..." : "Verificar cuenta"}
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="w-100"
+                    disabled={loading}
+                  >
+                    {loading ? "Checking..." : "Verify account"}
                   </Button>
                 </Form>
               </Card.Body>

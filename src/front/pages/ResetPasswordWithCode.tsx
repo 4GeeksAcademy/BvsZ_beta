@@ -7,6 +7,7 @@ import {
   Form,
   Button,
   Alert,
+  InputGroup,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
@@ -20,6 +21,7 @@ const ResetPasswordWithCode: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,7 +74,7 @@ const ResetPasswordWithCode: React.FC = () => {
                 {error && <Alert variant="danger">{error}</Alert>}
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Email</Form.Label>
+                    <Form.Label>E-mail</Form.Label>
                     <Form.Control
                       type="email"
                       value={email}
@@ -93,23 +95,43 @@ const ResetPasswordWithCode: React.FC = () => {
                   </Form.Group>
                   <Form.Group className="mb-3">
                     <Form.Label>New Password</Form.Label>
-                    <Form.Control
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      required
-                      disabled={loading}
-                    />
+                    <InputGroup>
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                        disabled={loading}
+                      />
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => setShowPassword(!showPassword)}
+                        tabIndex={-1}
+                        disabled={loading}
+                      >
+                        {showPassword ? "Hide" : "See"}
+                      </Button>
+                    </InputGroup>
                   </Form.Group>
                   <Form.Group className="mb-3">
                     <Form.Label>Confirm Password</Form.Label>
-                    <Form.Control
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      disabled={loading}
-                    />
+                    <InputGroup>
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        disabled={loading}
+                      />
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => setShowPassword(!showPassword)}
+                        tabIndex={-1}
+                        disabled={loading}
+                      >
+                        {showPassword ? "Hide" : "See"}
+                      </Button>
+                    </InputGroup>
                   </Form.Group>
                   <Button
                     type="submit"

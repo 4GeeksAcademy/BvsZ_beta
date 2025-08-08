@@ -23,7 +23,7 @@ const ForgotPassword: React.FC = () => {
         body: JSON.stringify({ email })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || 'Error al enviar código');
+      if (!res.ok) throw new Error(data.msg || 'Error sending code');
       setMessage(data.msg || 'Revisa tu email');
       setEmail('');
     } catch (err) {
@@ -41,7 +41,7 @@ const ForgotPassword: React.FC = () => {
           <Col md={6} lg={5}>
             <Card>
               <Card.Header>
-                <h4 className="mb-0 text-center">Forgot Password</h4>
+                <h2 className="mb-0 text-center">Forgot Password</h2>
               </Card.Header>
               <Card.Body>
                 {message && <Alert variant="success">{message}</Alert>}
@@ -60,7 +60,7 @@ const ForgotPassword: React.FC = () => {
                     {loading ? 'Loading...' : 'Send Reset Code'}
                   </Button>
                   <Button type="button" className="btn btn-primary w-100 mt-2" onClick={() => window.location.href = "/reset-password-code"}>
-                    Ya tengo el código
+                    I already have the code
                   </Button>
                 </Form>
               </Card.Body>
