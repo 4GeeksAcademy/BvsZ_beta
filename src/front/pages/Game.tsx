@@ -5,6 +5,7 @@ import Navigation from "../components/Navigation";
 import { isAuthenticated, fetchWithAuth } from "../utils/auth";
 import { getApiEndpoint } from "../utils/config";
 import PhaserGame from "../game/PhaserGame";
+import { EventBus, USER_EVENT } from "../game/EventBus";
 
 interface User {
   id: number;
@@ -45,11 +46,9 @@ const Game: React.FC = () => {
         // Verificar acceso al juego y enviar datos al EventBus
         const gameData = await gameResponse.json();
         if (gameData.game_data.authorized) {
-          import("../game/EventBus").then(({ EventBus, USER_EVENT }) => {
-            EventBus.emit(USER_EVENT, {
-              ...profileData.user,
-              ...gameData.game_data,
-            });
+          EventBus.emit(USER_EVENT, {
+            ...profileData.user,
+            ...gameData.game_data,
           });
         } else {
           navigate("/login");
@@ -67,19 +66,7 @@ const Game: React.FC = () => {
     // Cleanup function que se ejecuta cuando el componente se desmonta
     return () => {
       // Limpiar EventBus y notificar a Phaser que se está saliendo del juego
-      import("../game/EventBus").then(({ EventBus }) => {
-        EventBus.emit("game:cleanup");
-      });
-
-      // Si hay una referencia al juego de Phaser, asegurarse de que se destruya
-      if (phaserRef.current?.game) {
-        console.log("Limpiando juego de Phaser...");
-        try {
-          phaserRef.current.game.destroy(true);
-        } catch (error) {
-          console.warn("Error al destruir el juego de Phaser:", error);
-        }
-      }
+      EventBus.emit("game:cleanup");
     };
   }, [navigate]);
 

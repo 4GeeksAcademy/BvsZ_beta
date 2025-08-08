@@ -24,6 +24,17 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist',
       sourcemap: !isProduction,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            phaser: ['phaser'],
+            bootstrap: ['react-bootstrap'],
+            router: ['react-router-dom'],
+          }
+        }
+      },
+      chunkSizeWarningLimit: 1000,
     },
   };
 });
