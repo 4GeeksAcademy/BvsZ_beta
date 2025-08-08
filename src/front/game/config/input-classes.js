@@ -2,24 +2,18 @@
 // Cada nivel tiene su propio array de clases permitidas
 
 export const inputClasses = [
-  // Nivel 1
-  [
-    "justify-content-start",
-    "justify-content-end",
-  ],
-  // Nivel 2
-  [
-    "justify-content-start",
-    "justify-content-center",
-    "justify-content-end",
-  ],
-  // Nivel 3
+  // Nivel 1 - Solo justify básico
+  ["justify-content-start", "justify-content-end"],
+  // Nivel 2 - Añade center
+  ["justify-content-start", "justify-content-center", "justify-content-end"],
+  // Nivel 3 - Añade offset
   [
     "justify-content-start",
     "justify-content-center",
     "justify-content-end",
-    "justify-content-between",
-    "justify-content-around",
-    "justify-content-evenly",
+    "offset-1",
+    "offset-2",
+    "offset-3",
+    "offset-4",
   ],
 ];

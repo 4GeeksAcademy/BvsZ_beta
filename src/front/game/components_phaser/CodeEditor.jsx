@@ -44,7 +44,7 @@ export default function CodeEditor({ levels }) {
     return (
         <div className="code-block">
             <code>
-                <span className="tag">&lt;div</span> <span className="attr">class</span>=<span className="value">"container border"&gt;</span><br />
+                <span className="tag">&lt;div</span> <span className="attr">class</span>=<span className="value">"container border"</span><span className="tag">&gt;</span><br />
                 &nbsp;&nbsp;<span className="tag">&lt;div</span> <span className="attr">class</span>=<span className="value">"row </span>
                 <span className='code-input' >
                     <InputClasses
@@ -52,7 +52,7 @@ export default function CodeEditor({ levels }) {
                         onClassSelected={(clase) => setSelectedClass(clase)}
                     />
                 </span>
-                <span className="value">"&gt;</span><br />
+                <span className="value">"</span><span className="tag">&gt;</span><br />
                 &nbsp;&nbsp;&nbsp;&nbsp;<span className="tag">&lt;div</span> <span className="attr">class</span>=<span className="value">"col-2"&gt;</span><br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{renderTurrets()}<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;<span className="tag">&lt;/div&gt;</span><br />

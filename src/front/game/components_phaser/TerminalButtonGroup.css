@@ -3,4 +3,20 @@
   padding: 16px;
 }
 
+.active-classes-container {
+  border: 2px solid var(--pixel-purple);
+  background: rgba(139, 0, 255, 0.1);
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-size: 1.5rem;
+}
 
+.active-classes {
+  color: var(--pixel-purple);
+  font-size: 1.2rem;
+  font-family: "Courier New", monospace;
+}

@@ -77,8 +77,8 @@ export class TurretObject {
     // Implementar lógica de disparo aquí
   }
 
-  // Método para reorganizar torretas según clase de justificación CSS
-  reorganizeTurrets(justifyClass) {
+  // Método para reorganizar torretas según clases de Bootstrap (justify-content y offset)
+  reorganizeTurrets(cssClasses) {
     if (this.turrets.length === 0) return;
 
     const cols = this.scene.gridCells.length;
@@ -88,18 +88,34 @@ export class TurretObject {
 
     let newPositions = [];
 
+    // Convertir string a array si es necesario
+    const classes = Array.isArray(cssClasses)
+      ? cssClasses
+      : cssClasses.split(" ");
+
+    // Buscar clases de offset
+    const offsetClass = classes.find((cls) => cls.startsWith("offset-"));
+    let offsetCols = 0;
+    if (offsetClass) {
+      const offsetMatch = offsetClass.match(/offset-(\d+)/);
+      if (offsetMatch) {
+        offsetCols = parseInt(offsetMatch[1]);
+        // Asegurar que el offset no exceda el número de columnas
+        offsetCols = Math.min(offsetCols, cols - turretCount);
+      }
+    }
+
+    // Buscar clases de justify-content
+    const justifyClass = classes.find((cls) =>
+      cls.startsWith("justify-content-")
+    );
+
+    // Calcular posiciones considerando el offset
+    let startCol = offsetCols;
+
     switch (justifyClass) {
       case "justify-content-start":
-        // Alinear torretas al inicio (izquierda)
-        for (let i = 0; i < turretCount; i++) {
-          const x = i * colWidth + colWidth / 2;
-          newPositions.push({ x, colIndex: i });
-        }
-        break;
-
-      case "justify-content-center":
-        // Centrar torretas
-        const startCol = Math.floor((cols - turretCount) / 2);
+        // Alinear torretas al inicio considerando el offset
         for (let i = 0; i < turretCount; i++) {
           const colIndex = startCol + i;
           const x = colIndex * colWidth + colWidth / 2;
@@ -107,8 +123,20 @@ export class TurretObject {
         }
         break;
 
+      case "justify-content-center":
+        // Centrar torretas en el espacio disponible después del offset
+        const availableSpace = cols - offsetCols;
+        const centerStart =
+          offsetCols + Math.floor((availableSpace - turretCount) / 2);
+        for (let i = 0; i < turretCount; i++) {
+          const colIndex = centerStart + i;
+          const x = colIndex * colWidth + colWidth / 2;
+          newPositions.push({ x, colIndex });
+        }
+        break;
+
       case "justify-content-end":
-        // Alinear torretas al final (derecha)
+        // Alinear torretas al final considerando el offset
         for (let i = 0; i < turretCount; i++) {
           const colIndex = cols - turretCount + i;
           const x = colIndex * colWidth + colWidth / 2;
@@ -117,7 +145,13 @@ export class TurretObject {
         break;
 
       default:
-        return;
+        // Si no hay clase de justify, usar start con offset
+        for (let i = 0; i < turretCount; i++) {
+          const colIndex = startCol + i;
+          const x = colIndex * colWidth + colWidth / 2;
+          newPositions.push({ x, colIndex });
+        }
+        break;
     }
 
     // Aplicar nuevas posiciones a las torretas existentes con animación

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { EventBus, LEVEL_CHANGE, REORGANIZE_TURRETS, INPUT_METHOD_CHANGE } from '../EventBus';
+import { EventBus, LEVEL_CHANGE, REORGANIZE_TURRETS, INPUT_METHOD_CHANGE, GAME_PAUSE, GAME_RESUME } from '../EventBus';
 // levels se recibirá por props
 import '../components_phaser/InputClasses.css';
 
@@ -19,6 +19,7 @@ const InputClasses = ({ level, levels }) => {
   const inputRef = useRef(null);
   const [currentLevel, setCurrentLevel] = useState(level || 0);
   const [classList, setClassList] = useState(levels && levels[level || 0]?.inputClasses ? levels[level || 0].inputClasses : []);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Estadísticas de typing para calcular la precisión
   const [typingStats, setTypingStats] = useState({
@@ -49,10 +50,17 @@ const InputClasses = ({ level, levels }) => {
 
   useEffect(() => {
     setInputValue('');
+    setLastSelected('');
     setSuggestions([]);
     setShowSuggestions(false);
     setActiveSuggestion(0);
     setClassList(levels && levels[currentLevel]?.inputClasses ? levels[currentLevel].inputClasses : []);
+    // Reset typing stats
+    setTypingStats({
+      totalKeystrokes: 0,
+      correctKeystrokes: 0,
+      backspaces: 0,
+    });
   }, [currentLevel, levels]);
 
   useEffect(() => {
@@ -62,21 +70,44 @@ const InputClasses = ({ level, levels }) => {
       setCurrentLevel(idx);
       setClassList(levels && levels[idx]?.inputClasses ? levels[idx].inputClasses : []);
       setInputValue('');
+      setLastSelected('');
       setSuggestions([]);
       setShowSuggestions(false);
       setActiveSuggestion(0);
+      // Reset typing stats
+      setTypingStats({
+        totalKeystrokes: 0,
+        correctKeystrokes: 0,
+        backspaces: 0,
+      });
+    };
+
+    const handleGamePause = () => {
+      setIsPaused(true);
+      setShowSuggestions(false); // Ocultar sugerencias cuando se pausa
+    };
+
+    const handleGameResume = () => {
+      setIsPaused(false);
     };
 
     // Asegurarse de que el método de entrada es teclado cuando se usa este componente
     EventBus.emit(INPUT_METHOD_CHANGE, { method: 'keyboard' });
 
     EventBus.on(LEVEL_CHANGE, handleLevelChange);
+    EventBus.on(GAME_PAUSE, handleGamePause);
+    EventBus.on(GAME_RESUME, handleGameResume);
+
     return () => {
       EventBus.removeListener(LEVEL_CHANGE, handleLevelChange);
+      EventBus.removeListener(GAME_PAUSE, handleGamePause);
+      EventBus.removeListener(GAME_RESUME, handleGameResume);
     };
   }, [levels]);
 
   const handleChange = (e) => {
+    if (isPaused) return; // No permitir cambios cuando está pausado
+
     const value = e.target.value;
     const prevValue = inputValue;
     setInputValue(value);
@@ -85,9 +116,13 @@ const InputClasses = ({ level, levels }) => {
     const isBackspace = value.length < prevValue.length;
     const newChars = isBackspace ? 0 : (value.length - prevValue.length);
 
+    // Obtener la palabra actual que se está escribiendo
+    const words = value.split(' ');
+    const currentWord = words[words.length - 1];
+
     // Si está escribiendo una clase correcta, consideramos las teclas como correctas
     const isCorrectTyping = classList.some(cls =>
-      cls.toLowerCase().startsWith(value.toLowerCase())
+      cls.toLowerCase().startsWith(currentWord.toLowerCase())
     );
 
     setTypingStats(prev => ({
@@ -96,12 +131,16 @@ const InputClasses = ({ level, levels }) => {
       backspaces: prev.backspaces + (isBackspace ? 1 : 0),
     }));
 
-    if (value.length >= 3) {
-      const filtered = classList.filter((cls) =>
-        cls.toLowerCase().startsWith(value.toLowerCase())
-      );
+    // Filtrar sugerencias basadas en la palabra actual
+    if (currentWord.length >= 2) {
+      const filtered = classList.filter((cls) => {
+        // No sugerir clases ya utilizadas
+        const existingClasses = words.slice(0, -1);
+        return cls.toLowerCase().startsWith(currentWord.toLowerCase()) &&
+          !existingClasses.includes(cls);
+      });
       setSuggestions(filtered);
-      setShowSuggestions(true);
+      setShowSuggestions(filtered.length > 0);
       setActiveSuggestion(0);
     } else {
       setSuggestions([]);
@@ -110,17 +149,25 @@ const InputClasses = ({ level, levels }) => {
   };
 
   const handleKeyDown = (e) => {
+    if (isPaused) return; // No permitir teclas cuando está pausado
+
+    if (e.key === 'Enter') {
+      if (showSuggestions && suggestions.length > 0) {
+        selectSuggestion(suggestions[activeSuggestion]);
+      } else {
+        applyClasses();
+      }
+      return;
+    }
+
     if (!showSuggestions) return;
+
     if (e.key === 'ArrowDown') {
       setActiveSuggestion((prev) =>
         prev < suggestions.length - 1 ? prev + 1 : prev
       );
     } else if (e.key === 'ArrowUp') {
       setActiveSuggestion((prev) => (prev > 0 ? prev - 1 : 0));
-    } else if (e.key === 'Enter') {
-      if (suggestions.length > 0) {
-        selectSuggestion(suggestions[activeSuggestion]);
-      }
     } else if (e.key === 'Tab') {
       if (suggestions.length > 0) {
         e.preventDefault();
@@ -130,8 +177,13 @@ const InputClasses = ({ level, levels }) => {
   };
 
   const selectSuggestion = (suggestion) => {
-    setLastSelected(suggestion);
-    setInputValue('');
+    if (isPaused) return; // No permitir selección cuando está pausado
+
+    const words = inputValue.split(' ');
+    const newWords = [...words.slice(0, -1), suggestion];
+    const newValue = newWords.join(' ');
+
+    setInputValue(newValue + ' '); // Añadir espacio para la siguiente clase
     setSuggestions([]);
     setShowSuggestions(false);
     setActiveSuggestion(0);
@@ -141,9 +193,18 @@ const InputClasses = ({ level, levels }) => {
       ...prev,
       correctKeystrokes: prev.correctKeystrokes,
     }));
+  };
 
-    // Emitir evento para reorganizar torretas
-    EventBus.emit(REORGANIZE_TURRETS, { justifyClass: suggestion });
+  // Método para aplicar las clases cuando el usuario presiona Enter o pierde el foco
+  const applyClasses = () => {
+    if (isPaused) return; // No permitir aplicar clases cuando está pausado
+
+    const trimmedValue = inputValue.trim();
+    if (trimmedValue) {
+      setLastSelected(trimmedValue);
+      // Emitir evento para reorganizar torretas con todas las clases
+      EventBus.emit(REORGANIZE_TURRETS, { justifyClass: trimmedValue });
+    }
   };
 
   return (
@@ -152,14 +213,15 @@ const InputClasses = ({ level, levels }) => {
         ref={inputRef}
         type="text"
         className="form-control"
-        placeholder={lastSelected}
+        placeholder={lastSelected || "Type a class"}
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
+        onBlur={applyClasses}
         autoComplete="off"
-        disabled={classList.length === 0}
+        disabled={classList.length === 0 || isPaused}
       />
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && suggestions.length > 0 && !isPaused && (
         <ul className="suggestions-list">
           {suggestions.map((suggestion, idx) => (
             <li
@@ -172,9 +234,9 @@ const InputClasses = ({ level, levels }) => {
           ))}
         </ul>
       )}
-      <div className="typing-accuracy">
+      {/*       <div className="typing-accuracy">
         Precisión: {accuracy}%
-      </div>
+      </div> */}
     </div>
   );
 };

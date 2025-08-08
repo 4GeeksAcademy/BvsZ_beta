@@ -14,9 +14,9 @@ export const levels = [
     zombieDamage: 100,
     bulletVelocityY: 100,
     bulletDamage: 10,
-    zombiesPerLevel: 1,
+    zombiesPerLevel: 5,
     maxZombiesOnScreen: 200,
-    inputClasses: inputClasses[1],
+    inputClasses: inputClasses[2],
   },
   {
     turretHealth: 50,
