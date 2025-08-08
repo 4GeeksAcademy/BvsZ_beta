@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 *.db
+.env
 __pycache__/
 
 # Ignore package-lock.json
