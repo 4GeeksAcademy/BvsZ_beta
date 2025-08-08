@@ -96,10 +96,20 @@ const TerminalButtonGroup = ({ levels }) => {
       <div className="active-classes-container mb-1 pt-1 pb-1">
         Active classes: <br />
         <span className="active-classes m-0">
-          {selectedClasses.length > 0
-            ? selectedClasses.join(' ')
-            : 'Click on a class below to activate it'
-          }
+          {selectedClasses.length > 0 ? (
+            <>
+              {/* Primera línea: clases justify */}
+              <div>
+                {selectedClasses.filter(cls => cls.startsWith('justify-content-')).join(' ') || 'No justify classes selected'}
+              </div>
+              {/* Segunda línea: clases offset */}
+              <div>
+                {selectedClasses.filter(cls => cls.startsWith('offset-')).join(' ') || 'No offset classes selected'}
+              </div>
+            </>
+          ) : (
+            'Click on a class below to activate it'
+          )}
         </span>
       </div>
       {classList.map((cssClass) => (
