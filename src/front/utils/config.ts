@@ -6,7 +6,7 @@ export const API_CONFIG = {
     REGISTER: "/register",
     PROFILE: "/profile",
     GAME: "/game",
-    FORGOT_PASSWORD: "/forgot-password",
+    FORGOT_PASSWORD: "/password/send-reset-code",
     RESET_PASSWORD: "/password/reset",
     LEADERBOARD_MOUSE: "/leaderboard/mouse",
     LEADERBOARD_KEYBOARD: "/leaderboard/keyboard",

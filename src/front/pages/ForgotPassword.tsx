@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import Navigation from '../components/Navigation';
+import { getApiEndpoint } from '../utils/config';
+import { Navigate } from 'react-router-dom';
+
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -14,16 +17,16 @@ const ForgotPassword: React.FC = () => {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/forgot-password', {
+      const res = await fetch(getApiEndpoint("FORGOT_PASSWORD"), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to request reset');
-      setMessage(data.message || 'Check your email for further instructions');
+      if (!res.ok) throw new Error(data.msg || 'Error al enviar código');
+      setMessage(data.msg || 'Revisa tu email');
       setEmail('');
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'Failed to request reset');
     } finally {
       setLoading(false);
@@ -54,7 +57,10 @@ const ForgotPassword: React.FC = () => {
                     />
                   </Form.Group>
                   <Button type="submit" variant="primary" className="w-100" disabled={loading}>
-                    {loading ? 'Loading...' : 'Send Reset Link'}
+                    {loading ? 'Loading...' : 'Send Reset Code'}
+                  </Button>
+                  <Button type="button" className="btn btn-primary w-100 mt-2" onClick={() => window.location.href = "/reset-password-code"}>
+                    Ya tengo el código
                   </Button>
                 </Form>
               </Card.Body>

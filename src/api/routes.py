@@ -11,13 +11,8 @@ import datetime
 
 api = Blueprint('api', __name__)
 # Allow CORS requests to this API
-CORS(api, resources={
-    r"/*": {
-        "origins": "*",
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
+CORS(api, supports_credentials=True)
+
 
 SECRET_KEY = "super-secret"  # Cambia esto por una variable de entorno en producción
 
@@ -428,3 +423,10 @@ def verify_user_code():
     db.session.commit()
 
     return jsonify({'msg': 'Cuenta verificada correctamente.'}), 200
+
+@api.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
+    return response
