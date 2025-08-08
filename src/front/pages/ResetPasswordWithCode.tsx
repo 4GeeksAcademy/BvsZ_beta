@@ -50,7 +50,7 @@ const ResetPasswordWithCode: React.FC = () => {
 
       setMessage(data.msg || "Password reset successfully");
       setTimeout(() => navigate("/login"), 1500);
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
