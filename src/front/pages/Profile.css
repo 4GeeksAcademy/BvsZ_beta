@@ -1,0 +1,34 @@
+/* Estilos específicos para el perfil de usuario */
+
+/* Aumentar el tamaño de los títulos de las estadísticas */
+.stat-item h6 {
+  font-size: 1.125rem; /* Aumento del 50% respecto al tamaño base */
+}
+
+/* Estilo para los botones de invitación a jugar */
+.try-mode-button,
+button.try-mode-button,
+.btn.try-mode-button {
+  font-size: 1.5rem !important; /* Texto del botón más grande */
+  padding: 0.5rem 1rem !important; /* Padding más grande para el botón */
+  font-weight: 500 !important;
+}
+
+/* Estilo para las cards de estadísticas no disponibles */
+.stats-missing-card {
+  background-color: rgba(0, 135, 139, 0.26);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+/* Estilos para los valores de las estadísticas */
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* Estilo para la sección de estadísticas */
+.stats-section {
+  margin-bottom: 2rem;
+}
