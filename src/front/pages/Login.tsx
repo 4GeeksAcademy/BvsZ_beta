@@ -110,6 +110,7 @@ const Login: React.FC = () => {
         const data = await reps.json();
         if (!reps.ok) throw new Error(data.msg || "Error en el registro");
         setSuccess("¡Register successfully!");
+        navigate("/verify-account", { state: { email } });
         setIsRegister(false);
         setEmail("");
         setPassword("");

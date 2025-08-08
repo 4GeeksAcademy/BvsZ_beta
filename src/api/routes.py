@@ -91,6 +91,17 @@ def register_user():
     )
     db.session.add(new_user)
     db.session.commit()
+    
+    # Enviar código de verificación por correo al registrarse
+    from api.utils import send_email_via_brevo
+    import random
+
+    code = str(random.randint(1000, 9999))
+    new_user.verification_code = code
+    db.session.commit()
+
+    html = f"<p>Tu código de verificación es: <strong>{code}</strong></p>"
+    send_email_via_brevo(email, "Código de verificación", html)
 
     # Omite el envío de correo de verificación para pruebas locales
 
@@ -106,6 +117,9 @@ def login_user():
     user = User.query.filter_by(email=data['email']).first()
     if not user or not check_password_hash(user.password, data['password']):
         return jsonify({'msg': 'Credenciales inválidas.'}), 401
+    
+    if not user.is_verified:
+        return jsonify({'msg': 'Tu cuenta no está verificada. Revisa tu correo electrónico.'}), 403
 
     payload = {
         # Convert UUID to string for JSON serialization

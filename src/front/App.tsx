@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { useRef, useState, useEffect } from 'react';
 import ResetPasswordWithCode from "./pages/ResetPasswordWithCode";
+import VerifyAccount from "./pages/VerifyAccount";
 
 
 const queryClient = new QueryClient();   
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/backend-test" element={<BackendTest />} />
+          <Route path="/verify-account" element={<VerifyAccount />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
