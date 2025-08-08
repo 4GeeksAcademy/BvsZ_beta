@@ -5,34 +5,31 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const isProduction = mode === 'production';
+  const isProduction = mode === "production";
   return {
-    base: isProduction ? './' : '/',
+    base: isProduction ? "./" : "/",
     server: {
       host: "::",
       port: 8080,
     },
-    plugins: [
-      react(),
-      !isProduction && componentTagger(),
-    ].filter(Boolean),
+    plugins: [react(), !isProduction && componentTagger()].filter(Boolean),
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
     },
     build: {
-      outDir: 'dist',
+      outDir: "dist",
       sourcemap: !isProduction,
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: ['react', 'react-dom'],
-            phaser: ['phaser'],
-            bootstrap: ['react-bootstrap'],
-            router: ['react-router-dom'],
-          }
-        }
+            vendor: ["react", "react-dom"],
+            phaser: ["phaser"],
+            bootstrap: ["react-bootstrap"],
+            router: ["react-router-dom"],
+          },
+        },
       },
       chunkSizeWarningLimit: 1000,
     },

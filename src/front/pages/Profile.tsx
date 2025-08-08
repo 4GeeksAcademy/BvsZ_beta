@@ -135,9 +135,19 @@ const Profile: React.FC = () => {
     return (
       <>
         <Navigation />
-        <Container>
-          <div className="text-center">Loading...</div>
-        </Container>
+        <div
+          className="d-flex flex-column justify-content-center align-items-center vh-100"
+          style={{ marginTop: "-80px" }}
+        >
+          <div
+            className="spinner-border text-white"
+            role="status"
+            style={{ width: "3rem", height: "3rem" }}
+          >
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-3 text-white fs-4">Loading...</p>
+        </div>
       </>
     );
   }

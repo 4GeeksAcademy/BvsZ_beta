@@ -87,13 +87,13 @@ const Leaderboard: React.FC = () => {
                     <div className="spinner-border text-primary" role="status">
                       <span className="visually-hidden">Loading...</span>
                     </div>
-                    <p className="mt-2">Cargando tabla de clasificación...</p>
+                    <p className="mt-2">Loading...</p>
                   </div>
                 ) : error ? (
                   <div className="alert alert-danger">{error}</div>
                 ) : leaderboard.length === 0 ? (
                   <div className="text-center py-4">
-                    <p>No hay datos disponibles en la tabla de clasificación.</p>
+                    <p>No data.</p>
                   </div>
                 ) : (
                   <Table>
