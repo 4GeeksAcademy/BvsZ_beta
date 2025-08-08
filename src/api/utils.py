@@ -1,4 +1,5 @@
 from flask import jsonify, url_for
+import os
 
 class APIException(Exception):
     status_code = 400
@@ -44,7 +45,7 @@ import requests
 
 def send_email_via_brevo(to_email, subject, html_content):
     url = "https://api.brevo.com/v3/smtp/email"
-    api_key = "la api key de brevo"  # Reemplaza esto con tu API key real de Brevo
+    api_key = os.getenv("BREVO_API_KEY")  # Reemplaza esto con tu API key real de Brevo
 
     payload = {
         "sender": {"name": "BvsZ Game", "email": "sebasmiramontes@gmail.com"},
