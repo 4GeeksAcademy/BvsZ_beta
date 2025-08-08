@@ -140,7 +140,7 @@ const Leaderboard: React.FC = () => {
                           <TableCell>{entry.username}</TableCell>
                           <TableCell className="text-success">
                             <strong>
-                              {Math.round(entry.score).toLocaleString()}
+                              {entry.score.toLocaleString()}
                             </strong>
                           </TableCell>
                           <TableCell>

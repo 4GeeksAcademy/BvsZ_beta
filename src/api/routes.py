@@ -91,7 +91,7 @@ def register_user():
     )
     db.session.add(new_user)
     db.session.commit()
-    
+
     # Enviar código de verificación por correo al registrarse
     from api.utils import send_email_via_brevo
     import random
@@ -117,7 +117,7 @@ def login_user():
     user = User.query.filter_by(email=data['email']).first()
     if not user or not check_password_hash(user.password, data['password']):
         return jsonify({'msg': 'Credenciales inválidas.'}), 401
-    
+
     if not user.is_verified:
         return jsonify({'msg': 'Tu cuenta no está verificada. Revisa tu correo electrónico.'}), 403
 
@@ -193,6 +193,23 @@ def add_game_stat(current_user, input_method):
             user_id=current_user.id).first()
 
         if existing_stat:
+            # Guardar el score actual antes de actualizar
+            previous_score = existing_stat.score
+
+            # Crear un objeto temporal para calcular el score de la nueva partida
+            new_game_stat = MouseGameStats(
+                user_id=current_user.id,
+                zombies_killed_by_player=data.get(
+                    'zombies_killed_by_player', 0),
+                zombies_killed_by_environment=data.get(
+                    'zombies_killed_by_environment', 0),
+                total_play_time=data.get('total_play_time', 0.0),
+                bullets_fired=data.get('bullets_fired', 0),
+                levels_completed=data.get('levels_completed', 0)
+            )
+            # Calcular el score de la nueva partida
+            new_game_score = new_game_stat.calculate_score()
+
             # Actualizar las estadísticas existentes sumando los nuevos valores
             existing_stat.zombies_killed_by_player += data.get(
                 'zombies_killed_by_player', 0)
@@ -202,8 +219,8 @@ def add_game_stat(current_user, input_method):
             existing_stat.bullets_fired += data.get('bullets_fired', 0)
             existing_stat.levels_completed += data.get('levels_completed', 0)
 
-            # Calcular el nuevo puntaje
-            existing_stat.calculate_score()
+            # Mantener el score más alto (ya sea el anterior o el de la nueva partida)
+            existing_stat.score = max(previous_score, new_game_score)
             db.session.commit()
 
             return jsonify({'msg': 'Estadística de juego actualizada correctamente.', 'stat': existing_stat.serialize()}), 200
@@ -224,6 +241,24 @@ def add_game_stat(current_user, input_method):
             user_id=current_user.id).first()
 
         if existing_stat:
+            # Guardar el score actual antes de actualizar
+            previous_score = existing_stat.score
+
+            # Crear un objeto temporal para calcular el score de la nueva partida
+            new_game_stat = KeyboardGameStats(
+                user_id=current_user.id,
+                zombies_killed_by_player=data.get(
+                    'zombies_killed_by_player', 0),
+                zombies_killed_by_environment=data.get(
+                    'zombies_killed_by_environment', 0),
+                total_play_time=data.get('total_play_time', 0.0),
+                bullets_fired=data.get('bullets_fired', 0),
+                levels_completed=data.get('levels_completed', 0),
+                typing_accuracy=data.get('typing_accuracy', 0.0)
+            )
+            # Calcular el score de la nueva partida
+            new_game_score = new_game_stat.calculate_score()
+
             # Para el typing_accuracy, calculamos el promedio ponderado basado en las sesiones anteriores
             new_accuracy = data.get('typing_accuracy', 0.0)
 
@@ -249,8 +284,8 @@ def add_game_stat(current_user, input_method):
             existing_stat.bullets_fired += data.get('bullets_fired', 0)
             existing_stat.levels_completed += data.get('levels_completed', 0)
 
-            # Calcular el nuevo puntaje
-            existing_stat.calculate_score()
+            # Mantener el score más alto (ya sea el anterior o el de la nueva partida)
+            existing_stat.score = max(previous_score, new_game_score)
             db.session.commit()
 
             return jsonify({'msg': 'Estadística de juego actualizada correctamente.', 'stat': existing_stat.serialize()}), 200
@@ -269,7 +304,9 @@ def add_game_stat(current_user, input_method):
             )
 
     # Si llegamos aquí, significa que estamos creando una nueva entrada
-    new_stat.calculate_score()
+    # Calculamos el score y agregamos la nueva entrada
+    score = new_stat.calculate_score()
+    new_stat.score = score  # Aseguramos que el score esté establecido correctamente
     db.session.add(new_stat)
     db.session.commit()
 
@@ -293,7 +330,7 @@ def get_leaderboard(input_method):
             StatsModel.bullets_fired,
             StatsModel.levels_completed
         ).join(User).order_by(StatsModel.score.desc()).all()
-        
+
         leaderboard = [{
             'username': row.username,
             'score': row.score,
@@ -316,7 +353,7 @@ def get_leaderboard(input_method):
             StatsModel.levels_completed,
             StatsModel.typing_accuracy
         ).join(User).order_by(StatsModel.score.desc()).all()
-        
+
         leaderboard = [{
             'username': row.username,
             'score': row.score,
@@ -332,6 +369,7 @@ def get_leaderboard(input_method):
         'msg': f'Leaderboard para {input_method} obtenido correctamente.',
         'leaderboard': leaderboard
     }), 200
+
 
 @api.route('/verify/send-code', methods=['POST'])
 def send_verification_code():
@@ -354,6 +392,7 @@ def send_verification_code():
 
     return jsonify({'msg': 'Código enviado al correo.'}), 200
 
+
 @api.route('/password/send-reset-code', methods=['POST'])
 def send_password_reset_code():
     from api.utils import send_email_via_brevo
@@ -375,6 +414,7 @@ def send_password_reset_code():
 
     return jsonify({'msg': 'Código de restauración enviado al correo.'}), 200
 
+
 @api.route('/password/verify-reset-code', methods=['POST'])
 def verify_password_reset_code():
     data = request.get_json()
@@ -389,6 +429,7 @@ def verify_password_reset_code():
         return jsonify({'msg': 'Código incorrecto'}), 400
 
     return jsonify({'msg': 'Código válido. Procede al cambio de contraseña.'}), 200
+
 
 @api.route('/password/reset', methods=['PUT'])
 def reset_password():
@@ -418,7 +459,6 @@ def reset_password():
     return jsonify({'msg': 'Contraseña restablecida correctamente.'}), 200
 
 
-
 @api.route('/verify/code', methods=['POST'])
 def verify_user_code():
     data = request.get_json()
@@ -437,6 +477,7 @@ def verify_user_code():
     db.session.commit()
 
     return jsonify({'msg': 'Cuenta verificada correctamente.'}), 200
+
 
 @api.after_request
 def add_cors_headers(response):
