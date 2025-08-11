@@ -7,15 +7,14 @@ import Leaderboard from "./pages/Leaderboard";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
-import BackendTest from "./pages/BackendTest";
 import NotFound from "./pages/NotFound";
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { useRef, useState, useEffect } from 'react';
+import HowToPlay from "./pages/HowToPlay";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { useRef, useState, useEffect } from "react";
 import ResetPasswordWithCode from "./pages/ResetPasswordWithCode";
 import VerifyAccount from "./pages/VerifyAccount";
 
-
-const queryClient = new QueryClient();   
+const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -25,11 +24,14 @@ const App = () => (
           <Route path="/" element={<Home />} />
           <Route path="/game" element={<Game />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/how-to-play" element={<HowToPlay />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/reset-password-code" element={<ResetPasswordWithCode />} />
+          <Route
+            path="/reset-password-code"
+            element={<ResetPasswordWithCode />}
+          />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/backend-test" element={<BackendTest />} />
           <Route path="/verify-account" element={<VerifyAccount />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

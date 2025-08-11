@@ -58,23 +58,22 @@ const Navigation: React.FC = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
             <Link to="/" className="nav-link">
-
               Home
             </Link>
             {user && (
               <Link to="/game" className="nav-link">
-
                 Game
               </Link>
             )}
+            <Link to="/how-to-play" className="nav-link">
+              How to Play
+            </Link>
             <Link to="/leaderboard" className="nav-link">
-
               Leaderboard
             </Link>
             {user && (
               <>
                 <Link to="/profile" className="nav-link">
-
                   Profile
                 </Link>
               </>

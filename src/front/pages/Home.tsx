@@ -26,7 +26,8 @@ const Home: React.FC = () => {
             <p className="text-muted">
               An educational game that makes learning{" "}
               <span className="text-bootstrap">Bootstrap</span> flexbox fun and
-              interactive.
+              interactive. Play with mouse or keyboard controls designed for
+              developers!
             </p>
           </Col>
         </Row>
@@ -42,7 +43,9 @@ const Home: React.FC = () => {
                   Deploy turrets using{" "}
                   <span className="text-bootstrap">Bootstrap</span> flex classes
                   to protect your servers. Learn by doing in this interactive
-                  tower defense experience where turrets fire automatically!
+                  tower defense experience where turrets fire automatically! Use
+                  class buttons or type code directly - like having both GUI and
+                  terminal!
                 </Card.Text>
                 <Link to="/game" className="mt-auto">
                   <Button variant="success" size="lg" className="w-100">
@@ -86,7 +89,7 @@ const Home: React.FC = () => {
               </Card.Header>
               <Card.Body>
                 <Row>
-                  <Col md={6}>
+                  <Col md={12}>
                     <h5 className="text-danger">
                       🧟‍♂️ The <span className="text-zombies">Zombie</span> Threat
                     </h5>
@@ -105,32 +108,24 @@ const Home: React.FC = () => {
                       column. Your job is to move the turrets to the right
                       columns to intercept the horde.
                     </p>
-                  </Col>
-                  <Col md={6}>
-                    <h5 className="text-success">
-                      🎯 Master{" "}
-                      <span className="text-bootstrap">Bootstrap</span> Classes
-                    </h5>
+
+                    <h5 className="text-info">💻 IDE-Style Controls</h5>
                     <p>
-                      Use the available{" "}
-                      <span className="text-bootstrap">Bootstrap</span> classes
-                      to position your turrets. Master them to control the
-                      battlefield!
+                      Play with familiar developer controls:{" "}
+                      <strong>🖱️ click CSS class buttons</strong> for quick
+                      selection or{" "}
+                      <strong>⌨️ type directly in HTML code</strong> with
+                      IntelliSense autocomplete. Choose your preferred coding
+                      style!
                     </p>
 
-                    <h5 className="text-warning">🏆 Educational Objectives</h5>
-                    <ul>
-                      <li>
-                        Master <span className="text-bootstrap">Bootstrap</span>
-                        's 12-column grid
-                      </li>
-                      <li>
-                        Understand <code>justify-content</code> for alignment
-                      </li>
-                      <li>
-                        Learn to use <code>offset</code> for spacing
-                      </li>
-                    </ul>
+                    <div className="text-center mt-4">
+                      <Link to="/how-to-play">
+                        <Button variant="warning" size="lg">
+                          📚 Read Full Guide
+                        </Button>
+                      </Link>
+                    </div>
                   </Col>
                 </Row>
               </Card.Body>
