@@ -408,8 +408,8 @@ const Login: React.FC = () => {
                     {loading
                       ? "Loading..."
                       : isRegister
-                      ? "Registrarse"
-                      : "Entrar"}
+                      ? "Singup"
+                      : "Login"}
                   </Button>
                 </Form>
                 {!isRegister && (

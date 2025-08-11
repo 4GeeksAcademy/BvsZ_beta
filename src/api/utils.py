@@ -71,6 +71,6 @@ def send_email_via_brevo(to_email, subject, html_content):
 
     # Puedes hacer debugging con esto:
     if response.status_code != 201:
-        print("❌ Error al enviar correo:", response.text)
+        print("❌ Error sending email:", response.text)
 
     return response.status_code

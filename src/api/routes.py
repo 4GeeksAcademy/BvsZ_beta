@@ -25,17 +25,17 @@ def token_required(f):
             token = request.headers['Authorization'].split(" ")[1]
 
         if not token:
-            return jsonify({'msg': 'Token no proporcionado'}), 401
+            return jsonify({'msg': 'Token not provided'}), 401
 
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             current_user = User.query.get(data['user_id'])
             if not current_user:
-                return jsonify({'msg': 'Usuario no encontrado'}), 401
+                return jsonify({'msg': 'User not found'}), 401
         except jwt.ExpiredSignatureError:
-            return jsonify({'msg': 'Token expirado'}), 401
+            return jsonify({'msg': 'Token expired'}), 401
         except jwt.InvalidTokenError:
-            return jsonify({'msg': 'Token inválido'}), 401
+            return jsonify({'msg': 'Invalid token'}), 401
 
         return f(current_user, *args, **kwargs)
     return decorated
@@ -55,7 +55,7 @@ def register_user():
     required_fields = ['username', 'email', 'password',
                        'verify_password', 'age', 'country']
     if not all(field in data and data[field] for field in required_fields):
-        return jsonify({'msg': 'Todos los campos son obligatorios.'}), 400
+        return jsonify({'msg': 'All fields are required.'}), 400
 
     username = data['username']
     email = data['email']
@@ -65,16 +65,16 @@ def register_user():
     country = data['country']
 
     if not is_valid_username(username):
-        return jsonify({'msg': 'El nombre de usuario debe tener al menos 4 caracteres alfanuméricos o guion bajo.'}), 400
+        return jsonify({'msg': 'Username must have at least 4 alphanumeric characters or underscores.'}), 400
     if not is_valid_password(password):
-        return jsonify({'msg': 'La contraseña debe tener al menos 8 caracteres.'}), 400
+        return jsonify({'msg': 'Password must have at least 8 characters.'}), 400
     if password != verify_password:
-        return jsonify({'msg': 'Las contraseñas no coinciden.'}), 400
+        return jsonify({'msg': 'Passwords do not match.'}), 400
 
     if User.query.filter_by(username=username).first():
-        return jsonify({'msg': 'El nombre de usuario ya existe.'}), 409
+        return jsonify({'msg': 'Username already exists.'}), 409
     if User.query.filter_by(email=email).first():
-        return jsonify({'msg': 'El correo ya está registrado.'}), 409
+        return jsonify({'msg': 'Email is already registered.'}), 409
 
     hashed_password = generate_password_hash(password)
     verification_token = secrets.token_urlsafe(32)
@@ -100,26 +100,26 @@ def register_user():
     new_user.verification_code = code
     db.session.commit()
 
-    html = f"<p>Tu código de verificación es: <strong>{code}</strong></p>"
-    send_email_via_brevo(email, "Código de verificación", html)
+    html = f"<p>Your verification code is: <strong>{code}</strong></p>"
+    send_email_via_brevo(email, "Verification Code", html)
 
     # Omite el envío de correo de verificación para pruebas locales
 
-    return jsonify({'msg': 'Usuario registrado correctamente.', 'user': new_user.serialize()}), 201
+    return jsonify({'msg': 'User registered successfully.', 'user': new_user.serialize()}), 201
 
 
 @api.route('/login', methods=['POST'])
 def login_user():
     data = request.get_json()
     if not data or not data.get('email') or not data.get('password'):
-        return jsonify({'msg': 'Email y contraseña requeridos.'}), 400
+        return jsonify({'msg': 'Email and password required.'}), 400
 
     user = User.query.filter_by(email=data['email']).first()
     if not user or not check_password_hash(user.password, data['password']):
-        return jsonify({'msg': 'Credenciales inválidas.'}), 401
+        return jsonify({'msg': 'Invalid credentials.'}), 401
 
     if not user.is_verified:
-        return jsonify({'msg': 'Tu cuenta no está verificada. Revisa tu correo electrónico.'}), 403
+        return jsonify({'msg': 'Your account is not verified. Check your email.'}), 403
 
     payload = {
         # Convert UUID to string for JSON serialization
@@ -129,7 +129,7 @@ def login_user():
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
     return jsonify({
-        'msg': 'Login exitoso.',
+        'msg': 'Login successful.',
         'token': token,
         'user': user.serialize()
     }), 200
@@ -139,7 +139,7 @@ def login_user():
 @token_required
 def get_profile(current_user):
     return jsonify({
-        'msg': 'Perfil obtenido correctamente.',
+        'msg': 'Profile retrieved successfully.',
         'user': current_user.serialize()
     }), 200
 
@@ -148,7 +148,7 @@ def get_profile(current_user):
 @token_required
 def get_game_access(current_user):
     return jsonify({
-        'msg': 'Acceso al juego autorizado.',
+        'msg': 'Game access authorized.',
         'user': current_user.serialize(),
         'game_data': {
             'authorized': True,
@@ -162,7 +162,7 @@ def get_game_access(current_user):
 @token_required
 def get_stats(current_user, input_method):
     if input_method not in ['mouse', 'keyboard']:
-        return jsonify({'msg': 'Método de entrada inválido. Debe ser "mouse" o "keyboard".'}), 400
+        return jsonify({'msg': 'Invalid input method. Must be "mouse" or "keyboard".'}), 400
 
     if input_method == 'mouse':
         stat = MouseGameStats.query.filter_by(user_id=current_user.id).first()
@@ -171,10 +171,10 @@ def get_stats(current_user, input_method):
             user_id=current_user.id).first()
 
     if not stat:
-        return jsonify({'msg': 'No hay estadísticas disponibles.'}), 404
+        return jsonify({'msg': 'No stats available.'}), 404
 
     return jsonify({
-        'msg': 'Estadísticas obtenidas correctamente.',
+        'msg': 'Stats retrieved successfully.',
         'stats': stat.serialize()
     }), 200
 
@@ -183,7 +183,7 @@ def get_stats(current_user, input_method):
 @token_required
 def add_game_stat(current_user, input_method):
     if input_method not in ['mouse', 'keyboard']:
-        return jsonify({'msg': 'Método de entrada inválido. Debe ser "mouse" o "keyboard".'}), 400
+        return jsonify({'msg': 'Invalid input method. Must be "mouse" or "keyboard".'}), 400
 
     data = request.get_json()
 
@@ -223,7 +223,7 @@ def add_game_stat(current_user, input_method):
             existing_stat.score = max(previous_score, new_game_score)
             db.session.commit()
 
-            return jsonify({'msg': 'Estadística de juego actualizada correctamente.', 'stat': existing_stat.serialize()}), 200
+            return jsonify({'msg': 'Game stat updated successfully.', 'stat': existing_stat.serialize()}), 200
         else:
             # Crear una nueva entrada si no existe
             new_stat = MouseGameStats(
@@ -310,13 +310,13 @@ def add_game_stat(current_user, input_method):
     db.session.add(new_stat)
     db.session.commit()
 
-    return jsonify({'msg': 'Estadística de juego registrada correctamente.', 'stat': new_stat.serialize()}), 201
+    return jsonify({'msg': 'Game stat registered successfully.', 'stat': new_stat.serialize()}), 201
 
 
 @api.route('/leaderboard/<string:input_method>', methods=['GET'])
 def get_leaderboard(input_method):
     if input_method not in ['mouse', 'keyboard']:
-        return jsonify({'msg': 'Método de entrada inválido. Debe ser "mouse" o "keyboard".'}), 400
+        return jsonify({'msg': 'Invalid input method. Must be "mouse" or "keyboard".'}), 400
 
     if input_method == 'mouse':
         StatsModel = MouseGameStats
@@ -366,7 +366,7 @@ def get_leaderboard(input_method):
         } for row in stats_query]
 
     return jsonify({
-        'msg': f'Leaderboard para {input_method} obtenido correctamente.',
+        'msg': f'Leaderboard for {input_method} retrieved successfully.',
         'leaderboard': leaderboard
     }), 200
 
@@ -381,16 +381,16 @@ def send_verification_code():
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({'msg': 'Usuario no encontrado'}), 404
+        return jsonify({'msg': 'User not found'}), 404
 
     code = str(random.randint(1000, 9999))
     user.verification_code = code
     db.session.commit()
 
-    html = f"<p>Tu código de verificación es: <strong>{code}</strong></p>"
-    send_email_via_brevo(email, "Código de verificación", html)
+    html = f"<p>Your verification code is: <strong>{code}</strong></p>"
+    send_email_via_brevo(email, "Verification Code", html)
 
-    return jsonify({'msg': 'Código enviado al correo.'}), 200
+    return jsonify({'msg': 'Code sent to email.'}), 200
 
 
 @api.route('/password/send-reset-code', methods=['POST'])
@@ -403,16 +403,16 @@ def send_password_reset_code():
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({'msg': 'Usuario no encontrado'}), 404
+        return jsonify({'msg': 'User not found'}), 404
 
     code = str(random.randint(1000, 9999))
     user.password_reset_code = code
     db.session.commit()
 
-    html = f"<p>Tu código para restaurar contraseña es: <strong>{code}</strong></p>"
-    send_email_via_brevo(email, "Restaurar contraseña", html)
+    html = f"<p>Your password reset code is: <strong>{code}</strong></p>"
+    send_email_via_brevo(email, "Password Reset", html)
 
-    return jsonify({'msg': 'Código de restauración enviado al correo.'}), 200
+    return jsonify({'msg': 'Password reset code sent to email.'}), 200
 
 
 @api.route('/password/verify-reset-code', methods=['POST'])
@@ -423,12 +423,12 @@ def verify_password_reset_code():
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({'msg': 'Usuario no encontrado'}), 404
+        return jsonify({'msg': 'User not found'}), 404
 
     if user.password_reset_code != code:
-        return jsonify({'msg': 'Código incorrecto'}), 400
+        return jsonify({'msg': 'Incorrect code'}), 400
 
-    return jsonify({'msg': 'Código válido. Procede al cambio de contraseña.'}), 200
+    return jsonify({'msg': 'Valid code. Proceed to change password.'}), 200
 
 
 @api.route('/password/reset', methods=['PUT'])
@@ -441,22 +441,22 @@ def reset_password():
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({'msg': 'Usuario no encontrado'}), 404
+        return jsonify({'msg': 'User not found'}), 404
 
     if user.password_reset_code != code:
-        return jsonify({'msg': 'Código incorrecto'}), 400
+        return jsonify({'msg': 'Incorrect code'}), 400
 
     if not new_password or len(new_password) < 8:
-        return jsonify({'msg': 'La nueva contraseña debe tener al menos 8 caracteres.'}), 400
+        return jsonify({'msg': 'The new password must have at least 8 characters.'}), 400
 
     if new_password != confirm_password:
-        return jsonify({'msg': 'Las contraseñas no coinciden.'}), 400
+        return jsonify({'msg': 'Passwords do not match.'}), 400
 
     user.password = generate_password_hash(new_password)
-    user.password_reset_code = None  # Limpia el código
+    user.password_reset_code = None  # Clear the code
     db.session.commit()
 
-    return jsonify({'msg': 'Contraseña restablecida correctamente.'}), 200
+    return jsonify({'msg': 'Password reset successfully.'}), 200
 
 
 @api.route('/verify/code', methods=['POST'])
@@ -467,16 +467,16 @@ def verify_user_code():
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({'msg': 'Usuario no encontrado'}), 404
+        return jsonify({'msg': 'User not found'}), 404
 
     if user.verification_code != code:
-        return jsonify({'msg': 'Código incorrecto'}), 400
+        return jsonify({'msg': 'Incorrect code'}), 400
 
     user.is_verified = True
     user.verification_code = None
     db.session.commit()
 
-    return jsonify({'msg': 'Cuenta verificada correctamente.'}), 200
+    return jsonify({'msg': 'Account verified successfully.'}), 200
 
 
 @api.after_request
