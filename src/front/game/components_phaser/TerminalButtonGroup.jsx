@@ -6,10 +6,14 @@ import './TerminalButtonGroup.css';
 
 
 const TerminalButtonGroup = ({ levels }) => {
-  const [selectedClasses, setSelectedClasses] = useState(['justify-content-center']); // Array para múltiples clases
+  const initialClassList = levels && levels[0]?.inputClasses ? levels[0].inputClasses : [];
+  // Solo usar justify-content-center como default si está disponible en el primer nivel
+  const initialSelectedClasses = initialClassList.includes('justify-content-center') ? ['justify-content-center'] : [];
+
+  const [selectedClasses, setSelectedClasses] = useState(initialSelectedClasses); // Array para múltiples clases
   const [gameActive, setGameActive] = useState(false);
   const [levelIndex, setLevelIndex] = useState(0);
-  const [classList, setClassList] = useState(levels && levels[0]?.inputClasses ? levels[0].inputClasses : []);
+  const [classList, setClassList] = useState(initialClassList);
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
@@ -23,8 +27,13 @@ const TerminalButtonGroup = ({ levels }) => {
       // newLevel es 1-indexed
       const idx = Math.max(0, Number(newLevel) - 1);
       setLevelIndex(idx);
-      setClassList(levels && levels[idx]?.inputClasses ? levels[idx].inputClasses : []);
-      setSelectedClasses(['justify-content-center']); // Reset a clase por defecto
+      const newClassList = levels && levels[idx]?.inputClasses ? levels[idx].inputClasses : [];
+      setClassList(newClassList);
+
+      // Solo mantener las clases seleccionadas que están disponibles en el nuevo nivel
+      // Si no hay clases válidas, usar array vacío en lugar de clase por defecto
+      const validSelectedClasses = selectedClasses.filter(cls => newClassList.includes(cls));
+      setSelectedClasses(validSelectedClasses);
     };
     const handleGamePause = () => {
       setIsPaused(true);
@@ -99,7 +108,7 @@ const TerminalButtonGroup = ({ levels }) => {
             <>
               {/* Primera línea: clases justify */}
               <div>
-                {selectedClasses.filter(cls => cls.startsWith('justify-content-')).join(' ') }
+                {selectedClasses.filter(cls => cls.startsWith('justify-content-')).join(' ')}
               </div>
               {/* Segunda línea: clases offset */}
               <div>

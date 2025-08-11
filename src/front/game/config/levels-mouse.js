@@ -2,7 +2,7 @@
 import { inputClasses } from "./input-classes";
 
 export const levels = [
-  {
+  { //NIVEL 1
     turretHealth: 50,
     turretsCount: 2,
     turretsCols: [ 6, 7],
@@ -18,7 +18,7 @@ export const levels = [
     maxZombiesOnScreen: 200,
     inputClasses: inputClasses[2],
   },
-  {
+  { //NIVEL 2
     turretHealth: 50,
     turretsCount: 4,
     turretsCols: [5, 6, 7, 8],
@@ -34,7 +34,7 @@ export const levels = [
     maxZombiesOnScreen: 10,
     inputClasses: inputClasses[1],
   },
-  {
+  { //NIVEL 3
     turretHealth: 50,
     turretsCount: 4,
     turretsCols: [5, 6, 7, 8],
