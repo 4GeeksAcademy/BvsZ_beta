@@ -1,71 +1,69 @@
-# Plantilla de WebApp con React JS y Flask API
+# Bootstrap vs Zombies 🧟‍♂️
 
-Construye aplicaciones web usando React.js para el front end y python/flask para tu API backend.
+Un juego educativo tipo tower defense donde aprendes el sistema de grid y flexbox de Bootstrap ¡defendiendo tus servidores de hordas de zombies! Mueve tus torretas usando clases reales de Bootstrap, ya sea haciendo clic en botones de clase o escribiéndolas con autocompletado tipo IDE.
 
-- La documentación se puede encontrar aquí: https://4geeks.com/docs/start/react-flask-template
-- Aquí hay un video sobre [cómo usar esta plantilla](https://www.youtube.com/watch?v=qBz6Ddd2m38)
-- Integrado con Pipenv para la gestión de paquetes.
-- Despliegue rápido a Render [en solo unos pocos pasos aquí](https://4geeks.com/es/docs/start/despliega-con-render-com).
-- Uso del archivo .env.
-- Integración de SQLAlchemy para la abstracción de bases de datos.
+## 🎮 Jugabilidad
 
-### 1) Instalación:
+- Coloca y reposiciona torretas en una grilla de 12 columnas usando clases Bootstrap (ej: `justify-content-center`, `offset-2`).
+- Defiende tus servidores de oleadas de zombies. Las torretas disparan automáticamente a los zombies en su columna.
+- Usa:
+  - 🖱️ **Mouse:** Haz clic en los botones de clase para aplicar clases Bootstrap al instante.
+  - ⌨️ **Teclado:** Escribe clases en un editor de código con autocompletado en tiempo real, como en VS Code.
+- Avanza por niveles, cada uno introduciendo nuevos conceptos y retos de Bootstrap.
+- Compite por la mejor puntuación en el leaderboard.
 
-> Si usas Github Codespaces (recomendado) o Gitpod, esta plantilla ya vendrá con Python, Node y la base de datos Posgres instalados. Si estás trabajando localmente, asegúrate de instalar Python 3.10, Node.
+## 🛠️ Tecnologías
 
-Se recomienda instalar el backend primero, asegúrate de tener Python 3.10, Pipenv y un motor de base de datos (se recomienda Posgres).
+- **Frontend:** React + TypeScript + Vite + Bootstrap + Phaser (para el motor de juego)
+- **Backend:** Python Flask API
+- **Base de datos:** SQLAlchemy (con migraciones Alembic)
 
-1. Instala los paquetes de python: `$ pipenv install`
-2. Crea un archivo .env basado en el .env.example: `$ cp .env.example .env`
-3. Instala tu motor de base de datos y crea tu base de datos, dependiendo de tu base de datos, debes crear una variable DATABASE_URL con uno de los valores posibles, asegúrate de reemplazar los valores con la información de tu base de datos:
+## 🚀 Cómo empezar
 
-| Motor     | DATABASE_URL                                        |
-| --------- | --------------------------------------------------- |
-| SQLite    | sqlite:////test.db                                  |
-| MySQL     | mysql://username:password@localhost:port/example    |
-| Postgres  | postgres://username:password@localhost:5432/example |
+1. Instala Python 3.10+, Node.js y Pipenv.
+2. Instala dependencias del backend:
+   ```sh
+   pipenv install
+   ```
+3. Copia `.env.example` a `.env` y configura tu DATABASE_URL.
+4. Ejecuta las migraciones:
+   ```sh
+   pipenv run migrate
+   pipenv run upgrade
+   ```
+5. Inicia el backend:
+   ```sh
+   pipenv run start
+   ```
+6. Instala dependencias del frontend:
+   ```sh
+   npm install
+   npm run dev
+   ```
 
-4. Migra las migraciones: `$ pipenv run migrate` (omite si no has hecho cambios en los modelos en `./src/api/models.py`)
-5. Ejecuta las migraciones: `$ pipenv run upgrade`
-6. Ejecuta la aplicación: `$ pipenv run start`
+## 🧑‍💻 Controles
 
-> Nota: Los usuarios de Codespaces pueden conectarse a psql escribiendo: `psql -h localhost -U gitpod example`
+- **Mouse:** Haz clic en los botones de clase para seleccionar/deseleccionar clases Bootstrap para posicionar torretas.
+- **Teclado:** Escribe clases en el editor de código; usa Tab/Enter para aceptar sugerencias.
+- **Ambos métodos** actualizan el juego en tiempo real y te ayudan a aprender Bootstrap practicando.
 
-### Deshacer una migración
+## 📚 Objetivos de aprendizaje
 
-También puedes deshacer una migración ejecutando
+- Domina el grid de 12 columnas y utilidades flexbox de Bootstrap.
+- Practica con nombres de clases reales y recibe feedback visual instantáneo.
+- Aprende jugando: cada nivel es un reto práctico de Bootstrap.
 
-```sh
-$ pipenv run downgrade
-```
+## 👾 Sobre el proyecto
 
-### Población de la tabla de usuarios en el backend
-
-Para insertar usuarios de prueba en la base de datos, ejecuta el siguiente comando:
-
-```sh
-$ flask insert-test-users 5
-```
-
-Y verás el siguiente mensaje:
-
-```
-    Creating test users
-    test_user1@test.com created.
-    test_user2@test.com created.
-    test_user3@test.com created.
-    test_user4@test.com created.
-    test_user5@test.com created.
-    Users created successfully!
-```
+Creado con fines educativos por 4Geeks Academy. Ideal para estudiantes, docentes y cualquier persona que quiera aprender Bootstrap de forma divertida e interactiva.
 
 ### **Nota importante para la base de datos y los datos dentro de ella**
 
-Cada entorno de Github Codespace tendrá **su propia base de datos**, por lo que si estás trabajando con más personas, cada uno tendrá una base de datos diferente y diferentes registros dentro de ella. Estos datos **se perderán**, así que no pases demasiado tiempo creando registros manualmente para pruebas, en su lugar, puedes automatizar la adición de registros a tu base de datos editando el archivo ```commands.py``` dentro de la carpeta ```/src/api```. Edita la línea 32 de la función ```insert_test_data``` para insertar los datos según tu modelo (usa la función ```insert_test_users``` anterior como ejemplo). Luego, todo lo que necesitas hacer es ejecutar ```pipenv run insert-test-data```.
+Cada entorno de Github Codespace tendrá **su propia base de datos**, por lo que si estás trabajando con más personas, cada uno tendrá una base de datos diferente y diferentes registros dentro de ella. Estos datos **se perderán**, así que no pases demasiado tiempo creando registros manualmente para pruebas, en su lugar, puedes automatizar la adición de registros a tu base de datos editando el archivo `commands.py` dentro de la carpeta `/src/api`. Edita la línea 32 de la función `insert_test_data` para insertar los datos según tu modelo (usa la función `insert_test_users` anterior como ejemplo). Luego, todo lo que necesitas hacer es ejecutar `pipenv run insert-test-data`.
 
 ### Instalación manual del Front-End:
 
--   Asegúrate de estar usando la versión 20 de node y de que ya hayas instalado y ejecutado correctamente el backend.
+- Asegúrate de estar usando la versión 20 de node y de que ya hayas instalado y ejecutado correctamente el backend.
 
 1. Instala los paquetes: `$ npm install`
 2. ¡Empieza a codificar! inicia el servidor de desarrollo de webpack `$ npm run start`
