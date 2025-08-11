@@ -25,14 +25,12 @@ const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
         }
 
         return () => {
-            console.log("PhaserGame: Iniciando cleanup...");
 
             // Limpiar EventBus
             EventBus.removeAllListeners();
 
             // Destruir el juego de Phaser
             if (game.current) {
-                console.log("PhaserGame: Destruyendo instancia de Phaser...");
                 try {
                     // Parar todos los sonidos antes de destruir
                     if (game.current.sound) {
@@ -42,7 +40,6 @@ const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
                     // Destruir el juego
                     game.current.destroy(true);
                     game.current = undefined;
-                    console.log("PhaserGame: Instancia de Phaser destruida correctamente");
                 } catch (error) {
                     console.error("Error al destruir Phaser:", error);
                     game.current = undefined;

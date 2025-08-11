@@ -21,9 +21,6 @@ export class GameOver extends Scene {
     // Emitir evento de parar el juego cuando llegamos a GameOver
     EventBus.emit("game:stop");
 
-    // Debug: verificar qué datos llegan
-    console.log("GameOver - Datos recibidos:", data);
-
     // Recibir datos de estadísticas finales si se proporcionan
     if (data && data.stats) {
       this.finalStats = data.stats;
@@ -31,7 +28,6 @@ export class GameOver extends Scene {
 
     // Calcular estadísticas finales desde levelData si están disponibles
     if (data && data.levelData && data.levelData.length > 0) {
-      console.log("GameOver - levelData encontrado:", data.levelData);
 
       // Sumatoria de todos los zombies killed by player
       const totalZombiesKilledByPlayer = data.levelData.reduce(
@@ -51,8 +47,6 @@ export class GameOver extends Scene {
         0
       );
 
-      console.log("GameOver - Total balas disparadas:", totalBulletsFired);
-
       // Tiempo total del último nivel completado
       const lastLevel = data.levelData[data.levelData.length - 1];
       const totalGameTime = lastLevel.totalTime || 0;
@@ -69,8 +63,6 @@ export class GameOver extends Scene {
           .padStart(2, "0")}`,
         totalTimeSeconds: totalGameTime,
       };
-
-      console.log("GameOver - finalStats actualizadas:", this.finalStats);
     } else {
       console.log("GameOver - No se encontró levelData o está vacío");
     }

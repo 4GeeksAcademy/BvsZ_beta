@@ -30,25 +30,13 @@ export default function registerLevelCompletedUI(scene) {
     // Obtener el método de entrada desde el registro global de Phaser
     const inputMethod = scene.registry.get("inputMethod");
     if (inputMethod) {
-      console.log(
-        "Inicializando con método de entrada desde registry:",
-        inputMethod
-      );
       scene.currentInputMethod = inputMethod;
     }
   });
 
-  /*// Función para que otros componentes puedan actualizar la precisión de escritura
-  scene.updateTypingAccuracy = function (accuracy) {
-    this.typingAccuracy = accuracy;
-    console.log("Typing accuracy updated:", accuracy);
-  };*/
-
   // Función para depuración del método de entrada
   scene.logInputMethod = function () {
     const registryMethod = this.registry.get("inputMethod");
-    console.log("Current input method:", this.currentInputMethod);
-    console.log("Registry input method:", registryMethod);
   };
 
   // Función para enviar estadísticas al servidor
@@ -93,9 +81,6 @@ export default function registerLevelCompletedUI(scene) {
         typing_accuracy: this.typingAccuracy, // Valor predeterminado si no está disponible
         levels_completed: levelsCompleted,
       };
-
-      console.log("Enviando estadísticas al servidor:", statsData);
-      console.log("Método de entrada actual:", this.currentInputMethod);
 
       // Enviar estadísticas según el método de entrada
       if (this.currentInputMethod === "keyboard") {
@@ -152,13 +137,6 @@ export default function registerLevelCompletedUI(scene) {
         totalZombiesKilled: this.gameStats.zombiesKilled,
         totalTime: timeData.seconds,
       });
-
-      console.log(
-        "Nivel completado - currentLevelBulletsFired:",
-        this.currentLevelBulletsFired
-      );
-      console.log("Nivel completado - Datos agregados:", this.levelData.at(-1));
-      console.log("Array completo de niveles:", this.levelData);
 
       this.levelCompletedBackground = this.add.rectangle(
         centerX,

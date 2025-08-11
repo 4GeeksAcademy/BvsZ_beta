@@ -1,8 +1,6 @@
 //componente para limpiar cuando se desmonta Phaser
 
 function forceCleanup() {
-    console.log("Game scene: Iniciando limpieza forzada...");
-
     // Detener música de fondo inmediatamente
     if (this.bgMusic && this.bgMusic.isPlaying) {
       this.bgMusic.stop();
@@ -73,8 +71,6 @@ function forceCleanup() {
     if (this.physics) {
       this.physics.pause();
     }
-
-    console.log("Game scene: Limpieza forzada completada");
   }
 
   export default forceCleanup;

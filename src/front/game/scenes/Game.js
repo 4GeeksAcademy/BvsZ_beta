@@ -110,14 +110,12 @@ export class Game extends Phaser.Scene {
 
     // Escuchar evento de cleanup para limpiar cuando se sale del juego
     this.gameCleanupHandler = () => {
-      console.log("Game scene: Recibido evento de cleanup");
       forceCleanup(this);
     };
     EventBus.on(GAME_CLEANUP, this.gameCleanupHandler);
 
     // Escuchar eventos de pausa y reanudar
     this.gamePauseHandler = () => {
-      console.log("Game scene: Pausando juego");
       this.isPaused = true;
       this.scene.pause();
       this.physics.pause();
@@ -126,7 +124,6 @@ export class Game extends Phaser.Scene {
     EventBus.on(GAME_PAUSE, this.gamePauseHandler);
 
     this.gameResumeHandler = () => {
-      console.log("Game scene: Reanudando juego");
       this.isPaused = false;
       this.scene.resume();
       this.physics.resume();
@@ -236,7 +233,6 @@ export class Game extends Phaser.Scene {
       !this.levelCompleted
     ) {
       this.levelCompleted = true;
-      console.log(`¡Nivel ${this.currentLevelIndex + 1} completado!`);
 
       // Mostrar UI de nivel superado
       this.time.delayedCall(1000, () => {
@@ -271,8 +267,6 @@ export class Game extends Phaser.Scene {
       // Emitir evento de cambio de nivel
       EventBus.emit(LEVEL_CHANGE, this.currentLevelIndex + 1);
 
-      console.log(`Iniciando nivel ${this.currentLevelIndex + 1}`);
-
       // Recrear elementos del juego con nuevos parámetros
       this.recreateGameElements();
 
@@ -294,7 +288,6 @@ export class Game extends Phaser.Scene {
       this.showCountdown();
     } else {
       // Todos los niveles completados - victoria
-      console.log("¡Todos los niveles completados! ¡Victoria!");
       EventBus.emit(GAME_VICTORY);
       this.createVictoryUI();
     }
@@ -413,7 +406,6 @@ export class Game extends Phaser.Scene {
   }
 
   shutdown() {
-    console.log("Game scene: Ejecutando shutdown...");
 
     // Emitir evento de parar el juego
     EventBus.emit(GAME_STOP);

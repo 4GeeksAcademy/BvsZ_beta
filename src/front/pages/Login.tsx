@@ -137,9 +137,7 @@ const Login: React.FC = () => {
         }
 
         localStorage.setItem("token", data.token);
-        console.log(data.token);
         setSuccess("¡Login successfull! Redirecting...");
-        console.log(data.token);
         setTimeout(() => navigate("/profile"), 1500);
       }
     } catch (error) {
