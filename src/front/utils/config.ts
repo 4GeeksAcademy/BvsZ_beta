@@ -1,6 +1,6 @@
 // Configuración centralizada de la aplicación
 export const API_CONFIG = {
-  BASE_URL: "https://bug-free-zebra-g4xg7pwgww9cwxgg-3001.app.github.dev/api",
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api",
   ENDPOINTS: {
     LOGIN: "/login",
     REGISTER: "/register",

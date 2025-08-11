@@ -1,5 +1,7 @@
+import requests
 from flask import jsonify, url_for
 import os
+
 
 class APIException(Exception):
     status_code = 400
@@ -16,10 +18,12 @@ class APIException(Exception):
         rv['message'] = self.message
         return rv
 
+
 def has_no_empty_params(rule):
     defaults = rule.defaults if rule.defaults is not None else ()
     arguments = rule.arguments if rule.arguments is not None else ()
     return len(defaults) >= len(arguments)
+
 
 def generate_sitemap(app):
     links = ['/admin/']
@@ -31,7 +35,8 @@ def generate_sitemap(app):
             if "/admin/" not in url:
                 links.append(url)
 
-    links_html = "".join(["<li><a href='" + y + "'>" + y + "</a></li>" for y in links])
+    links_html = "".join(["<li><a href='" + y + "'>" +
+                         y + "</a></li>" for y in links])
     return """
         <div style="text-align: center;">
         <img style="max-height: 80px" src='https://storage.googleapis.com/breathecode/boilerplates/rigo-baby.jpeg' />
@@ -41,14 +46,16 @@ def generate_sitemap(app):
         <p>Remember to specify a real endpoint path like: </p>
         <ul style="text-align: left;">"""+links_html+"</ul></div>"
 
-import requests
 
 def send_email_via_brevo(to_email, subject, html_content):
     url = "https://api.brevo.com/v3/smtp/email"
-    api_key = os.getenv("BREVO_API_KEY")  # Reemplaza esto con tu API key real de Brevo
+    # Reemplaza esto con tu API key real de Brevo
+    api_key = os.getenv("BREVO_API_KEY")
+    # Email por defecto si no se define la variable
+    sender_email = os.getenv("SENDER_EMAIL", "noreply@bvszgame.com")
 
     payload = {
-        "sender": {"name": "BvsZ Game", "email": "sebasmiramontes@gmail.com"},
+        "sender": {"name": "BvsZ Game", "email": sender_email},
         "to": [{"email": to_email}],
         "subject": subject,
         "htmlContent": html_content
