@@ -19,10 +19,9 @@ const Home: React.FC = () => {
             </h1>
             {/* Subtitle using Bootstrap lead class for emphasis */}
             <p className="lead">
-              Master <span className="text-bootstrap">Bootstrap</span> flex
-              utilities in an epic tower defense battle! Use your CSS skills to
-              position defenses and survive the{" "}
-              <span className="text-zombies">zombie</span> apocalypse.
+              Defend your servers from the zombie horde! Use{" "}
+              <span className="text-bootstrap">Bootstrap's</span> classes to
+              position your automated turrets and survive the apocalypse.
             </p>
             <p className="text-muted">
               An educational game that makes learning{" "}
@@ -40,10 +39,10 @@ const Home: React.FC = () => {
               <Card.Body className="text-center d-flex flex-column">
                 <Card.Title className="text-success">🎮 Battle Mode</Card.Title>
                 <Card.Text className="flex-grow-1">
-                  Deploy <span className="text-bootstrap">Bootstrap</span> flex
-                  classes strategically to create an impenetrable defense grid
-                  against the undead horde! Learn by doing in this interactive
-                  tower defense experience.
+                  Deploy turrets using{" "}
+                  <span className="text-bootstrap">Bootstrap</span> flex classes
+                  to protect your servers. Learn by doing in this interactive
+                  tower defense experience where turrets fire automatically!
                 </Card.Text>
                 <Link to="/game" className="mt-auto">
                   <Button variant="success" size="lg" className="w-100">
@@ -61,9 +60,8 @@ const Home: React.FC = () => {
                 <Card.Title className="text-info">🏆 Hall of Fame</Card.Title>
                 <Card.Text className="flex-grow-1">
                   Check the leaderboard to see who are the ultimate{" "}
-                  <span className="text-bootstrap">Bootstrap</span> warriors and{" "}
-                  <span className="text-zombies">zombie</span> slayers. Compete
-                  with classmates and track your learning progress.
+                  <span className="text-bootstrap">Bootstrap</span> warriors.
+                  Compete with classmates and track your progress.
                 </Card.Text>
                 <Link to="/leaderboard" className="mt-auto">
                   <Button variant="info" size="lg" className="w-100">
@@ -75,10 +73,11 @@ const Home: React.FC = () => {
           </Col>
         </Row>
 
-        {/* How to Play Section */}
-        <Row className="justify-content-center">
-          <Col lg={12}>
-            <Card className="shadow">
+        {/* How to Play & News Section */}
+        <Row>
+          {/* How to Play Section */}
+          <Col lg={8}>
+            <Card className="shadow h-100">
               <Card.Header className="bg-dark text-white">
                 <h3 className="mb-0">
                   ⚔️ How to Survive the{" "}
@@ -92,24 +91,19 @@ const Home: React.FC = () => {
                       🧟‍♂️ The <span className="text-zombies">Zombie</span> Threat
                     </h5>
                     <p>
-                      Undead creatures spawn from the bottom of your 12-column{" "}
-                      <span className="text-bootstrap">Bootstrap</span> grid and
-                      march relentlessly upward. Each{" "}
-                      <span className="text-zombies">zombie</span> represents a
-                      layout challenge that must be solved with proper CSS
-                      positioning.
+                      Undead creatures march relentlessly toward your servers.
+                      Stop them by positioning your turrets on the 12-column{" "}
+                      <span className="text-bootstrap">Bootstrap</span> grid.
                     </p>
 
-                    <h5 className="text-primary">🛡️ Flex Defense System</h5>
+                    <h5 className="text-primary">
+                      🛡️ Automated Defense System
+                    </h5>
                     <p>
-                      Deploy flex containers as defensive turrets. Choose the
-                      right <span className="text-bootstrap">Bootstrap</span>
-                      flex class to target{" "}
-                      <span className="text-zombies">zombies</span> in their
-                      path. Your understanding of
-                      <code className="mx-1">justify-content</code> and{" "}
-                      <code>align-items</code>
-                      determines your survival!
+                      Your turrets fire automatically at any{" "}
+                      <span className="text-zombies">zombie</span> in their
+                      column. Your job is to move the turrets to the right
+                      columns to intercept the horde.
                     </p>
                   </Col>
                   <Col md={6}>
@@ -118,70 +112,53 @@ const Home: React.FC = () => {
                       <span className="text-bootstrap">Bootstrap</span> Classes
                     </h5>
                     <p>
-                      Learn essential classes like{" "}
-                      <code>justify-content-center</code>,
-                      <code className="mx-1">align-items-start</code>, and more
-                      through combat! Each victory reinforces your understanding
-                      of flexbox properties.
+                      Use the available{" "}
+                      <span className="text-bootstrap">Bootstrap</span> classes
+                      to position your turrets. Master them to control the
+                      battlefield!
                     </p>
 
                     <h5 className="text-warning">🏆 Educational Objectives</h5>
-                    <ul className="mb-0">
+                    <ul>
                       <li>
                         Master <span className="text-bootstrap">Bootstrap</span>
-                        's 12-column grid system
+                        's 12-column grid
                       </li>
-                      <li>Understand flexbox alignment properties</li>
-                      <li>Practice responsive design principles</li>
-                      <li>Apply CSS knowledge in practical scenarios</li>
+                      <li>
+                        Understand <code>justify-content</code> for alignment
+                      </li>
+                      <li>
+                        Learn to use <code>offset</code> for spacing
+                      </li>
                     </ul>
                   </Col>
                 </Row>
+              </Card.Body>
+            </Card>
+          </Col>
 
-                {/* Quick Start Guide */}
-                <Row className="mt-4 pt-4 border-top">
-                  <Col>
-                    <h5 className="text-info mb-3">🚀 Quick Start Guide</h5>
-                    <Row>
-                      <Col sm={6} md={3} className="mb-2">
-                        <div className="text-center p-3 bg-light rounded">
-                          <div className="fs-2 mb-2">1️⃣</div>
-                          Choose Class
-                          <br />
-                          <small>
-                            Select a{" "}
-                            <span className="text-bootstrap">Bootstrap</span>{" "}
-                            flex utility
-                          </small>
-                        </div>
-                      </Col>
-                      <Col sm={6} md={3} className="mb-2">
-                        <div className="text-center p-3 bg-light rounded">
-                          <div className="fs-2 mb-2">2️⃣</div>
-                          Place Turret
-                          <br />
-                          <small>Click grid column to deploy</small>
-                        </div>
-                      </Col>
-                      <Col sm={6} md={3} className="mb-2">
-                        <div className="text-center p-3 bg-light rounded">
-                          <div className="fs-2 mb-2">3️⃣</div>
-                          Watch Magic
-                          <br />
-                          <small>See flexbox in action</small>
-                        </div>
-                      </Col>
-                      <Col sm={6} md={3} className="mb-2">
-                        <div className="text-center p-3 bg-light rounded">
-                          <div className="fs-2 mb-2">4️⃣</div>
-                          Learn & Win
-                          <br />
-                          <small>Master CSS through gameplay</small>
-                        </div>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
+          {/* News Section */}
+          <Col lg={4}>
+            <Card className="shadow h-100">
+              <Card.Header className="bg-primary text-white">
+                <h3 className="mb-0">📰 Latest News</h3>
+              </Card.Header>
+              <Card.Body>
+                <h5 className="text-info">New Features & Updates!</h5>
+                <ul className="list-unstyled">
+                  <li className="mb-2">
+                    <strong>Aug 10, 2025:</strong> New <code>offset-*</code>{" "}
+                    classes added for more precise turret placement!
+                  </li>
+                  <li className="mb-2">
+                    <strong>Aug 5, 2025:</strong> Server defense protocol
+                    initiated. Protect the servers at all costs!
+                  </li>
+                  <li className="mb-2">
+                    <strong>Jul 28, 2025:</strong> Turrets now fire
+                    automatically. Focus on your positioning strategy!
+                  </li>
+                </ul>
               </Card.Body>
             </Card>
           </Col>
