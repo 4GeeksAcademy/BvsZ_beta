@@ -222,12 +222,17 @@ const Login: React.FC = () => {
           <Col md={6} lg={5}>
             <Card>
               <Card.Header>
-                <h4 className="mb-0 text-center">
+                <h3 className="mb-0 text-center">
                   🧟‍♂️{" "}
-                  {isRegister
-                    ? "Join the Fight Against <span className='text-zombies'>Zombies</span>"
-                    : "Enter the Battle"}
-                </h4>
+                  {isRegister ? (
+                    <span>
+                      Join the Fight Against{" "}
+                      <span className="text-zombies">Zombies</span>
+                    </span>
+                  ) : (
+                    "Enter the Battle"
+                  )}
+                </h3>
               </Card.Header>
               <Card.Body>
                 {error && <Alert variant="danger">{error}</Alert>}
@@ -405,11 +410,7 @@ const Login: React.FC = () => {
                     className="w-100 mb-3"
                     disabled={loading}
                   >
-                    {loading
-                      ? "Loading..."
-                      : isRegister
-                      ? "Singup"
-                      : "Login"}
+                    {loading ? "Loading..." : isRegister ? "Singup" : "Login"}
                   </Button>
                 </Form>
                 {!isRegister && (
