@@ -5,6 +5,7 @@ export const inputClasses = [
   ["justify-content-start", "justify-content-end"],
   ["justify-content-start", "justify-content-center", "justify-content-end"],
   [
+    "offset-0",
     "offset-1",
     "offset-2",
     "offset-3",

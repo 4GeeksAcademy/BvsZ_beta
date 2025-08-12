@@ -120,16 +120,18 @@ const TerminalButtonGroup = ({ levels }) => {
           )}
         </span>
       </div>
-      {classList.map((cssClass) => (
-        <div className="col-auto" key={cssClass}>
-          <TerminalButton
-            label={cssClass}
-            onClick={() => handleClassClick(cssClass)}
-            isSelected={selectedClasses.includes(cssClass)}
-            disabled={!gameActive || isPaused}
-          />
-        </div>
-      ))}
+      <div className="row flex-wrap">
+        {classList.map((cssClass) => (
+          <div className="col-auto" key={cssClass}>
+            <TerminalButton
+              label={cssClass}
+              onClick={() => handleClassClick(cssClass)}
+              isSelected={selectedClasses.includes(cssClass)}
+              disabled={!gameActive || isPaused}
+            />
+          </div>
+        ))}
+      </div>
 
 
     </div>
