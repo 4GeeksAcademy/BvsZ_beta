@@ -153,7 +153,7 @@ const Leaderboard: React.FC = () => {
                           {inputMethod === "keyboard" && (
                             <TableCell>
                               {entry.typing_accuracy
-                                ? `${(entry.typing_accuracy * 100).toFixed(1)}%`
+                                ? `${(entry.typing_accuracy).toFixed(2)}%`
                                 : "N/A"}
                             </TableCell>
                           )}
