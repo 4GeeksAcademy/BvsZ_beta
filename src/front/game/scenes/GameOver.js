@@ -8,6 +8,9 @@ import {
   FONT_VT323_BUTTON,
 } from "../config/fonts";
 
+// Importar las funciones para enviar estadísticas
+import { postUserStatsMouse, postUserStatsKeyboard } from "../../utils/auth";
+
 export class GameOver extends Scene {
   constructor() {
     super("GameOver");
@@ -15,11 +18,105 @@ export class GameOver extends Scene {
       zombiesKilled: 0,
       gameTime: "00:00",
     };
+    // Método de entrada actual, predeterminado: mouse
+    this.currentInputMethod = "mouse";
+    // Precisión de escritura para el modo teclado, valor por defecto
+    this.typingAccuracy = 99.7;
+  }
+
+  // Función para enviar estadísticas al servidor (igual que en LevelCompletedUI)
+  sendGameStats() {
+    if (!this.levelData || this.levelData.length === 0) {
+      console.log("GameOver - No se encontraron niveles completados, no se enviarán estadísticas");
+      return;
+    }
+
+    try {
+      // Obtener método de entrada desde el registro global de Phaser
+      const inputMethod = this.registry.get("inputMethod");
+      if (inputMethod) {
+        this.currentInputMethod = inputMethod;
+      }
+
+      // Obtener precisión de escritura desde el registro global de Phaser
+      const typingAccuracy = this.registry.get("typingAccuracy");
+      if (typingAccuracy !== undefined && typingAccuracy !== null) {
+        this.typingAccuracy = typingAccuracy;
+      }
+
+      // Extraer estadísticas finales del último nivel
+      const lastLevel = this.levelData[this.levelData.length - 1];
+
+      // Calcular totales
+      const totalZombiesKilledByPlayer = this.levelData.reduce(
+        (total, level) => total + (level.zombieDeathStats?.byPlayer || 0),
+        0
+      );
+
+      const totalZombiesKilledByEnvironment = this.levelData.reduce(
+        (total, level) =>
+          total +
+          (level.zombieDeathStats?.byCollision || 0) +
+          (level.zombieDeathStats?.byTrap || 0),
+        0
+      );
+
+      const totalBulletsFired = this.levelData.reduce(
+        (total, level) => total + (level.bulletsFired || 0),
+        0
+      );
+
+      const totalTime = lastLevel.totalTime || 0;
+      const levelsCompleted = this.levelData.length;
+
+      // Crear objeto de estadísticas
+      const statsData = {
+        zombies_killed_by_player: totalZombiesKilledByPlayer,
+        zombies_killed_by_environment: totalZombiesKilledByEnvironment,
+        total_play_time: totalTime,
+        bullets_fired: totalBulletsFired,
+        typing_accuracy: this.typingAccuracy,
+        levels_completed: levelsCompleted,
+      };
+
+      // Enviar estadísticas según el método de entrada
+      if (this.currentInputMethod === "keyboard") {
+        postUserStatsKeyboard(statsData)
+          .then((response) =>
+            console.log("Estadísticas de teclado enviadas desde GameOver:", response)
+          )
+          .catch((error) =>
+            console.error("Error al enviar estadísticas de teclado desde GameOver:", error)
+          );
+      } else {
+        postUserStatsMouse(statsData)
+          .then((response) =>
+            console.log("Estadísticas de mouse enviadas desde GameOver:", response)
+          )
+          .catch((error) =>
+            console.error("Error al enviar estadísticas de mouse desde GameOver:", error)
+          );
+      }
+    } catch (error) {
+      console.error("Error al enviar estadísticas desde GameOver:", error);
+    }
   }
 
   create(data) {
     // Emitir evento de parar el juego cuando llegamos a GameOver
     EventBus.emit("game:stop");
+
+    // Recibir datos de nivel para poder enviar estadísticas
+    this.levelData = data && data.levelData ? data.levelData : [];
+
+    // Enviar estadísticas al servidor solo si hay niveles completados
+    // (El nivel actual en el que se perdió no cuenta como completado)
+    if (this.levelData && this.levelData.length > 0) {
+      console.log(`GameOver - Enviando estadísticas de ${this.levelData.length} niveles completados`);
+      this.sendGameStats();
+    } else {
+      console.log("GameOver - No hay niveles completados, no se enviarán estadísticas");
+    }
 
     // Recibir datos de estadísticas finales si se proporcionan
     if (data && data.stats) {
@@ -64,7 +161,8 @@ export class GameOver extends Scene {
         totalTimeSeconds: totalGameTime,
       };
     } else {
-      console.log("GameOver - No se encontró levelData o está vacío");
+      // No hay niveles completados, las estadísticas mostradas serán por defecto (0)
+      console.log("GameOver - Mostrando estadísticas por defecto (no hay niveles completados)");
     }
 
     // Obtener las dimensiones reales del juego
