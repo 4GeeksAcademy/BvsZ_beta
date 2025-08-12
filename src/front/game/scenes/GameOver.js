@@ -27,7 +27,9 @@ export class GameOver extends Scene {
   // Función para enviar estadísticas al servidor (igual que en LevelCompletedUI)
   sendGameStats() {
     if (!this.levelData || this.levelData.length === 0) {
-      console.log("GameOver - No se encontraron niveles completados, no se enviarán estadísticas");
+      console.log(
+        "GameOver - No se encontraron niveles completados, no se enviarán estadísticas"
+      );
       return;
     }
 
@@ -83,18 +85,30 @@ export class GameOver extends Scene {
       if (this.currentInputMethod === "keyboard") {
         postUserStatsKeyboard(statsData)
           .then((response) =>
-            console.log("Estadísticas de teclado enviadas desde GameOver:", response)
+            console.log(
+              "Estadísticas de teclado enviadas desde GameOver:",
+              response
+            )
           )
           .catch((error) =>
-            console.error("Error al enviar estadísticas de teclado desde GameOver:", error)
+            console.error(
+              "Error al enviar estadísticas de teclado desde GameOver:",
+              error
+            )
           );
       } else {
         postUserStatsMouse(statsData)
           .then((response) =>
-            console.log("Estadísticas de mouse enviadas desde GameOver:", response)
+            console.log(
+              "Estadísticas de mouse enviadas desde GameOver:",
+              response
+            )
           )
           .catch((error) =>
-            console.error("Error al enviar estadísticas de mouse desde GameOver:", error)
+            console.error(
+              "Error al enviar estadísticas de mouse desde GameOver:",
+              error
+            )
           );
       }
     } catch (error) {
@@ -112,10 +126,14 @@ export class GameOver extends Scene {
     // Enviar estadísticas al servidor solo si hay niveles completados
     // (El nivel actual en el que se perdió no cuenta como completado)
     if (this.levelData && this.levelData.length > 0) {
-      console.log(`GameOver - Enviando estadísticas de ${this.levelData.length} niveles completados`);
+      console.log(
+        `GameOver - Enviando estadísticas de ${this.levelData.length} niveles completados`
+      );
       this.sendGameStats();
     } else {
-      console.log("GameOver - No hay niveles completados, no se enviarán estadísticas");
+      console.log(
+        "GameOver - No hay niveles completados, no se enviarán estadísticas"
+      );
     }
 
     // Recibir datos de estadísticas finales si se proporcionan
@@ -125,7 +143,6 @@ export class GameOver extends Scene {
 
     // Calcular estadísticas finales desde levelData si están disponibles
     if (data && data.levelData && data.levelData.length > 0) {
-
       // Sumatoria de todos los zombies killed by player
       const totalZombiesKilledByPlayer = data.levelData.reduce(
         (total, level) => total + (level.zombieDeathStats?.byPlayer || 0),
@@ -162,7 +179,9 @@ export class GameOver extends Scene {
       };
     } else {
       // No hay niveles completados, las estadísticas mostradas serán por defecto (0)
-      console.log("GameOver - Mostrando estadísticas por defecto (no hay niveles completados)");
+      console.log(
+        "GameOver - Mostrando estadísticas por defecto (no hay niveles completados)"
+      );
     }
 
     // Obtener las dimensiones reales del juego
