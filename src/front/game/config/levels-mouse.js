@@ -114,7 +114,7 @@ export const levels = [
     maxZombiesOnScreen: 8,
     inputClasses: inputClasses[6],
   },*/
-  { //NIVEL 8
+/*  { //NIVEL 8
     gridCols: 12,
     serverCols: [ 1, 3, 4, 5, 6, 8],
     serverHealth: 60,
@@ -123,27 +123,123 @@ export const levels = [
     turretsCols: [ 1],
     bulletVelocityY: 100,
     bulletDamage: 10,
-    zombieVelocityY: -25, //Negativo
+    zombieVelocityY: -20, //Negativo
     zombieHealth: 50,
     zombieDamage: 20,
     zombiesPerLevel: 20,
     maxZombiesOnScreen: 4,
     inputClasses: inputClasses[7],
+  }, */
+/* { //NIVEL 9 
+    gridCols: 12,
+    serverCols: [ 1, 2, 6, 7, 11, 12],
+    serverHealth: 60,
+    turretsCount: 2,
+    turretHealth: 100,
+    turretsCols: [1, 2],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -70, //Negativo
+    zombieHealth: 10,
+    zombieDamage: 20,
+    zombiesPerLevel: 60,
+    maxZombiesOnScreen: 8,
+    inputClasses: inputClasses[3],
+  }, */
+/*  { //NIVEL 10 
+    gridCols: 12,
+    serverCols: [ 1, 2, 6, 7, 11, 12],
+    serverHealth: 60,
+    turretsCount: 2,
+    turretHealth: 100,
+    turretsCols: [1, 2],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -70, //Negativo
+    zombieHealth: 10,
+    zombieDamage: 20,
+    zombiesPerLevel: 60,
+    maxZombiesOnScreen: 10,
+    inputClasses: inputClasses[3],
   },
-  { //NIVEL 9 PRUEBA VELOCIDAD DE ZOMBIES
+  { //NIVEL 11 
     gridCols: 12,
-    serverCols: [ 1, 3, 4, 5, 6, 8],
+    serverCols: [ 1, 2, 6, 7, 11, 12],
     serverHealth: 60,
-    turretsCount: 1,
+    turretsCount: 2,
     turretHealth: 100,
-    turretsCols: [ 1],
+    turretsCols: [1, 2],
     bulletVelocityY: 100,
     bulletDamage: 10,
-    zombieVelocityY: -25, //Negativo
-    zombieHealth: 50,
+    zombieVelocityY: -70, //Negativo
+    zombieHealth: 10,
     zombieDamage: 20,
-    zombiesPerLevel: 20,
-    maxZombiesOnScreen: 4,
-    inputClasses: inputClasses[7],
+    zombiesPerLevel: 80,
+    maxZombiesOnScreen: 12,
+    inputClasses: inputClasses[3],
+  }, */
+/*  { //NIVEL 12 
+    gridCols: 12,
+    serverCols: [ 1, 2, 6, 7, 11, 12],
+    serverHealth: 40,
+    turretsCount: 2,
+    turretHealth: 60,
+    turretsCols: [1, 2],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -50, //Negativo
+    zombieHealth: 10,
+    zombieDamage: 20,
+    zombiesPerLevel: 30,
+    maxZombiesOnScreen: 8,
+    inputClasses: inputClasses[8],
+  },*/
+/*  { //NIVEL 13 
+    gridCols: 12,
+    serverCols: [ 1, 2, 6, 7, 11, 12],
+    serverHealth: 40,
+    turretsCount: 2,
+    turretHealth: 60,
+    turretsCols: [1, 2],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -70, //Negativo
+    zombieHealth: 10,
+    zombieDamage: 20,
+    zombiesPerLevel: 40,
+    maxZombiesOnScreen: 10,
+    inputClasses: inputClasses[8],
+  },*/
+/*  { //NIVEL 14 
+    gridCols: 12,
+    serverCols: [ 1, 2, 6, 7, 11, 12],
+    serverHealth: 40,
+    turretsCount: 2,
+    turretHealth: 60,
+    turretsCols: [1, 2],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -70, //Negativo
+    zombieHealth: 10,
+    zombieDamage: 20,
+    zombiesPerLevel: 80,
+    maxZombiesOnScreen: 12,
+    inputClasses: inputClasses[8],
+  },*/
+  { //NIVEL 15 
+    gridCols: 12,
+    serverCols: [ 1, 2, 3, 4, 5, 6, 10, 11, 12],
+    serverHealth: 40,
+    turretsCount: 3,
+    turretHealth: 60,
+    turretsCols: [5, 6, 7],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -20, //Negativo
+    zombieHealth: 40,
+    zombieDamage: 20,
+    zombiesPerLevel: 40,
+    maxZombiesOnScreen: 6,
+    inputClasses: inputClasses[9],
   },
 ];
