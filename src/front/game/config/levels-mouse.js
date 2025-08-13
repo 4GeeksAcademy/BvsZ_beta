@@ -12,7 +12,7 @@ export const levels = [
     turretsCols: [1, 2],
     bulletVelocityY: 100,
     bulletDamage: 10,
-    zombieVelocityY: -20, //Negativo
+    zombieVelocityY: -25, //Negativo
     zombieHealth: 50,
     zombieDamage: 20,
     zombiesPerLevel: 30,
@@ -29,7 +29,7 @@ export const levels = [
     turretsCols: [6, 7],
     bulletVelocityY: 100,
     bulletDamage: 10,
-    zombieVelocityY: -20, //Negativo
+    zombieVelocityY: -25, //Negativo
     zombieHealth: 50,
     zombieDamage: 20,
     zombiesPerLevel: 30,
@@ -73,7 +73,7 @@ export const levels = [
   {
     //NIVEL 5
     gridCols: 12,
-    serverCols: [3, 4, 6, 7],
+    serverCols: [3, 4, 5, 6, 7],
     serverHealth: 40,
     turretsCount: 2,
     turretHealth: 60,
@@ -83,14 +83,14 @@ export const levels = [
     zombieVelocityY: -20, //Negativo
     zombieHealth: 50,
     zombieDamage: 20,
-    zombiesPerLevel: 20,
+    zombiesPerLevel: 30,
     maxZombiesOnScreen: 6,
     inputClasses: inputClasses[4],
   },
   {
     //NIVEL 6
     gridCols: 12,
-    serverCols: [7, 8, 11, 12],
+    serverCols: [7, 8, 9, 11, 12],
     serverHealth: 40,
     turretsCount: 2,
     turretHealth: 60,
@@ -100,7 +100,7 @@ export const levels = [
     zombieVelocityY: -20, //Negativo
     zombieHealth: 50,
     zombieDamage: 20,
-    zombiesPerLevel: 20,
+    zombiesPerLevel: 30,
     maxZombiesOnScreen: 6,
     inputClasses: inputClasses[5],
   },
@@ -183,7 +183,7 @@ export const levels = [
     zombiesPerLevel: 80,
     maxZombiesOnScreen: 12,
     inputClasses: inputClasses[3],
-    
+
   },
     { //NIVEL 12 
     gridCols: 12,
@@ -197,7 +197,7 @@ export const levels = [
     zombieVelocityY: -50, //Negativo
     zombieHealth: 10,
     zombieDamage: 20,
-    zombiesPerLevel: 30,
+    zombiesPerLevel: 40,
     maxZombiesOnScreen: 8,
     inputClasses: inputClasses[8],
   },
@@ -213,9 +213,9 @@ export const levels = [
     zombieVelocityY: -70, //Negativo
     zombieHealth: 10,
     zombieDamage: 20,
-    zombiesPerLevel: 40,
+    zombiesPerLevel: 50,
     maxZombiesOnScreen: 10,
-    inputClasses: inputClasses[8],
+    inputClasses: inputClasses[11],
   },
     { //NIVEL 14 
     gridCols: 12,
