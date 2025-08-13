@@ -130,4 +130,20 @@ export const levels = [
     maxZombiesOnScreen: 4,
     inputClasses: inputClasses[7],
   },
+  { //NIVEL 9 PRUEBA VELOCIDAD DE ZOMBIES
+    gridCols: 12,
+    serverCols: [ 1, 3, 4, 5, 6, 8],
+    serverHealth: 60,
+    turretsCount: 1,
+    turretHealth: 100,
+    turretsCols: [ 1],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -25, //Negativo
+    zombieHealth: 50,
+    zombieDamage: 20,
+    zombiesPerLevel: 20,
+    maxZombiesOnScreen: 4,
+    inputClasses: inputClasses[7],
+  },
 ];

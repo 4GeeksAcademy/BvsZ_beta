@@ -70,6 +70,32 @@ export class TurretObject {
     turret.destroy();
     this.turrets = this.turrets.filter((t) => t !== turret);
     this.scene.turrets = this.turrets;
+
+    // Verificar si no quedan torretas y acelerar zombies
+    if (this.turrets.length === 0) {
+      this.accelerateZombiesWhenNoTurrets();
+    }
+  }
+
+  // Método para acelerar zombies cuando no hay torretas
+  accelerateZombiesWhenNoTurrets() {
+    const speedBoostVelocity = -800;
+
+    // Acelerar zombies existentes
+    if (this.scene.zombies) {
+      this.scene.zombies.children.iterate((zombie) => {
+        if (zombie && zombie.active) {
+          zombie.setVelocityY(speedBoostVelocity);
+        }
+      });
+    }
+
+    // Cambiar la velocidad base del zombie manager para zombies futuros
+    if (this.scene.zombieManager) {
+      this.scene.zombieManager.zombieVelocityY = speedBoostVelocity;
+    }
+
+    console.log("¡No quedan torretas! Los zombies ahora se mueven más rápido.");
   }
 
   // Método para disparar (placeholder, implementar lógica de disparo aquí)

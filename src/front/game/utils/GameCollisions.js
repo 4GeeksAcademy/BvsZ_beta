@@ -100,8 +100,14 @@ export function setupGameEvents(scene) {
         return; // No crear zombies si estamos en conteo regresivo o se cumplen otras condiciones
       }
 
+      // Determinar la velocidad del zombie según si hay torretas o no
+      let zombieVelocity = scene.level.zombieVelocityY;
+      if (!scene.turrets || scene.turrets.length === 0) {
+        zombieVelocity = -800; // Velocidad acelerada si no hay torretas
+      }
+
       const newZombie = scene.zombieManager.createZombie(
-        scene.level.zombieVelocityY,
+        zombieVelocity,
         scene.level.zombieHealth,
         scene.level.zombieDamage
       );
@@ -110,7 +116,7 @@ export function setupGameEvents(scene) {
         scene.zombiesSpawned++;
       } else {
         console.log("No se puede crear zombie: no hay servidores disponibles");
-        //AGREGAR GAME OVER 
+        //AGREGAR GAME OVER
       }
     },
     loop: true,

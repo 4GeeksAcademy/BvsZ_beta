@@ -66,6 +66,9 @@ export class Game extends Phaser.Scene {
 
     // Variable para controlar el estado de pausa del juego
     this.isPaused = false;
+
+    // Variable para controlar si ya se aceleraron los zombies por falta de torretas
+    this.hasAccelerated = false;
   }
 
   create() {
@@ -99,6 +102,9 @@ export class Game extends Phaser.Scene {
     this.currentLevelIndex = 0;
     this.zombiesSpawned = 0;
     this.levelCompleted = false;
+
+    // Resetear la variable de aceleración
+    this.hasAccelerated = false;
 
     // Escuchar eventos de zombies eliminados para actualizar estadísticas
     this.zombieKilledHandler = () => {
@@ -167,6 +173,10 @@ export class Game extends Phaser.Scene {
     EventBus.on("TYPING_ACCURACY_UPDATE", (accuracy) => {
       this.typingAccuracy = accuracy;
     });
+
+    // Verificar si no hay torretas y acelerar zombies si es necesario
+    this.checkAndAccelerateZombiesIfNoTurrets();
+
     // Actualizar barras de vida de zombies
     if (this.zombieUpdatables) {
       this.zombieUpdatables = this.zombieUpdatables.filter(
@@ -250,6 +260,9 @@ export class Game extends Phaser.Scene {
       this.currentLevelIndex++;
       this.zombiesSpawned = 0;
       this.levelCompleted = false;
+
+      // Resetear la variable de aceleración para el nuevo nivel
+      this.hasAccelerated = false;
 
       // Resetear contadores de muertes de zombies para el nuevo nivel
       this.currentLevelZombieDeaths = {
@@ -406,7 +419,6 @@ export class Game extends Phaser.Scene {
   }
 
   shutdown() {
-
     // Emitir evento de parar el juego
     EventBus.emit(GAME_STOP);
 
@@ -436,5 +448,40 @@ export class Game extends Phaser.Scene {
       EventBus.removeListener(GAME_CLEANUP, this.gameCleanupHandler);
       this.gameCleanupHandler = null;
     }
+  }
+
+  // Método para verificar si no hay torretas y acelerar zombies
+  checkAndAccelerateZombiesIfNoTurrets() {
+    // Solo ejecutar esta verificación una vez por nivel
+    if (this.hasAccelerated) return;
+
+    // Verificar si no hay torretas
+    if (!this.turrets || this.turrets.length === 0) {
+      this.accelerateAllZombies();
+      this.hasAccelerated = true;
+    }
+  }
+
+  // Método para acelerar todos los zombies cuando no hay torretas
+  accelerateAllZombies() {
+    const speedBoostVelocity = -800;
+
+    // Acelerar zombies existentes
+    if (this.zombies) {
+      this.zombies.children.iterate((zombie) => {
+        if (zombie && zombie.active) {
+          zombie.setVelocityY(speedBoostVelocity);
+        }
+      });
+    }
+
+    // Cambiar la velocidad base del zombie manager para zombies futuros
+    if (this.zombieManager) {
+      this.zombieManager.zombieVelocityY = speedBoostVelocity;
+    }
+
+    console.log(
+      "¡No hay torretas! Los zombies ahora se mueven a velocidad máxima (-800)."
+    );
   }
 }
