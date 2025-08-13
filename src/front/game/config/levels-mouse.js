@@ -183,7 +183,8 @@ export const levels = [
     zombiesPerLevel: 80,
     maxZombiesOnScreen: 12,
     inputClasses: inputClasses[3],
-  }, 
+    
+  },
     { //NIVEL 12 
     gridCols: 12,
     serverCols: [ 1, 2, 6, 7, 11, 12],
