@@ -173,7 +173,10 @@ export class TurretObject {
 
     // PASO 2: Aplicar offset (suma) a las posiciones calculadas
     for (let i = 0; i < basePositions.length; i++) {
-      const finalColIndex = Math.min(cols - 1, Math.max(0, basePositions[i] + offsetCols));
+      const finalColIndex = Math.min(
+        cols - 1,
+        Math.max(0, basePositions[i] + offsetCols)
+      );
       const x = finalColIndex * colWidth + colWidth / 2;
       newPositions.push({ x, colIndex: finalColIndex });
     }

@@ -56,7 +56,6 @@ export const inputClasses = [
     "offset-9",
     "offset-10",
     "offset-11",
-    "offset-12",
   ], //8
     [
     "justify-content-center", 

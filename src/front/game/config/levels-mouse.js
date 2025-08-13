@@ -260,18 +260,18 @@ export const levels = [
   },  */
   { //NIVEL 17
     gridCols: 12,
-    serverCols: [ 1, 2, 3, 4, 5, 6, 9, 10, 11, 12],
-    serverHealth: 40,
-    turretsCount: 4,
-    turretHealth: 60,
-    turretsCols: [5, 6, 7, 8],
+    serverCols: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    serverHealth: 20,
+    turretsCount: 1,
+    turretHealth: 140,
+    turretsCols: [1],
     bulletVelocityY: 100,
     bulletDamage: 10,
-    zombieVelocityY: -30, //Negativo
-    zombieHealth: 40,
+    zombieVelocityY: -40, //Negativo
+    zombieHealth: 10,
     zombieDamage: 20,
-    zombiesPerLevel: 60,
-    maxZombiesOnScreen: 8,
-    inputClasses: inputClasses[10],
+    zombiesPerLevel: 40,
+    maxZombiesOnScreen: 6,
+    inputClasses: inputClasses[8],
   },
 ];
