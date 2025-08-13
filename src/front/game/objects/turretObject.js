@@ -136,48 +136,46 @@ export class TurretObject {
       cls.startsWith("justify-content-")
     );
 
-    // Calcular posiciones considerando el offset
-    let startCol = offsetCols;
+    // PASO 1: Calcular posiciones base según justify-content (sin offset)
+    let basePositions = [];
 
     switch (justifyClass) {
       case "justify-content-start":
-        // Alinear torretas al inicio considerando el offset
+        // Alinear torretas al inicio (columna 0)
         for (let i = 0; i < turretCount; i++) {
-          const colIndex = startCol + i;
-          const x = colIndex * colWidth + colWidth / 2;
-          newPositions.push({ x, colIndex });
+          basePositions.push(i);
         }
         break;
 
       case "justify-content-center":
-        // Centrar torretas en el espacio disponible después del offset
-        const availableSpace = cols - offsetCols;
-        const centerStart =
-          offsetCols + Math.floor((availableSpace - turretCount) / 2);
+        // Centrar torretas en el grid completo
+        const centerStart = Math.floor((cols - turretCount) / 2);
         for (let i = 0; i < turretCount; i++) {
-          const colIndex = centerStart + i;
-          const x = colIndex * colWidth + colWidth / 2;
-          newPositions.push({ x, colIndex });
+          basePositions.push(centerStart + i);
         }
         break;
 
       case "justify-content-end":
-        // Alinear torretas al final considerando el offset
+        // Alinear torretas al final
+        const endStart = cols - turretCount;
         for (let i = 0; i < turretCount; i++) {
-          const colIndex = cols - turretCount + i;
-          const x = colIndex * colWidth + colWidth / 2;
-          newPositions.push({ x, colIndex });
+          basePositions.push(endStart + i);
         }
         break;
 
       default:
-        // Si no hay clase de justify, usar start con offset
+        // Si no hay clase de justify, usar start por defecto
         for (let i = 0; i < turretCount; i++) {
-          const colIndex = startCol + i;
-          const x = colIndex * colWidth + colWidth / 2;
-          newPositions.push({ x, colIndex });
+          basePositions.push(i);
         }
         break;
+    }
+
+    // PASO 2: Aplicar offset (suma) a las posiciones calculadas
+    for (let i = 0; i < basePositions.length; i++) {
+      const finalColIndex = Math.min(cols - 1, Math.max(0, basePositions[i] + offsetCols));
+      const x = finalColIndex * colWidth + colWidth / 2;
+      newPositions.push({ x, colIndex: finalColIndex });
     }
 
     // Aplicar nuevas posiciones a las torretas existentes con animación
