@@ -2,52 +2,132 @@
 import { inputClasses } from "./input-classes";
 
 export const levels = [
-  { //NIVEL 1
-    turretHealth: 50,
-    turretsCount: 2,
-    turretsCols: [ 6, 7],
+/*  { //NIVEL 1
     gridCols: 12,
-    serverCols: [1, 2, 6, 7, 11, 12],
-    serverHealth: 50,
-    zombieVelocityY: -70, //Negativo
-    zombieHealth: 10,
-    zombieDamage: 100,
+    serverCols: [1, 2, 11, 12],
+    serverHealth: 40,
+    turretsCount: 2,
+    turretHealth: 60,
+    turretsCols: [ 1, 2],
     bulletVelocityY: 100,
     bulletDamage: 10,
-    zombiesPerLevel: 5,
-    maxZombiesOnScreen: 200,
+    zombieVelocityY: -20, //Negativo
+    zombieHealth: 50,
+    zombieDamage: 20,
+    zombiesPerLevel: 30,
+    maxZombiesOnScreen: 6,
+    inputClasses: inputClasses[0],
+  },*/
+/*  { //NIVEL 2
+    gridCols: 12,
+    serverCols: [6, 7, 11, 12],
+    serverHealth: 40,
+    turretsCount: 2,
+    turretHealth: 60,
+    turretsCols: [ 6, 7],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -20, //Negativo
+    zombieHealth: 50,
+    zombieDamage: 20,
+    zombiesPerLevel: 30,
+    maxZombiesOnScreen: 6,
+    inputClasses: inputClasses[1],
+  },*/
+/*  { //NIVEL 3
+    gridCols: 12,
+    serverCols: [1, 2, 6, 7,],
+    serverHealth: 40,
+    turretsCount: 2,
+    turretHealth: 60,
+    turretsCols: [ 6, 7],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -20, //Negativo
+    zombieHealth: 50,
+    zombieDamage: 20,
+    zombiesPerLevel: 30,
+    maxZombiesOnScreen: 6,
     inputClasses: inputClasses[2],
-  },
-  { //NIVEL 2
-    turretHealth: 50,
-    turretsCount: 4,
-    turretsCols: [5, 6, 7, 8],
+  },*/
+/*  { //NIVEL 4
     gridCols: 12,
-    serverCols: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    serverHealth: 50,
-    zombieVelocityY: -100, //Negativo
-    zombieHealth: 10,
-    zombieDamage: 100,
-    bulletVelocityY: 110,
+    serverCols: [1, 2, 6, 7, 11, 12],
+    serverHealth: 40,
+    turretsCount: 2,
+    turretHealth: 60,
+    turretsCols: [ 6, 7],
+    bulletVelocityY: 100,
     bulletDamage: 10,
-    zombiesPerLevel: 3,
-    maxZombiesOnScreen: 10,
-    inputClasses: inputClasses[1],
-  },
-  { //NIVEL 3
-    turretHealth: 50,
-    turretsCount: 4,
-    turretsCols: [5, 6, 7, 8],
+    zombieVelocityY: -20, //Negativo
+    zombieHealth: 50,
+    zombieDamage: 20,
+    zombiesPerLevel: 40,
+    maxZombiesOnScreen: 7,
+    inputClasses: inputClasses[3],
+  },*/
+/*  { //NIVEL 5
     gridCols: 12,
-    serverCols: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    serverHealth: 50,
-    zombieVelocityY: -130, //Negativo
-    zombieHealth: 10,
-    zombieDamage: 10,
-    bulletVelocityY: 110,
+    serverCols: [ 3, 4, 6, 7],
+    serverHealth: 40,
+    turretsCount: 2,
+    turretHealth: 60,
+    turretsCols: [ 1, 2],
+    bulletVelocityY: 100,
     bulletDamage: 10,
-    zombiesPerLevel: 5,
-    maxZombiesOnScreen: 10,
-    inputClasses: inputClasses[1],
+    zombieVelocityY: -20, //Negativo
+    zombieHealth: 50,
+    zombieDamage: 20,
+    zombiesPerLevel: 20,
+    maxZombiesOnScreen: 6,
+    inputClasses: inputClasses[4],
+  },*/
+/*  { //NIVEL 6
+    gridCols: 12,
+    serverCols: [ 7, 8, 11, 12],
+    serverHealth: 40,
+    turretsCount: 2,
+    turretHealth: 60,
+    turretsCols: [ 1, 2],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -20, //Negativo
+    zombieHealth: 50,
+    zombieDamage: 20,
+    zombiesPerLevel: 20,
+    maxZombiesOnScreen: 6,
+    inputClasses: inputClasses[5],
+  },*/
+/*  { //NIVEL 7
+    gridCols: 12,
+    serverCols: [ 1, 2, 3, 4, 7, 8],
+    serverHealth: 40,
+    turretsCount: 2,
+    turretHealth: 60,
+    turretsCols: [ 1, 2],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -20, //Negativo
+    zombieHealth: 50,
+    zombieDamage: 20,
+    zombiesPerLevel: 40,
+    maxZombiesOnScreen: 8,
+    inputClasses: inputClasses[6],
+  },*/
+  { //NIVEL 8
+    gridCols: 12,
+    serverCols: [ 1, 3, 4, 5, 6, 8],
+    serverHealth: 60,
+    turretsCount: 1,
+    turretHealth: 100,
+    turretsCols: [ 1],
+    bulletVelocityY: 100,
+    bulletDamage: 10,
+    zombieVelocityY: -25, //Negativo
+    zombieHealth: 50,
+    zombieDamage: 20,
+    zombiesPerLevel: 20,
+    maxZombiesOnScreen: 4,
+    inputClasses: inputClasses[7],
   },
 ];
