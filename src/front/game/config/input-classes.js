@@ -87,4 +87,21 @@ export const inputClasses = [
     "offset-9",
     "offset-10",
   ], //11
+  
+  [
+    "offset-0",
+    "offset-1",
+    "offset-2",
+    "offset-3",
+    "offset-4",
+    "offset-5",
+    "offset-6",
+    "offset-7",
+    "offset-8",
+    "offset-9",
+    "offset-10",
+    "justify-content-start",
+    "justify-content-center", 
+    "justify-content-end"
+  ], //12
 ];

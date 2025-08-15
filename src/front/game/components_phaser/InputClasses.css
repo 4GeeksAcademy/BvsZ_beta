@@ -1,29 +1,39 @@
 .input-classes-autocomplete {
   position: relative;
-  display: inline;
+  display: block;
+  width: 100%;
+  max-width: 400px;
 }
 
-.input-classes-autocomplete input {
+.input-classes-autocomplete textarea {
   background-color: #1a1a1a;
   color: #ce9178;
   border: 3px solid #444;
   margin: 0;
-  padding: 0 0 0 5px;
+  padding: 12px;
   font-family: "Courier New", monospace;
   font-size: 14px;
-  display: inline;
-  width: auto;
-  min-width: 100px;
+  line-height: 1.5;
+  display: block;
+  width: 100%;
+  height: calc(4 * 1.5em + 24px); /* 4 líneas * line-height + padding */
+  max-height: calc(4 * 1.5em + 24px);
+  min-height: calc(4 * 1.5em + 24px);
+  resize: none;
+  white-space: pre;
+  word-wrap: break-word;
+  tab-size: 4;
+  overflow-y: auto;
 }
 
-.input-classes-autocomplete input:focus {
+.input-classes-autocomplete textarea:focus {
   outline: none;
   border-color: #a1d84a;
   box-shadow: 0 0 5px rgba(161, 216, 74, 0.5);
 }
 
-/* Estilos para cuando el input está deshabilitado */
-.input-classes-autocomplete input:disabled {
+/* Estilos para cuando el textarea está deshabilitado */
+.input-classes-autocomplete textarea:disabled {
   background-color: #0f0f0f;
   color: #666;
   border-color: #333;
@@ -31,21 +41,25 @@
   opacity: 0.6;
 }
 
-.input-classes-autocomplete input:disabled::placeholder {
+.input-classes-autocomplete textarea:disabled::placeholder {
   color: #555 !important;
 }
 
 /* Color para el placeholder */
-.input-classes-autocomplete input::placeholder {
+.input-classes-autocomplete textarea::placeholder {
   color: #ce9178 !important;
-  opacity: 1;
+  opacity: 0.7;
+  font-style: italic;
 }
 
 .suggestions-list {
   width: 100%;
+  max-width: 300px;
+  max-height: 200px;
   position: absolute;
   top: 100%;
   left: 0;
+  z-index: 1000;
   overflow-y: auto;
   background-color: #222;
   border: 1px solid #444;
@@ -54,6 +68,7 @@
   margin: 0;
   padding: 0;
   font-size: inherit;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .suggestions-list li {
@@ -61,6 +76,13 @@
   color: #ccc;
   font-family: "Courier New", monospace;
   font-size: inherit;
+  padding: 8px 12px;
+  border-bottom: 1px solid #333;
+  transition: background-color 0.15s ease;
+}
+
+.suggestions-list li:last-child {
+  border-bottom: none;
 }
 
 .suggestions-list li.active,
