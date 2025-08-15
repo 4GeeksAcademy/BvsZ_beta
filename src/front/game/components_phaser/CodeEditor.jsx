@@ -46,13 +46,12 @@ export default function CodeEditor({ levels }) {
             <code>
                 <span className="tag">&lt;div</span> <span className="attr">class</span>=<span className="value">"container"</span><span className="tag">&gt;</span><br />
                 &nbsp;&nbsp;<span className="tag">&lt;div</span> <span className="attr">class</span>=<span className="value">"row </span>
-                <span className='code-input' >
+                <span className='code-input'>
                     <InputClasses
                         levels={levels}
                         onClassSelected={(clase) => setSelectedClass(clase)}
                     />
-                </span>
-                <span className="value">"</span><span className="tag">&gt;</span><br />
+                </span><span className="value">"</span><span className="tag">&gt;</span><br />
                 &nbsp;&nbsp;&nbsp;&nbsp;<span className="tag">&lt;div</span> <span className="attr">class</span>=<span className="value">"col-{turretsCount}"&gt;</span><br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{renderTurrets()}<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;<span className="tag">&lt;/div&gt;</span><br />

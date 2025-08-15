@@ -18,7 +18,7 @@
 }
 
 .code-input {
-  display: inline-block;
+  display: inline;
   position: relative;
   width: 250px;
 }
@@ -31,4 +31,36 @@
 }
 .value {
   color: #ce9178;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  .code-input {
+    display: inline;
+    width: auto;
+    max-width: 250px;
+  }
+
+  .code-block {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .turret-img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .code-input {
+    display: inline;
+    width: auto;
+    max-width: none;
+  }
+
+  .code-block {
+    font-size: 0.85rem;
+    padding: 6px;
+  }
 }

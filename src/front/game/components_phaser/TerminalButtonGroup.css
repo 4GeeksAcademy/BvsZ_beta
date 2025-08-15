@@ -20,3 +20,37 @@
   font-size: 1.2rem;
   font-family: "Courier New", monospace;
 }
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  .row {
+    margin-top: 1em;
+    padding: 12px;
+  }
+
+  .active-classes-container {
+    padding: 10px;
+    font-size: 1.3rem;
+    position: relative; /* Remove sticky on small screens to avoid overlap */
+  }
+
+  .active-classes {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .row {
+    margin-top: 0.5em;
+    padding: 8px;
+  }
+
+  .active-classes-container {
+    padding: 8px;
+    font-size: 1.2rem;
+  }
+
+  .active-classes {
+    font-size: 1rem;
+  }
+}

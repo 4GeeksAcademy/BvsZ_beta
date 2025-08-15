@@ -88,23 +88,29 @@ const PhaserGame = forwardRef(function PhaserGame({ currentActiveScene }, ref) {
     }, [currentActiveScene, ref])
 
     return (
-        <div className='container'>
-            <div className='row no-wrap'>
-                <div className='col-8'>
+        <div className='container-fluid'>
+            <div className='row'>
+                {/* Game Container - Full width on small screens, 8 columns on large screens */}
+                <div className='col-12 col-lg-8'>
                     <div id="game-container"></div>
                 </div>
-                <div className='col-4 d-grid gap-0 row-gap-1'>
-                    <div className='mt-3'>
+
+                {/* Stats and Input Components - Stack below on small screens, sidebar on large screens */}
+                <div className='col-12 col-lg-4 mt-3 mt-lg-0'>
+                    {/* Primera fila: Stats */}
+                    <div className='mb-3'>
                         <Stats />
                     </div>
 
+                    {/* Segunda fila: Input Method Component */}
                     <div>
                         {/* Renderizar el componente según el método de entrada seleccionado */}
                         {inputMethod === 'mouse' ? (
                             <TerminalButtonGroup levels={levelsMouse} />
                         ) : (
                             <CodeEditor levels={levelsKeyboard} />
-                        )}</div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
