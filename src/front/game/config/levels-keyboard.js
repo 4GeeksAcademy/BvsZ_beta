@@ -2,41 +2,6 @@
 import { inputClasses } from "./input-classes";
 
 export const levels = [
-  
-  {
-    //NIVEL test
-    gridCols: 12,
-    serverCols: [1, 2, 11, 12],
-    serverHealth: 40,
-    turretsCount: 2,
-    turretHealth: 60,
-    turretsCols: [1, 2],
-    bulletVelocityY: 100,
-    bulletDamage: 10,
-    zombieVelocityY: -20, //Negativo
-    zombieHealth: 50,
-    zombieDamage: 20,
-    zombiesPerLevel: 3,
-    maxZombiesOnScreen: 6,
-    inputClasses: inputClasses[12],
-  },
-  {
-    //NIVEL test 2
-    gridCols: 12,
-    serverCols: [1, 2, 11, 12],
-    serverHealth: 40,
-    turretsCount: 2,
-    turretHealth: 60,
-    turretsCols: [1, 2],
-    bulletVelocityY: 100,
-    bulletDamage: 10,
-    zombieVelocityY: -20, //Negativo
-    zombieHealth: 50,
-    zombieDamage: 20,
-    zombiesPerLevel: 30,
-    maxZombiesOnScreen: 6,
-    inputClasses: inputClasses[12],
-  },
   {
     //NIVEL 1
     gridCols: 12,
