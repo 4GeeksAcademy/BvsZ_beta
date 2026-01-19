@@ -30,3 +30,5 @@ urllib3
 certifi
 six
 wtforms
+
+PyJWT
